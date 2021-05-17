@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "219679976525",
+    "project_id": "orbital-test-4e374",
+    "storage_bucket": "orbital-test-4e374.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219679976525:android:76e20d4699e0703b070004",
+        "android_client_info": {
+          "package_name": "com.example.orbital2796_nusell"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219679976525-slck4slm18r111lejhkkeirsqjfkfmu2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD75NSoaveKQLcOb8aYiIUXzZH5X_6wwbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219679976525-slck4slm18r111lejhkkeirsqjfkfmu2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219679976525-q2cmnrlhm97b3vf94alp8jqkei5vtd9r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.orbital2976.NUSellApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
