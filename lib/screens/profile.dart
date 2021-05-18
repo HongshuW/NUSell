@@ -1,18 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
-import 'package:orbital2796_nusell/screens/profile.dart';
 
-class HomeScreen extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
   final auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //a collection of three floating action buttons, on pressed will
-      //turn to another page
       body: Center(
-        child: Text('Home'),
+        //on pressed will log the user out to the log in page
+        child: ElevatedButton(
+          child: Text('Log Out'),
+          onPressed: () {
+            auth.signOut();
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => LoginScreen()));
+          },
+        ),
       ),
+      //a collection of the three buttons
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -21,7 +29,10 @@ class HomeScreen extends StatelessWidget {
           children: <Widget>[
             FloatingActionButton(
               heroTag: "home",
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => HomeScreen()));
+              },
               child: Icon(Icons.house),
             ),
             FloatingActionButton(
@@ -34,10 +45,7 @@ class HomeScreen extends StatelessWidget {
             ),
             FloatingActionButton(
               heroTag: "profile",
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
-              },
+              onPressed: () {},
               child: Icon(Icons.person),
             )
           ],

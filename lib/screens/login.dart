@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
+import 'package:orbital2796_nusell/screens/verify.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -100,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       //Success
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()));
+          MaterialPageRoute(builder: (context) => VerifyScreen()));
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
