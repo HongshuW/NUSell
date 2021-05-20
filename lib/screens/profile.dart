@@ -10,16 +10,29 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        //on pressed will log the user out to the log in page
-        child: ElevatedButton(
-          child: Text('Log Out'),
-          onPressed: () {
-            auth.signOut();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => LoginScreen()));
-          },
-        ),
-      ),
+          //on pressed will log the user out to the log in page
+          child: Row(
+        children: [
+          ElevatedButton(
+            child: Text('Log Out'),
+            onPressed: () {
+              auth.signOut();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
+          ),
+          ElevatedButton(
+            child: Text('Delete Account'),
+            onPressed: () {
+              User user = FirebaseAuth.instance.currentUser;
+              user.delete();
+              print('Deleted successfully!');
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
+          ),
+        ],
+      )),
       //a collection of the three buttons
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
