@@ -11,3 +11,5 @@ class App extends StatelessWidget {
     );
   }
 }
+
+class ChangeNotifierProvider {}
