@@ -10,9 +10,10 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-          //on pressed will log the user out to the log in page
           child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          //on pressed will log the user out to the log in page
           ElevatedButton(
             child: Text('Log Out'),
             onPressed: () {

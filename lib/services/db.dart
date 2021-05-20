@@ -5,16 +5,17 @@ class DatabaseService {
   final String uid;
   DatabaseService({this.uid});
 
-  final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users');
+  // final CollectionReference userCollection =
+  //     FirebaseFirestore.instance.collection('users');
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   Future updateUserData(NUSellUser user) async {
     var options = SetOptions(merge: true);
     print('came in here!');
-    return await userCollection.doc(uid).set(user.toMap(), options);
+    return await db.collection('users').doc(uid).set(user.toMap(), options);
   }
 
-  Future deleteuser() {
-    return userCollection.doc(uid).delete();
+  Future deleteUser() {
+    return db.collection('users').doc(uid).delete();
   }
 }
