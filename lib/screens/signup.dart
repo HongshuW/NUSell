@@ -6,6 +6,7 @@ import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
 import 'package:orbital2796_nusell/screens/verify.dart';
+import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:orbital2796_nusell/services/db.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  String _username, _email, _password, _confirmPassword;
+  String _username, _phoneNumber, _email, _password, _confirmPassword;
   TextEditingController password = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
   final auth = FirebaseAuth.instance;
@@ -49,6 +50,24 @@ class _SignupScreenState extends State<SignupScreen> {
                     validator: (String value) {
                       if (value.isEmpty) {
                         return 'Please enter your username';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(hintText: 'Phone number'),
+                    onChanged: (value) {
+                      setState(() {
+                        _phoneNumber = value.trim();
+                      });
+                    },
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return 'Please enter your phone number';
                       }
                       return null;
                     },
@@ -126,7 +145,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: () {
                             if (_formkey.currentState.validate()) {
                               print('successful!');
-                              _signup(_email, _password);
+                              AuthService().signup(_email, _password, _username,
+                                  _phoneNumber, context);
                             } else {
                               print('unsuccessful!');
                             }
@@ -189,27 +209,28 @@ class _SignupScreenState extends State<SignupScreen> {
         ));
   }
 
-  _signup(String _email, String _password) async {
-    try {
-      UserCredential cred = await auth.createUserWithEmailAndPassword(
-        email: _email,
-        password: _password,
-      );
-      User firebaseUser = cred.user;
-      NUSellUser user = NUSellUser(
-          uid: firebaseUser.uid,
-          username: _username,
-          email: _email,
-          password: _password);
-      print(user.uid);
-      await DatabaseService(uid: user.uid).updateUserData(user);
-      print(user.uid);
-      //Success
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => VerifyScreen()));
-    } on FirebaseAuthException catch (error) {
-      print(error.message);
-      Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
-    }
-  }
+  // _signup() async {
+  //   try {
+  //     UserCredential cred = await auth.createUserWithEmailAndPassword(
+  //       email: _email,
+  //       password: _password,
+  //     );
+  //     User firebaseUser = cred.user;
+  //     NUSellUser user = NUSellUser(
+  //         uid: firebaseUser.uid,
+  //         username: _username,
+  //         phoneNumber: _phoneNumber,
+  //         email: _email,
+  //         password: _password);
+  //     print(user.uid);
+  //     await UserDatabaseService(uid: user.uid).updateUserData(user);
+  //     print(user.uid);
+  //     //Success
+  //     Navigator.of(context).pushReplacement(
+  //         MaterialPageRoute(builder: (context) => VerifyScreen()));
+  //   } on FirebaseAuthException catch (error) {
+  //     print(error.message);
+  //     Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
+  //   }
+  // }
 }

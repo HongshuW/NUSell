@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
 import 'package:orbital2796_nusell/screens/signup.dart';
+import 'package:orbital2796_nusell/services/auth.dart';
+
+NUSellUser currentUser;
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -67,35 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: TextFormField(
-          //     controller: confirmPassword,
-          //     validator: (String value) {
-          //       if (value.isEmpty) {
-          //         return 'Please re-enter password';
-          //       }
-
-          //       if (confirmPassword.text != _password) {
-          //         return 'Password does not match';
-          //       }
-
-          //       return null;
-          //     },
-          //     obscureText: true,
-          //     decoration: InputDecoration(hintText: 'Confirm Password'),
-          //     onChanged: (value) {
-          //       setState(() {
-          //         _confirmPassword = value.trim();
-          //       });
-          //     },
-          //   ),
-          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                onPressed: () => _signin(_email, _password),
+                onPressed: () =>
+                    AuthService().signin(_email, _password, context),
                 child: Text('Sign In'),
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(242, 195, 71, 1), // background
@@ -136,18 +115,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
-  }
-
-  _signin(String email, String _password) async {
-    try {
-      await auth.signInWithEmailAndPassword(email: _email, password: _password);
-
-      //Success
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()));
-    } on FirebaseAuthException catch (error) {
-      print(error.message);
-      Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
-    }
   }
 }
