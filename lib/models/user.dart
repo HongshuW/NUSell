@@ -5,6 +5,7 @@ class NUSellUser {
   String avatarUrl;
   String email;
   String password;
+  String gender;
 
   NUSellUser(
       {this.uid,
@@ -12,7 +13,8 @@ class NUSellUser {
       this.avatarUrl,
       this.phoneNumber,
       this.email,
-      this.password});
+      this.password,
+      this.gender});
 
   factory NUSellUser.fromJson(Map<String, dynamic> json) {
     return NUSellUser(
@@ -20,7 +22,8 @@ class NUSellUser {
         avatarUrl: json['avatarUrl'],
         phoneNumber: json['phoneNumber'],
         email: json['email'],
-        password: json['password']);
+        password: json['password'],
+        gender: json['gender']);
   }
 
   Map<String, dynamic> toMap() {
@@ -29,7 +32,8 @@ class NUSellUser {
       'phoneNumber': phoneNumber,
       'avatarUrl': avatarUrl,
       'email': email,
-      'password': password
+      'password': password,
+      'gender': gender
     };
   }
 }

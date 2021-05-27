@@ -1,13 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:orbital2796_nusell/models/user.dart';
-import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
-import 'package:orbital2796_nusell/screens/verify.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
-import 'package:orbital2796_nusell/services/db.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -15,10 +9,9 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  String _username, _phoneNumber, _email, _password, _confirmPassword;
+  String _email, _password, _confirmPassword;
   TextEditingController password = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
-  final auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
   @override
@@ -37,42 +30,6 @@ class _SignupScreenState extends State<SignupScreen> {
             key: _formkey,
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(hintText: 'Username'),
-                    onChanged: (value) {
-                      setState(() {
-                        _username = value.trim();
-                      });
-                    },
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please enter your username';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(hintText: 'Phone number'),
-                    onChanged: (value) {
-                      setState(() {
-                        _phoneNumber = value.trim();
-                      });
-                    },
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
@@ -145,8 +102,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: () {
                             if (_formkey.currentState.validate()) {
                               print('successful!');
-                              AuthService().signup(_email, _password, _username,
-                                  _phoneNumber, context);
+                              AuthService().signup(_email, _password, context);
                             } else {
                               print('unsuccessful!');
                             }
@@ -208,29 +164,4 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ));
   }
-
-  // _signup() async {
-  //   try {
-  //     UserCredential cred = await auth.createUserWithEmailAndPassword(
-  //       email: _email,
-  //       password: _password,
-  //     );
-  //     User firebaseUser = cred.user;
-  //     NUSellUser user = NUSellUser(
-  //         uid: firebaseUser.uid,
-  //         username: _username,
-  //         phoneNumber: _phoneNumber,
-  //         email: _email,
-  //         password: _password);
-  //     print(user.uid);
-  //     await UserDatabaseService(uid: user.uid).updateUserData(user);
-  //     print(user.uid);
-  //     //Success
-  //     Navigator.of(context).pushReplacement(
-  //         MaterialPageRoute(builder: (context) => VerifyScreen()));
-  //   } on FirebaseAuthException catch (error) {
-  //     print(error.message);
-  //     Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
-  //   }
-  // }
 }

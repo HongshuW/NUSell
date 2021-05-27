@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+//unused; for testing before only
 class AllUserInformation extends StatefulWidget {
   //final NUSellUser user;
   // final String uid;

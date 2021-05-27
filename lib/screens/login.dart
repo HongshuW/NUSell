@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
@@ -13,10 +12,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String _email, _password, _confirmPassword;
+  String _email, _password;
   TextEditingController password = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
-  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {

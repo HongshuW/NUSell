@@ -14,20 +14,15 @@ class AuthService with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  signup(String email, String password, String username, String phoneNumber,
-      BuildContext context) async {
+  signup(String email, String password, BuildContext context) async {
     try {
       UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       User firebaseUser = cred.user;
-      NUSellUser user = NUSellUser(
-          uid: firebaseUser.uid,
-          username: username,
-          phoneNumber: phoneNumber,
-          email: email,
-          password: password);
+      NUSellUser user =
+          NUSellUser(uid: firebaseUser.uid, email: email, password: password);
       print(user.uid);
       await UserDatabaseService(uid: user.uid).updateUserData(user);
       print(user.uid);
@@ -50,6 +45,10 @@ class AuthService with ChangeNotifier {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
     }
+  }
+
+  signout() async {
+    await _auth.signOut();
   }
 
   Future _populateCurrentUser(User user) async {

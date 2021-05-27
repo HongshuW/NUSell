@@ -12,7 +12,7 @@ class Avatar extends StatelessWidget {
       child: Center(
         child: avatarUrl == null
             ? CircleAvatar(
-                radius: 70,
+                radius: 50,
                 // backgroundColor: Color.fromRGBO(242, 195, 71, 1),
                 child: Icon(Icons.photo_camera),
               )
