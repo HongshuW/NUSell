@@ -21,7 +21,17 @@ class HomeScreen extends StatelessWidget {
       path = imgArr[0];
     }
     var img = await storage.ref().child(path).getDownloadURL();
-    return Image.network(img);
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: Image.network(
+          img,
+        fit: BoxFit.fitWidth,
+        width: 200,
+      ),
+    );
   }
 
   @override
@@ -76,22 +86,33 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                     child: Column(children: <Widget>[
-                      Expanded(
-                        child: FutureBuilder(
-                          future: getImage(doc["images"]),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return snapshot.data;
-                          },
+                        Expanded(
+                          child: FutureBuilder(
+                            future: getImage(doc["images"]),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return snapshot.data;
+                            },
+                          ),
                         ),
-                      ),
-                      Text("${doc["productName"]}"),
-                      Text("\$${doc["price"].toString()}"),
-                    ],),
+                        Text(
+                          "${doc["productName"]}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          "\$${doc["price"].toString()}",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],),
                 );
               }).toList(),
             );
