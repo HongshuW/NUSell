@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       .collection('users')
       .doc(AuthService().getCurrentUID())
       .snapshots();
-  NUSellUser user;
+  NUSellUser user = NUSellUser();
 
   File newProfilePic;
 
@@ -54,12 +54,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
+            body: SingleChildScrollView(
+              child: Column(
+                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    height: 250,
                     decoration: BoxDecoration(
                       color: Colors.green.shade100,
                       borderRadius: BorderRadius.only(
@@ -68,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FutureBuilder(
                             future: _readUserInfo(),
@@ -87,12 +87,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                ),
-                FutureBuilder(
-                    future: _readUserInfo(),
-                    builder: (context, snapshot) {
-                      return Expanded(
-                        child: Column(
+                  FutureBuilder(
+                      future: _readUserInfo(),
+                      builder: (context, snapshot) {
+                        return Column(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -145,10 +143,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                             ),
                           ],
-                        ),
-                      );
-                    }),
-              ],
+                        );
+                      }),
+                ],
+              ),
             ),
 
             //a collection of the three buttons
