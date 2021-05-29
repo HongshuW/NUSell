@@ -34,6 +34,7 @@ class _PostScreenState extends State<PostScreen> {
   List<String> _imgRef = [];
   String docId;
 
+  CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   FirebaseStorage storage = FirebaseStorage.instance;
 
   String categoryToString(Categories cat) {
@@ -72,15 +73,20 @@ class _PostScreenState extends State<PostScreen> {
     ImagePicker picker = ImagePicker();
     PickedFile pickedFile;
     if (gallery) {
-      pickedFile = await picker.getImage(source: ImageSource.gallery);
+      pickedFile = await picker.getImage(
+          source: ImageSource.gallery,
+        imageQuality: 30,
+      );
     } else {
-      pickedFile = await picker.getImage(source: ImageSource.camera);
+      pickedFile = await picker.getImage(
+          source: ImageSource.camera,
+        imageQuality: 30,
+      );
     }
 
     setState(() {
       if (pickedFile != null) {
         _images.add(File(pickedFile.path));
-        _imgRef.add('productpics/${basename(pickedFile.path)}');
       } else {
         print("no image picked!");
       }
@@ -88,17 +94,19 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   uploadImages() async {
-    _images.forEach((img) async {
-      storage.ref()
-          .child('productpics/${basename(img.path)}')
-          .putFile(File(img.path));
-    });
+    var len = _images.length;
+    for (var i = 0; i < len; i++) {
+      var img = _images[i];
+      Reference ref = storage.ref().child('productpics/${basename(img.path)}');
+      await ref.putFile(File(img.path));
+      String url = await ref.getDownloadURL();
+      _imgRef.add(url);
+    }
+    posts.doc(this.docId).update({"images": FieldValue.arrayUnion(_imgRef)});
   }
 
   @override
   Widget build(BuildContext context) {
-    // Direct to the `posts` collection.
-    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
@@ -136,7 +144,6 @@ class _PostScreenState extends State<PostScreen> {
         );
         return null;
       } else {
-        uploadImages();
         return posts.add({
           'user': userId,
           'productName': productName,
@@ -144,7 +151,7 @@ class _PostScreenState extends State<PostScreen> {
           'category': categoryToString(_category),
           'price': price,
           'location': locationToString(_location),
-          'images': _imgRef
+          'images': []
         })
             .then((docRef) => this.docId = docRef.id)
             .then((value) => addedPost.add(this.docId))
@@ -152,8 +159,6 @@ class _PostScreenState extends State<PostScreen> {
             .then((value) => Fluttertoast.showToast(
               msg: 'You have added a post successfully!',
               gravity: ToastGravity.CENTER))
-            .then((value) => Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ProfileScreen())))
             .catchError((error) => print('Fail to add a post: $error'));
       }
     }
@@ -191,12 +196,20 @@ class _PostScreenState extends State<PostScreen> {
             child: RaisedButton(
               child: Text("POST"),
               color: Color.fromRGBO(252, 228, 70, 1),
-              onPressed: (){addPost(this.productName);},
+              onPressed: () async {
+                addPost(this.productName);
+                setState(() {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+                });
+                uploadImages();
+                },
             ),
           ),
         ],
         backgroundColor: Colors.white70,
       ),
+
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());

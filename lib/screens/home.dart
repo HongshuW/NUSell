@@ -13,14 +13,13 @@ class HomeScreen extends StatelessWidget {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  getImage(imgArr) async {
-    var path;
+  getImage(imgArr) {
+    var img;
     if (imgArr.isEmpty) {
-      path = 'productpics/default.png';
+      img = 'https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault.png?alt=media&token=c1100242-206c-44d9-a51b-181937932156';
     } else {
-      path = imgArr[0];
+      img = imgArr[0];
     }
-    var img = await storage.ref().child(path).getDownloadURL();
     return ClipRRect(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(10),
@@ -87,17 +86,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                     child: Column(children: <Widget>[
                         Expanded(
-                          child: FutureBuilder(
-                            future: getImage(doc["images"]),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              return snapshot.data;
-                            },
-                          ),
+                          child: getImage(doc["images"]),
                         ),
                         Text(
                           "${doc["productName"]}",
