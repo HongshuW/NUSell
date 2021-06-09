@@ -36,6 +36,7 @@ dependencies:
   provider: ^5.0.0
   image_picker: ^0.7.5+2
   firebase_storage: ^8.1.0
+  custom_radio_grouped_button: ^1.0.6+1
 
 dev_dependencies:
   flutter_test:

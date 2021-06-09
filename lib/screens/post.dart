@@ -10,12 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'dart:io';
-
-enum Categories { textbooks, notes, homeApplicances, toysAndGames,
-  electronics, cosmetics }
-
-enum Locations { UTown, PGP, MRT, CentralLibrary }
 
 class PostScreen extends StatefulWidget {
   PostScreen({Key key}) : super(key: key);
@@ -27,47 +23,15 @@ class _PostScreenState extends State<PostScreen> {
   String userId;
   String productName;
   String description;
-  Categories _category = Categories.textbooks;
   double price;
-  Locations _location = Locations.UTown;
   List<File> _images = [];
   List<String> _imgRef = [];
   String docId;
+  String location = "UTown";
+  String category = "Textbooks";
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   FirebaseStorage storage = FirebaseStorage.instance;
-
-  String categoryToString(Categories cat) {
-    if (cat == Categories.textbooks) {
-      return 'Textbooks';
-    } else if (cat == Categories.notes) {
-      return 'Notes';
-    } else if (cat == Categories.homeApplicances) {
-      return 'Home Applicances';
-    } else if (cat == Categories.toysAndGames) {
-      return 'Toys & Games';
-    } else if (cat == Categories.electronics) {
-      return 'Electronics';
-    } else if (cat == Categories.cosmetics) {
-      return 'Cosmetics';
-    } else {
-      return '';
-    }
-  }
-
-  String locationToString(Locations loc) {
-    if (loc == Locations.UTown) {
-      return "UTown";
-    } else if (loc == Locations.PGP) {
-      return "PGP";
-    } else if (loc == Locations.MRT) {
-      return "MRT";
-    } else if (loc == Locations.CentralLibrary) {
-      return "Central Library";
-    } else {
-      return "";
-    }
-  }
 
   Future getImage(bool gallery) async {
     ImagePicker picker = ImagePicker();
@@ -113,9 +77,9 @@ class _PostScreenState extends State<PostScreen> {
 
     DocumentReference currentUser = FirebaseFirestore.instance
         .collection('users').doc(this.userId);
-    List<String> addedPost = List<String>();
+    List<String> addedPost = [];
 
-    addPost(productName) {
+    addPost() {
       if (userId == null || userId == "") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
@@ -148,31 +112,72 @@ class _PostScreenState extends State<PostScreen> {
           'user': userId,
           'productName': productName,
           'description': description,
-          'category': categoryToString(_category),
+          'category': category,
           'price': price,
-          'location': locationToString(_location),
-          'images': []
+          'location': location,
+          'images': [],
+          'time': DateTime.parse(DateTime.now().toString()),
         })
             .then((docRef) => this.docId = docRef.id)
             .then((value) => addedPost.add(this.docId))
             .then((value) => currentUser.update({"posts": FieldValue.arrayUnion(addedPost)}))
             .then((value) => Fluttertoast.showToast(
               msg: 'You have added a post successfully!',
-              gravity: ToastGravity.CENTER))
-            .catchError((error) => print('Fail to add a post: $error'));
+              gravity: ToastGravity.CENTER));
       }
     }
 
-    switchCategory(Categories value) {
-      setState(() {
-        _category = value;
-      });
-    }
-
-    switchLocation(Locations value) {
-      setState(() {
-        _location = value;
-      });
+    displayImages() {
+      List<Widget> result = [];
+      if (_images.isEmpty) {
+        result.add(Image.network("https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"));
+      } else {
+        for (File img in _images) {
+          result.add(
+              InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.transparent,
+                          title: Container(
+                            margin: EdgeInsets.only(right: 180),
+                            child: ElevatedButton(
+                              onPressed: (){
+                                Navigator.of(context).pop();
+                              },
+                              child: Icon(Icons.arrow_back),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white30,
+                              ),
+                            ),
+                          ),
+                          content: Image.file(img),
+                          actions: <Widget>[
+                            ElevatedButton(
+                                onPressed: (){
+                                  this._images.remove(img);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("delete"),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromRGBO(220, 80, 60, 1),
+                                ),
+                            ),
+                          ],
+                        );
+                      }
+                  );
+                },
+                child: Image.file(
+                      img,
+                      fit: BoxFit.fitWidth,),
+              )
+          );
+        }
+      }
+      return result;
     }
 
     return Scaffold(
@@ -193,16 +198,13 @@ class _PostScreenState extends State<PostScreen> {
           // on pressed will submit the post and return to the profile screen
           Container(
             margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 10.0),
-            child: RaisedButton(
-              child: Text("POST"),
-              color: Color.fromRGBO(252, 228, 70, 1),
-              onPressed: () async {
-                addPost(this.productName);
-                setState(() {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
-                });
-                uploadImages();
+            child: ElevatedButton(
+              child: Text("Cancel"),
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromRGBO(255, 88, 68, 1),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
                 },
             ),
           ),
@@ -219,9 +221,10 @@ class _PostScreenState extends State<PostScreen> {
             gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomCenter,
+              stops: [0.5,0.5],
               colors: [
-                Color.fromRGBO(175, 241, 218, 0.7),
-                Color.fromRGBO(249, 234, 143, 0.7),
+                Color.fromRGBO(175, 241, 218, 0.3),
+                Color.fromRGBO(249, 234, 143, 0.5),
               ],
             ),
           ),
@@ -229,7 +232,7 @@ class _PostScreenState extends State<PostScreen> {
           child: ListView(children: <Widget>[
             // name of the product
             Container(
-              margin: const EdgeInsets.only(right: 130.0, top: 20.0),
+              margin: const EdgeInsets.only(right: 130.0, top: 20.0, bottom: 10.0),
               child: TextField(
                 decoration: InputDecoration(
                     labelText: "Name of the Product",
@@ -244,31 +247,45 @@ class _PostScreenState extends State<PostScreen> {
                     fillColor: Color.fromRGBO(255, 255, 255, 0.5),
                     filled: true,
                 ),
+                controller: TextEditingController(text: this.productName),
                 onChanged: (value){
                   this.productName = value;
                 },
               ),
             ),
 
+            // display photos
+            GridView.count(
+              crossAxisCount: 3,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1,
+              shrinkWrap: true,
+              children: displayImages(),
+            ),
+
             // upload photos
             Container(
-              margin: const EdgeInsets.only(top: 50.0, bottom: 50.0),
+              margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Row(children: <Widget>[
-                RaisedButton(
+                ElevatedButton(
                   child: Icon(
                     Icons.add_photo_alternate,
                     color: Color.fromRGBO(242, 195, 71, 1),
                   ),
                   onPressed: (){getImage(true);},
-                  color: Colors.white70,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white70,
+                  ),
                 ),
-                RaisedButton(
+                ElevatedButton(
                   child: Icon(
                     Icons.add_a_photo,
                     color: Color.fromRGBO(242, 195, 71, 1),
                   ),
                   onPressed: (){getImage(false);},
-                  color: Colors.white70,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white70,
+                  ),
                 ),
               ],),
             ),
@@ -288,6 +305,7 @@ class _PostScreenState extends State<PostScreen> {
                   fillColor: Color.fromRGBO(255, 255, 255, 0.5),
                   filled: true,
               ),
+              controller: TextEditingController(text: this.description),
               onChanged: (value){
                 this.description = value;
               },
@@ -317,45 +335,45 @@ class _PostScreenState extends State<PostScreen> {
             ),
 
             // select categories (buttons)
-            Container(
-              child: Column(children: <Widget>[
-                RadioListTile<Categories>(
-                  title: const Text('Textbooks'),
-                  value: Categories.textbooks,
-                  groupValue: _category,
-                  onChanged: switchCategory,
-                ),
-                RadioListTile<Categories>(
-                    title: const Text('Notes'),
-                    value: Categories.notes,
-                    groupValue: _category,
-                    onChanged: switchCategory,
-                ),
-                RadioListTile<Categories>(
-                  title: const Text('Home Applicances'),
-                  value: Categories.homeApplicances,
-                  groupValue: _category,
-                  onChanged: switchCategory,
-                ),
-                RadioListTile<Categories>(
-                  title: const Text('Toys & Games'),
-                  value: Categories.toysAndGames,
-                  groupValue: _category,
-                  onChanged: switchCategory,
-                ),
-                RadioListTile<Categories>(
-                  title: const Text('Electronics'),
-                  value: Categories.electronics,
-                  groupValue: _category,
-                  onChanged: switchCategory,
-                ),
-                RadioListTile<Categories>(
-                  title: const Text('Cosmetics'),
-                  value: Categories.cosmetics,
-                  groupValue: _category,
-                  onChanged: switchCategory,
-                ),
-              ],),
+            CustomRadioButton(
+              defaultSelected: 'Textbooks',
+              elevation: 0,
+              padding: 0,
+              unSelectedColor: Colors.white54,
+              enableButtonWrap: true,
+              width: 120,
+              wrapAlignment: WrapAlignment.center,
+              buttonLables: [
+                'Textbooks',
+                'Notes',
+                'Food',
+                'Appliances',
+                'Electronics',
+                'Cosmetics',
+                'Toys',
+                'Others',
+              ],
+              buttonValues: [
+                'Textbooks',
+                'Notes',
+                'Food',
+                'Appliances',
+                'Electronics',
+                'Cosmetics',
+                'Toys',
+                'Others',
+              ],
+              buttonTextStyle: ButtonTextStyle(
+                  selectedColor: Colors.white,
+                  unSelectedColor: Colors.black,
+                  textStyle: TextStyle(fontSize: 12)
+              ),
+              radioButtonValue: (value) {
+                this.category = value;
+              },
+              selectedColor: Color.fromRGBO(242, 195, 71, 1),
+              unSelectedBorderColor: Colors.white54,
+              selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
             ),
 
             // Price
@@ -435,32 +453,62 @@ class _PostScreenState extends State<PostScreen> {
 
             // select locations (buttons)
             Container(
-              child: Column(children: <Widget>[
-                RadioListTile<Locations>(
-                  title: const Text('UTown'),
-                  value: Locations.UTown,
-                  groupValue: _location,
-                  onChanged: switchLocation,
+              margin: EdgeInsets.only(bottom: 40),
+              child: CustomRadioButton(
+                defaultSelected: 'UTown',
+                elevation: 0,
+                padding: 0,
+                unSelectedColor: Colors.white54,
+                enableButtonWrap: true,
+                width: 120,
+                wrapAlignment: WrapAlignment.center,
+                buttonLables: [
+                  'UTown',
+                  'PGP',
+                  'Kent Ridge MRT',
+                  'Central Library',
+                  'Outside NUS',
+                  'Others',
+                ],
+                buttonValues: [
+                  "UTown",
+                  "PGP",
+                  "Kent Ridge MRT",
+                  'Central Library',
+                  'Outside NUS',
+                  'Others',
+                ],
+                buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(fontSize: 12)
                 ),
-                RadioListTile<Locations>(
-                  title: const Text('PGP'),
-                  value: Locations.PGP,
-                  groupValue: _location,
-                  onChanged: switchLocation,
+                radioButtonValue: (value) {
+                  this.location = value;
+                },
+                selectedColor: Color.fromRGBO(242, 195, 71, 1),
+                unSelectedBorderColor: Colors.white54,
+                selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
+              ),
+            ),
+
+            // cancel button
+            Container(
+              margin: EdgeInsets.only(bottom: 30, left: 90, right: 90),
+                child: ElevatedButton(
+                    onPressed: () async {
+                      addPost();
+                      uploadImages();
+                      setState(() {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+                      });
+                    },
+                    child: Text("Post"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(242, 195, 71, 1),
+                  ),
                 ),
-                RadioListTile<Locations>(
-                  title: const Text('Kent Ridge MRT'),
-                  value: Locations.MRT,
-                  groupValue: _location,
-                  onChanged: switchLocation,
-                ),
-                RadioListTile<Locations>(
-                  title: const Text('Central Library'),
-                  value: Locations.CentralLibrary,
-                  groupValue: _location,
-                  onChanged: switchLocation,
-                ),
-              ],),
             ),
           ],),
         ),
