@@ -9,6 +9,7 @@ import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
+import 'package:orbital2796_nusell/screens/myposts.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -112,6 +113,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 'Your phone number: ${user.phoneNumber}',
                                 style: TextStyle(fontSize: 16),
                               ),
+                            ),
+                            ElevatedButton(
+                              child: Text('My posts'),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => MyPostsScreen()));
+                              },
                             ),
                             ElevatedButton(
                               child: Text('Edit your profile'),
