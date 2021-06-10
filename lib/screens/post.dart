@@ -123,7 +123,9 @@ class _PostScreenState extends State<PostScreen> {
             .then((value) => currentUser.update({"posts": FieldValue.arrayUnion(addedPost)}))
             .then((value) => Fluttertoast.showToast(
               msg: 'You have added a post successfully!',
-              gravity: ToastGravity.CENTER));
+              gravity: ToastGravity.CENTER))
+            .then((value) => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => ProfileScreen())));
       }
     }
 
@@ -499,10 +501,6 @@ class _PostScreenState extends State<PostScreen> {
                     onPressed: () async {
                       addPost();
                       uploadImages();
-                      setState(() {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
-                      });
                     },
                     child: Text("Post"),
                   style: ElevatedButton.styleFrom(
