@@ -116,9 +116,12 @@ class _PostScreenState extends State<PostScreen> {
               'location': location,
               'images': [],
               'time': DateTime.parse(DateTime.now().toString()),
-              'searchKey': productName.substring(0, 1).toLowerCase()
+              'searchKey': productName.substring(0, 1).toLowerCase(),
             })
-            .then((docRef) => this.docId = docRef.id)
+            .then((docRef) {
+              this.docId = docRef.id;
+              posts.doc(this.docId).update({"productId": this.docId});
+            })
             .then((value) => addedPost.add(this.docId))
             .then((value) =>
                 currentUser.update({"posts": FieldValue.arrayUnion(addedPost)}))

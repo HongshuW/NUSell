@@ -30,7 +30,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   updateButton() {
     return Container(
-        child: ElevatedButton(onPressed: () {}, child: Text("update")),
+      child: ElevatedButton(onPressed: () {}, child: Text("update")),
     );
   }
 
@@ -42,7 +42,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     updatePost() {
       if (name == null || name == "") {
         Fluttertoast.showToast(
@@ -72,8 +71,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'category': category,
           'price': price,
           'location': location,
-        })
-            .then((value) => Fluttertoast.showToast(
+          'productId': this.docId
+        }).then((value) => Fluttertoast.showToast(
             msg: 'You have updated this post successfully!',
             gravity: ToastGravity.CENTER));
       }
@@ -82,51 +81,50 @@ class _EditProductScreenState extends State<EditProductScreen> {
     displayImages() {
       List<Widget> result = [];
       if (this._imgRef.isEmpty) {
-        result.add(Image.network("https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"));
+        result.add(Image.network(
+            "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"));
       } else {
         for (String img in this._imgRef) {
-          result.add(
-              InkWell(
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.transparent,
-                          title: Container(
-                            margin: EdgeInsets.only(right: 180),
-                            child: ElevatedButton(
-                              onPressed: (){
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.arrow_back),
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white30,
-                              ),
-                            ),
+          result.add(InkWell(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.transparent,
+                      title: Container(
+                        margin: EdgeInsets.only(right: 180),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(Icons.arrow_back),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white30,
                           ),
-                          content: Image.network(img),
-                          actions: <Widget>[
-                            ElevatedButton(
-                              onPressed: (){
-                                this._imgRef.remove(img);
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("delete"),
-                              style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(220, 80, 60, 1),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                  );
-                },
-                child: Image.network(
-                  img,
-                  fit: BoxFit.fitWidth,),
-              )
-          );
+                        ),
+                      ),
+                      content: Image.network(img),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          onPressed: () {
+                            this._imgRef.remove(img);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("delete"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(220, 80, 60, 1),
+                          ),
+                        ),
+                      ],
+                    );
+                  });
+            },
+            child: Image.network(
+              img,
+              fit: BoxFit.fitWidth,
+            ),
+          ));
         }
       }
       return result;
@@ -140,7 +138,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           color: Colors.black,
         ),
         title: Text(
-            "Update your product",
+          "Update your product",
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -152,7 +150,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           margin: EdgeInsets.all(30),
           child: FutureBuilder<DocumentSnapshot>(
             future: this._future,
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
               }
@@ -181,7 +180,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Text("\n\nProduct Name: "),
                   TextField(
                     controller: TextEditingController(text: "${this.name}"),
-                    onChanged: (value){
+                    onChanged: (value) {
                       this.name = value;
                     },
                   ),
@@ -190,7 +189,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Text("\n\nPrice (in SGD): "),
                   TextField(
                     controller: TextEditingController(text: "${this.price}"),
-                    onChanged: (value){
+                    onChanged: (value) {
                       try {
                         this.price = double.parse(value);
                       } catch (FormatException) {
@@ -206,8 +205,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   // Description
                   Text("\n\nDescription: "),
                   TextField(
-                    controller: TextEditingController(text: "${this.description}"),
-                    onChanged: (value){
+                    controller:
+                        TextEditingController(text: "${this.description}"),
+                    onChanged: (value) {
                       this.description = value;
                     },
                   ),
@@ -245,8 +245,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     buttonTextStyle: ButtonTextStyle(
                         selectedColor: Colors.white,
                         unSelectedColor: Colors.black,
-                        textStyle: TextStyle(fontSize: 12)
-                    ),
+                        textStyle: TextStyle(fontSize: 12)),
                     radioButtonValue: (value) {
                       this.category = value;
                     },
@@ -284,8 +283,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     buttonTextStyle: ButtonTextStyle(
                         selectedColor: Colors.white,
                         unSelectedColor: Colors.black,
-                        textStyle: TextStyle(fontSize: 12)
-                    ),
+                        textStyle: TextStyle(fontSize: 12)),
                     radioButtonValue: (value) {
                       this.location = value;
                     },
@@ -296,20 +294,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                   // Actions
                   ElevatedButton(
-                      onPressed: (){
-                        Navigator.of(context).pop();
-                        },
-                      child: Text("Cancel"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromRGBO(255, 88, 68, 1),
-                      ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color.fromRGBO(255, 88, 68, 1),
+                    ),
                   ),
                   ElevatedButton(
-                      onPressed: (){
-                        updatePost();
-                        Navigator.of(context).pop();
-                        },
-                      child: Text("Update"),
+                    onPressed: () {
+                      updatePost();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Update"),
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(100, 170, 255, 1),
                     ),
