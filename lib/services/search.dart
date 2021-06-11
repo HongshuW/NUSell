@@ -8,4 +8,11 @@ class SearchService {
             isEqualTo: searchField.substring(0, 1).toLowerCase())
         .get();
   }
+
+  // Future<QuerySnapshot> fullTextSearch(String searchField) {
+  //   return FirebaseFirestore.instance
+  //       .collection('posts')
+  //       .where('productName', isGreaterThanOrEqualTo: searchField)
+  //       .get();
+  // }
 }
