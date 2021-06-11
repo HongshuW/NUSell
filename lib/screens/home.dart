@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
+import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
+import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/userInfoProvider.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
@@ -11,6 +12,7 @@ import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/filter.dart';
 import 'package:orbital2796_nusell/screens/allPosts.dart';
 import 'package:orbital2796_nusell/screens/searchbar.dart';
+import 'package:orbital2796_nusell/screens/selectedFilters.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,12 +27,17 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  var filterVal = 0;
+  int type;
 
   @override
   Widget build(BuildContext context) {
     final userinfoProvider =
         Provider.of<userInfoProvider>(context, listen: false);
+
+    final posts = Provider.of<postsProvider>(context);
+
+    final selected = Provider.of<filtersProvider>(context);
+
     return ChangeNotifierProvider(
       create: (context) => postsProvider(),
       child: Scaffold(
@@ -121,16 +128,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       radioButtonValue: (value) => {
-                        setState(() {
-                          this.filterVal = value;
-                        })
+                        setState(() {this.type = value;})
                       },
                       unSelectedColor: Colors.transparent,
-                      selectedColor: Color.fromRGBO(250, 190, 90, 1),
+                      selectedColor: Color.fromRGBO(250, 190, 90, 0.5),
                       unSelectedBorderColor: Colors.white,
                       selectedBorderColor: Color.fromRGBO(190, 140, 90, 1),
                     ),
-                    Filter(value: this.filterVal),
+                    Filter(type: this.type),
+                    selectedFilters(),
                   ],
                 ),
               ),
@@ -145,7 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
         //turn to another page
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          height: 80,
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

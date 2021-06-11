@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
@@ -40,62 +41,73 @@ class _allPostsState extends State<allPosts> {
   @override
   Widget build(BuildContext context) {
     final posts = Provider.of<postsProvider>(context);
+    final filterState = Provider.of<filtersProvider>(context);
 
-    return Container(
-      padding: EdgeInsets.only(left: 30, right: 30, top: 20),
-      child: StreamBuilder(
-        stream: posts.snapshot,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            shrinkWrap: true,
-            children: snapshot.data.docs.map((doc) {
-              return InkWell(
-                onTap: () {
-                  if (auth.currentUser == null) {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
-                  } else {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ProductInfoScreen(product: doc.id)));
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(children: <Widget>[
-                    Expanded(
-                      child: getImage(doc["images"]),
-                    ),
-                    Text(
-                      "${doc["productName"]}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+    return ListView(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      children: [
+        Container(
+          padding: EdgeInsets.only(left: 30, right: 30, top: 20),
+          height: MediaQuery.of(context).size.height * 0.53,
+          child: StreamBuilder(
+            stream: posts.snapshot,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                shrinkWrap: true,
+                children: snapshot.data.docs
+                    .where((doc) => doc["price"] < filterState.range[1]
+                      && doc["price"] >= filterState.range[0])
+                    .map((doc) {
+                  return InkWell(
+                    onTap: () {
+                      if (auth.currentUser == null) {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoginScreen()));
+                      } else {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => ProductInfoScreen(product: doc.id)));
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: Column(children: <Widget>[
+                        Expanded(
+                          child: getImage(doc["images"]),
+                        ),
+                        Text(
+                          "${doc["productName"]}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          "\$${doc["price"].toString()}",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],),
                     ),
-                    Text(
-                      "\$${doc["price"].toString()}",
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],),
-                ),
+                  );
+                }).toList(),
               );
-            }).toList(),
-          );
-        },
-      ),
+            },
+          ),
+        ),
+      ],
     );
   }
 }

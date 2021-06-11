@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/providers/filtersProvider.dart';
+import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/userInfoProvider.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
@@ -14,6 +16,12 @@ class App extends StatelessWidget {
           create: (context) => userInfoProvider(),
         ),
         //Provider(create: (context) => ProfileScreen(auth.currentUser.uid)),
+        ChangeNotifierProvider(
+            create: (context) => postsProvider(),
+        ),
+        ChangeNotifierProvider(
+            create: (context) => filtersProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Login App',

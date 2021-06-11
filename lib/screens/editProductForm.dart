@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
+import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 
 class EditProductScreen extends StatefulWidget {
   final String product;
@@ -269,6 +269,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       'PGP',
                       'Kent Ridge MRT',
                       'Central Library',
+                      'YIH',
                       'Outside NUS',
                       'Others',
                     ],
@@ -277,6 +278,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       "PGP",
                       "Kent Ridge MRT",
                       'Central Library',
+                      'YIH',
                       'Outside NUS',
                       'Others',
                     ],
