@@ -10,10 +10,11 @@ import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/filter.dart';
 import 'package:orbital2796_nusell/screens/allPosts.dart';
+import 'package:orbital2796_nusell/screens/searchbar.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key}) : super(key : key);
+  HomeScreen({Key key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -43,12 +44,21 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Container(
             margin: EdgeInsets.only(left: 40, right: 40),
             child: TextField(
+              onTap: () {
+                if (auth.currentUser == null) {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                } else {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SearchBar()));
+                }
+              },
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.black),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                focusedBorder:OutlineInputBorder(
+                focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 hintText: "Search",
@@ -79,8 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                 ),
 
@@ -101,17 +111,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         'Price',
                         'Clear Filters'
                       ],
-                      buttonValues: [1,2,3,4,5],
+                      buttonValues: [1, 2, 3, 4, 5],
                       buttonTextStyle: ButtonTextStyle(
-                          selectedColor: Color.fromRGBO(190, 140, 90, 1),
-                          unSelectedColor: Colors.white,
-                          textStyle: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w300,
-                          ),
+                        selectedColor: Color.fromRGBO(190, 140, 90, 1),
+                        unSelectedColor: Colors.white,
+                        textStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                       radioButtonValue: (value) => {
-                        setState(() {this.filterVal = value;})
+                        setState(() {
+                          this.filterVal = value;
+                        })
                       },
                       unSelectedColor: Colors.transparent,
                       selectedColor: Color.fromRGBO(250, 190, 90, 1),
@@ -149,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   if (auth.currentUser == null) {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   } else {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => PostScreen()));
@@ -165,11 +177,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => LoginScreen()));
                   } else {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ProfileScreen()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ProfileScreen()));
                   }
                 },
-                child: Icon(Icons.person, color: Colors.white,),
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
                 backgroundColor: Color.fromRGBO(242, 195, 71, 1),
               )
             ],
