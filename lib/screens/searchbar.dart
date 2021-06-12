@@ -88,7 +88,7 @@ class _SearchBarState extends State<SearchBar> {
     }
   }
 
-  initiateSearch2(String value) {
+  fullTextSearch(String value) {
     if (value.length == 0) {
       setState(() {
         queryResultSet = [];
@@ -136,7 +136,7 @@ class _SearchBarState extends State<SearchBar> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (val) {
-                initiateSearch2(val);
+                fullTextSearch(val);
               },
               decoration: InputDecoration(
                 border: OutlineInputBorder(
