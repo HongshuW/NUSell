@@ -117,6 +117,8 @@ class _PostScreenState extends State<PostScreen> {
               'images': [],
               'time': DateTime.parse(DateTime.now().toString()),
               'searchKey': productName.substring(0, 1).toLowerCase(),
+              'nameForSearch': productName.toLowerCase().trim() +
+                  description.toLowerCase().trim()
             })
             .then((docRef) {
               this.docId = docRef.id;
@@ -324,41 +326,40 @@ class _PostScreenState extends State<PostScreen> {
                 },
               ),
 
-            // select categories (buttons)
-            CustomRadioButton(
-              defaultSelected: 'Textbooks',
-              elevation: 0,
-              padding: 0,
-              unSelectedColor: Colors.white54,
-              enableButtonWrap: true,
-              autoWidth: true,
-              wrapAlignment: WrapAlignment.center,
-              buttonLables: [
-                'Textbooks',
-                'Notes',
-                'Food',
-                'Appliances',
-                'Electronics',
-                'Cosmetics',
-                'Toys',
-                'Others',
-              ],
-              buttonValues: [
-                'Textbooks',
-                'Notes',
-                'Food',
-                'Appliances',
-                'Electronics',
-                'Cosmetics',
-                'Toys',
-                'Others',
-              ],
-              buttonTextStyle: ButtonTextStyle(
-                  selectedColor: Colors.white,
-                  unSelectedColor: Colors.black,
-                  textStyle: TextStyle(fontSize: 12)
+              // select categories (buttons)
+              CustomRadioButton(
+                defaultSelected: 'Textbooks',
+                elevation: 0,
+                padding: 0,
+                unSelectedColor: Colors.white54,
+                enableButtonWrap: true,
+                autoWidth: true,
+                wrapAlignment: WrapAlignment.center,
+                buttonLables: [
+                  'Textbooks',
+                  'Notes',
+                  'Food',
+                  'Appliances',
+                  'Electronics',
+                  'Cosmetics',
+                  'Toys',
+                  'Others',
+                ],
+                buttonValues: [
+                  'Textbooks',
+                  'Notes',
+                  'Food',
+                  'Appliances',
+                  'Electronics',
+                  'Cosmetics',
+                  'Toys',
+                  'Others',
+                ],
+                buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(fontSize: 12)),
               ),
-            ),
 
               // select categories (subtitle)
               Container(

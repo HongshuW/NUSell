@@ -71,7 +71,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'category': category,
           'price': price,
           'location': location,
-          'productId': this.docId
+          'productId': this.docId,
+          'nameForSearch':
+              name.toLowerCase().trim() + " " + description.toLowerCase().trim()
         }).then((value) => Fluttertoast.showToast(
             msg: 'You have updated this post successfully!',
             gravity: ToastGravity.CENTER));

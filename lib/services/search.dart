@@ -9,10 +9,10 @@ class SearchService {
         .get();
   }
 
-  // Future<QuerySnapshot> fullTextSearch(String searchField) {
-  //   return FirebaseFirestore.instance
-  //       .collection('posts')
-  //       .where('productName', isGreaterThanOrEqualTo: searchField)
-  //       .get();
-  // }
+  Future<QuerySnapshot> fullTextSearch(String searchField) {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('nameForSearch', isGreaterThanOrEqualTo: searchField)
+        .get();
+  }
 }

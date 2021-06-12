@@ -88,6 +88,42 @@ class _SearchBarState extends State<SearchBar> {
     }
   }
 
+  initiateSearch2(String value) {
+    if (value.length == 0) {
+      setState(() {
+        queryResultSet = [];
+        tempSearchStore = [];
+      });
+    } else {
+      var uncapitalisedValue = value.toLowerCase().trim();
+
+      if (queryResultSet.length == 0 && value.length == 1) {
+        SearchService().fullTextSearch(value).then((docs) {
+          for (int i = 0; i < docs.size; ++i) {
+            Map<String, dynamic> data = docs.docs[i].data();
+            queryResultSet.add(data);
+            setState(() {
+              tempSearchStore.add(queryResultSet[i]);
+            });
+          }
+        });
+      } else {
+        tempSearchStore = [];
+        queryResultSet.forEach((element) {
+          String name = element['nameForSearch'].toString().toLowerCase();
+          if (name.trim().contains(uncapitalisedValue)) {
+            setState(() {
+              tempSearchStore.add(element);
+            });
+          }
+        });
+      }
+    }
+    if (tempSearchStore.length == 0 && value.length > 1) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +136,7 @@ class _SearchBarState extends State<SearchBar> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (val) {
-                initiateSearch(val);
+                initiateSearch2(val);
               },
               decoration: InputDecoration(
                 border: OutlineInputBorder(
