@@ -43,30 +43,27 @@ class _allPostsState extends State<allPosts> {
     final posts = Provider.of<postsProvider>(context);
     final filterState = Provider.of<filtersProvider>(context);
 
-    return ListView(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: EdgeInsets.only(left: 30, right: 30, top: 20),
-          height: MediaQuery.of(context).size.height * 0.53,
-          child: StreamBuilder(
-            stream: posts.snapshot,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-              if (!snapshot.hasData) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                shrinkWrap: true,
-                children: snapshot.data.docs
-                    .where((doc) => doc["price"] < filterState.range[1]
-                      && doc["price"] >= filterState.range[0])
-                    .map((doc) {
+    return StreamBuilder(
+      stream: posts.snapshot,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return Container(
+          margin: EdgeInsets.all(20),
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            physics: ScrollPhysics(),
+            children: snapshot.data.docs
+                .where((doc) => doc["price"] < filterState.range[1]
+                && doc["price"] >= filterState.range[0])
+                .map((doc) {
                   return InkWell(
                     onTap: () {
                       if (auth.currentUser == null) {
@@ -76,7 +73,7 @@ class _allPostsState extends State<allPosts> {
                         Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => ProductInfoScreen(product: doc.id)));
                       }
-                    },
+                      },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -96,18 +93,18 @@ class _allPostsState extends State<allPosts> {
                         Text(
                           "\$${doc["price"].toString()}",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 17,
+                            height: 1.5
                           ),
                         ),
                       ],),
                     ),
                   );
                 }).toList(),
-              );
-            },
           ),
-        ),
-      ],
+        );
+        },
     );
   }
 }

@@ -53,16 +53,30 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         Container(
           height: 300,
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Listener(
                   onPointerUp: previousPage,
                   child: Icon(Icons.arrow_back_ios)
               ),
-              Image.network(
-                    img,
-                    fit: BoxFit.fitWidth,
-                    width: 200,
+              InkWell(
+                onTap: () {
+                  showDialog(
+                    barrierColor: Colors.black,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          child: Image.network(img),
+                          insetPadding: EdgeInsets.all(0),
+                        );
+                      }
+                  );
+                },
+                child: Image.network(
+                      img,
+                      fit: BoxFit.fitWidth,
+                      width: 0.7 * MediaQuery.of(context).size.width,
+                ),
               ),
               Listener(
                   onPointerUp: nextPage,
@@ -71,7 +85,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
             ],
           ),
         ),
-        Text(this.len > 0 ? "${this.index + 1} / ${this.len}" : "0/0"),
+        Container(
+          margin: EdgeInsets.only(top: 10),
+            child: Text(this.len > 0 ? "${this.index + 1} / ${this.len}" : "0/0")
+        ),
       ],
     );
   }
@@ -84,7 +101,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
     interactions(String seller, String user) {
       if (seller == user) {
-        return Column(
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
                 onPressed: (){
@@ -98,8 +116,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 child: Text("Update")
             ),
             ElevatedButton(
-                onPressed: (){
-                  db.collection("posts").doc(widget.product).delete();
+                onPressed: () async {
+                  DocumentReference docRef = db.collection("posts").doc(widget.product);
+                  var doc = await docRef.get();
+                  List<dynamic> images = doc["images"];
+                  for (var img in images) {
+                    storage.refFromURL(img).delete();
+                  }
+                  docRef.delete();
                   db.collection("users").doc(user).update({"posts": FieldValue.arrayRemove([widget.product])});
                   Navigator.of(context).pop();
                 },
@@ -134,7 +158,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(30),
+        padding: EdgeInsets.only(left: 30, right: 30),
         child: FutureBuilder<DocumentSnapshot>(
           future: db.collection("posts").doc(widget.product).get(),
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
@@ -180,7 +204,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                 ),
                               ),
                             ),
-                            Text("${user["username"]}"),
+                            Text(
+                                "${user["username"]}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                letterSpacing: 1
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -188,20 +219,59 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   },
                 ),
 
-                // Time posted
-                Row(
-                  children: [
-                    Text("${DateTime.fromMillisecondsSinceEpoch(
-                        post["time"].millisecondsSinceEpoch)}".substring(0, 10)
-                    ),
-                  ],
+                // Time and Location
+                Container(
+                  margin: EdgeInsets.only(bottom: 15),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${DateTime.fromMillisecondsSinceEpoch(
+                            post["time"].millisecondsSinceEpoch)}".substring(0, 10),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w300,
+                          letterSpacing: 1
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 15),
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(0, 0, 0, 0.1),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                                Icons.location_on,
+                              size: 15,
+                            ),
+                            Text(
+                              "${post['location']}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 // Product Name
                 Row(
                   children: [
                     Icon(Icons.article,),
-                    Text("${post['productName']}"),
+                    Text(
+                        " ${post['productName']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        letterSpacing: 1,
+                      ),
+                    ),
                   ],
                 ),
 
@@ -209,20 +279,29 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 Row(
                   children: [
                     Icon(Icons.attach_money),
-                    Text("${post['price']}"),
-                  ],
-                ),
-
-                // Location
-                Row(
-                  children: [
-                    Icon(Icons.location_on),
-                    Text("${post['location']}"),
+                    Text(
+                        " ${post['price']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                          letterSpacing: 1,
+                      ),
+                    ),
                   ],
                 ),
 
                 // Description
-                Text("\nDescription: \n${post['description']} \n"),
+                Text(
+                  "\nDescription: ",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                      letterSpacing: 1
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 5, bottom: 20),
+                    child: Text("${post['description']} \n"),
+                ),
 
                 // Interactions
                 interactions(post['user'], this.userId),
