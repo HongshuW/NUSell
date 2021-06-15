@@ -169,14 +169,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
               return ListView(
                 children: [
                   // Images
-                  Text("Photos: \n"),
-                  GridView.count(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 1,
-                    mainAxisSpacing: 1,
-                    shrinkWrap: true,
-                    children: displayImages(),
-                  ),
+                  // Text("Photos: \n"),
+                  // GridView.count(
+                  //   crossAxisCount: 3,
+                  //   crossAxisSpacing: 1,
+                  //   mainAxisSpacing: 1,
+                  //   shrinkWrap: true,
+                  //   children: displayImages(),
+                  // ),
 
                   // Product Name
                   Text("\n\nProduct Name: "),
@@ -207,6 +207,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   // Description
                   Text("\n\nDescription: "),
                   TextField(
+                    minLines: 1,
+                    maxLines: null,
                     controller:
                         TextEditingController(text: "${this.description}"),
                     onChanged: (value) {

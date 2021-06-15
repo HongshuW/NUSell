@@ -51,8 +51,6 @@ class _PostScreenState extends State<PostScreen> {
     setState(() {
       if (pickedFile != null) {
         _images.add(File(pickedFile.path));
-      } else {
-        print("no image picked!");
       }
     });
   }
@@ -138,8 +136,13 @@ class _PostScreenState extends State<PostScreen> {
     displayImages() {
       List<Widget> result = [];
       if (_images.isEmpty) {
-        result.add(Image.network(
-            "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"));
+        result.add(
+            InkWell(
+              onTap: () {
+                getImage(true);
+                },
+              child: Image.network("https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
+            ));
       } else {
         for (File img in _images) {
           result.add(InkWell(
@@ -307,7 +310,8 @@ class _PostScreenState extends State<PostScreen> {
               // description of the product
               TextField(
                 keyboardType: TextInputType.multiline,
-                maxLines: 5,
+                minLines: 1,
+                maxLines: null,
                 decoration: InputDecoration(
                   labelText: "Description",
                   hintText:
@@ -324,41 +328,6 @@ class _PostScreenState extends State<PostScreen> {
                 onChanged: (value) {
                   this.description = value;
                 },
-              ),
-
-              // select categories (buttons)
-              CustomRadioButton(
-                defaultSelected: 'Textbooks',
-                elevation: 0,
-                padding: 0,
-                unSelectedColor: Colors.white54,
-                enableButtonWrap: true,
-                autoWidth: true,
-                wrapAlignment: WrapAlignment.center,
-                buttonLables: [
-                  'Textbooks',
-                  'Notes',
-                  'Food',
-                  'Appliances',
-                  'Electronics',
-                  'Cosmetics',
-                  'Toys',
-                  'Others',
-                ],
-                buttonValues: [
-                  'Textbooks',
-                  'Notes',
-                  'Food',
-                  'Appliances',
-                  'Electronics',
-                  'Cosmetics',
-                  'Toys',
-                  'Others',
-                ],
-                buttonTextStyle: ButtonTextStyle(
-                    selectedColor: Colors.white,
-                    unSelectedColor: Colors.black,
-                    textStyle: TextStyle(fontSize: 12)),
               ),
 
               // select categories (subtitle)

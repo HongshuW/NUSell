@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:orbital2796_nusell/providers/postsProvider.dart';
 
 class Filter {
   final posts;
@@ -19,8 +18,7 @@ class Filter {
     return InkWell(
       onTap: () {
         selected.remove(this);
-        var newSnapshot = selected.getSnapshot();
-        posts.snapshot = newSnapshot;
+        posts.snapshot = selected.getQuery();
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 10, right: 5),
