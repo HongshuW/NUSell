@@ -7,6 +7,7 @@ class NUSellUser {
   String password;
   String gender;
   List<String> myPosts = [];
+  List<String> myCart = [];
 
   NUSellUser(
       {this.uid,
@@ -16,7 +17,8 @@ class NUSellUser {
       this.email,
       this.password,
       this.gender,
-      this.myPosts});
+      this.myPosts,
+      this.myCart});
 
   factory NUSellUser.fromJson(Map<String, dynamic> json) {
     return NUSellUser(
@@ -26,7 +28,8 @@ class NUSellUser {
         email: json['email'],
         password: json['password'],
         gender: json['gender'],
-        myPosts: List.from(json['posts']));
+        myPosts: List.from(json['posts']),
+        myCart: List.from(json['shopping carts']));
   }
 
   Map<String, dynamic> toMap() {
@@ -37,7 +40,8 @@ class NUSellUser {
       'email': email,
       'password': password,
       'gender': gender,
-      'posts': myPosts
+      'posts': myPosts,
+      'shopping carts': myCart
     };
   }
 }

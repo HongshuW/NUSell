@@ -7,6 +7,8 @@ import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
+import 'package:orbital2796_nusell/screens/shoppingCarts.dart';
+import 'package:orbital2796_nusell/services/auth.dart';
 
 class ProductInfoScreen extends StatefulWidget {
   final String product;
@@ -21,6 +23,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
+
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  List<String> shoppingCarts = [];
 
   int index = 0;
   var len;
@@ -113,6 +118,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
               }
+
               Map<String, dynamic> post = snapshot.data.data();
               return Column(
                 children: [
@@ -138,6 +144,31 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     ),
                     child: Text("See the seller's profile"),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                          icon: Icon(Icons.shopping_cart),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => MyShoppingCartsScreen(
+                                      userId: AuthService().getCurrentUID(),
+                                    )));
+                          }),
+                      ElevatedButton(
+                        onPressed: () {
+                          users.doc(AuthService().getCurrentUID()).update({
+                            'shopping carts':
+                                FieldValue.arrayUnion([widget.product]),
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Color.fromRGBO(100, 170, 255, 1),
+                        ),
+                        child: Text("Add to cart"),
+                      ),
+                    ],
+                  )
                 ],
               );
             });
