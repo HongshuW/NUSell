@@ -66,7 +66,32 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return Dialog(
-                          child: Image.network(img),
+                          child: Container(
+                            color: Colors.black,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 50),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                    ),
+                                  ),
+                                ),
+                                Image.network(img),
+                              ],
+                            ),
+                          ),
                           insetPadding: EdgeInsets.all(0),
                         );
                       }

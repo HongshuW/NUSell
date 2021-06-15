@@ -23,22 +23,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // firebase fields
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
+  // filters fields
   int type;
+
+  // back to top fields
+  ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
+    // Providers
     final userinfoProvider =
         Provider.of<userInfoProvider>(context, listen: false);
-
     final posts = Provider.of<postsProvider>(context);
-
     final selected = Provider.of<filtersProvider>(context);
-
-    ScrollController scrollController = ScrollController();
 
     return ChangeNotifierProvider(
       create: (context) => postsProvider(),
@@ -149,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // display posts
-                allPosts(),
+                allPosts(posts: posts),
               ],
             ),
           ),

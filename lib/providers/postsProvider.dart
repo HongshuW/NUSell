@@ -3,15 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class postsProvider with ChangeNotifier {
   // default snapshot of posts (sorted by time posted).
-
-  Stream<QuerySnapshot> _snapshot = FirebaseFirestore.instance
+  Query<Map<String, dynamic>> _snapshot = FirebaseFirestore.instance
       .collection("posts")
-      .orderBy("time", descending: true)
-      .snapshots();
+      .orderBy("time", descending: true);
 
-  Stream<QuerySnapshot> get snapshot => _snapshot;
+  Query<Map<String, dynamic>> get snapshot => _snapshot;
 
-  set snapshot(Stream<QuerySnapshot> newSnapshot) {
+  set snapshot(Query<Map<String, dynamic>> newSnapshot) {
     _snapshot = newSnapshot;
     notifyListeners();
   }
@@ -20,7 +18,6 @@ class postsProvider with ChangeNotifier {
   clear() {
     _snapshot = FirebaseFirestore.instance
         .collection("posts")
-        .orderBy("time", descending: true)
-        .snapshots();
+        .orderBy("time", descending: true);
   }
 }

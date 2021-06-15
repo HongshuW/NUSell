@@ -83,15 +83,13 @@ class filtersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<QuerySnapshot> getSnapshot() {
+  Query<Map<String, dynamic>> getQuery() {
     if (_query == null) {
       return FirebaseFirestore.instance
           .collection("posts")
-          .orderBy("time", descending: true)
-          .limit(10)
-          .snapshots();
+          .orderBy("time", descending: true);
     } else {
-      return _query.orderBy("time", descending: true).snapshots();
+      return _query.orderBy("time", descending: true);
     }
   }
 }
