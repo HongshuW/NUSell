@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 
 class ProductInfoScreen extends StatefulWidget {
   final String product;
@@ -16,7 +17,6 @@ class ProductInfoScreen extends StatefulWidget {
 }
 
 class _ProductInfoScreenState extends State<ProductInfoScreen> {
-
   var userId;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -44,7 +44,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   getImage(imgArr, index) {
     var img;
     if (imgArr.isEmpty) {
-      img = "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd";
+      img =
+          "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd";
     } else {
       img = imgArr[index];
     }
@@ -56,18 +57,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Listener(
-                  onPointerUp: previousPage,
-                  child: Icon(Icons.arrow_back_ios)
-              ),
+                  onPointerUp: previousPage, child: Icon(Icons.arrow_back_ios)),
               Image.network(
-                    img,
-                    fit: BoxFit.fitWidth,
-                    width: 200,
+                img,
+                fit: BoxFit.fitWidth,
+                width: 200,
               ),
               Listener(
-                  onPointerUp: nextPage,
-                  child: Icon(Icons.arrow_forward_ios)
-              ),
+                  onPointerUp: nextPage, child: Icon(Icons.arrow_forward_ios)),
             ],
           ),
         ),
@@ -78,7 +75,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
 
@@ -87,41 +83,64 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         return Column(
           children: [
             ElevatedButton(
-                onPressed: (){
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => EditProductScreen(product: widget.product))
-                  );
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          EditProductScreen(product: widget.product)));
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(100, 170, 255, 1),
                 ),
-                child: Text("Update")
-            ),
+                child: Text("Update")),
             ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   db.collection("posts").doc(widget.product).delete();
-                  db.collection("users").doc(user).update({"posts": FieldValue.arrayRemove([widget.product])});
+                  db.collection("users").doc(user).update({
+                    "posts": FieldValue.arrayRemove([widget.product])
+                  });
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(255, 88, 68, 1),
                 ),
-                child: Text("Delete")
-            ),
+                child: Text("Delete")),
           ],
         );
       } else {
-        return ElevatedButton(
-            onPressed: (){
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ContactSellerScreen(seller: this.userId))
+        return FutureBuilder(
+            future: db.collection("posts").doc(widget.product).get(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              }
+              Map<String, dynamic> post = snapshot.data.data();
+              return Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              ContactSellerScreen(seller: post['user'])));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Color.fromRGBO(100, 170, 255, 1),
+                    ),
+                    child: Text("Contact the seller"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              SellerProfileScreen(sellerId: post['user'])));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Color.fromRGBO(100, 170, 255, 1),
+                    ),
+                    child: Text("See the seller's profile"),
+                  ),
+                ],
               );
-            },
-          style: ElevatedButton.styleFrom(
-            primary: Color.fromRGBO(100, 170, 255, 1),
-          ),
-            child: Text("Contact the seller"),
-        );
+            });
       }
     }
 
@@ -137,7 +156,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         padding: EdgeInsets.all(30),
         child: FutureBuilder<DocumentSnapshot>(
           future: db.collection("posts").doc(widget.product).get(),
-          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
@@ -151,7 +171,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 // User
                 FutureBuilder<DocumentSnapshot>(
                   future: db.collection("users").doc("${post['user']}").get(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> userSnapshot){
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
                     if (!userSnapshot.hasData) {
                       return Center(child: CircularProgressIndicator());
                     }
@@ -159,9 +180,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     return InkWell(
                       onTap: () {
                         if (post['user'] == this.userId) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => ProfileScreen())
-                          );
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ProfileScreen()));
                         }
                       },
                       child: Container(
@@ -191,16 +211,18 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 // Time posted
                 Row(
                   children: [
-                    Text("${DateTime.fromMillisecondsSinceEpoch(
-                        post["time"].millisecondsSinceEpoch)}".substring(0, 10)
-                    ),
+                    Text(
+                        "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
+                            .substring(0, 10)),
                   ],
                 ),
 
                 // Product Name
                 Row(
                   children: [
-                    Icon(Icons.article,),
+                    Icon(
+                      Icons.article,
+                    ),
                     Text("${post['productName']}"),
                   ],
                 ),

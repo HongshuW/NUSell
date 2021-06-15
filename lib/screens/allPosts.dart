@@ -21,7 +21,8 @@ class _allPostsState extends State<allPosts> {
   getImage(imgArr) {
     var img;
     if (imgArr.isEmpty) {
-      img = 'https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault.png?alt=media&token=c1100242-206c-44d9-a51b-181937932156';
+      img =
+          'https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault.png?alt=media&token=c1100242-206c-44d9-a51b-181937932156';
     } else {
       img = imgArr[0];
     }
@@ -52,7 +53,8 @@ class _allPostsState extends State<allPosts> {
           height: MediaQuery.of(context).size.height * 0.53,
           child: StreamBuilder(
             stream: posts.snapshot,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(),
@@ -63,18 +65,21 @@ class _allPostsState extends State<allPosts> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 shrinkWrap: true,
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: snapshot.data.docs
-                    .where((doc) => doc["price"] < filterState.range[1]
-                      && doc["price"] >= filterState.range[0])
+                    .where((doc) =>
+                        doc["price"] < filterState.range[1] &&
+                        doc["price"] >= filterState.range[0])
                     .map((doc) {
                   return InkWell(
                     onTap: () {
                       if (auth.currentUser == null) {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => LoginScreen()));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => LoginScreen()));
                       } else {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => ProductInfoScreen(product: doc.id)));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                ProductInfoScreen(product: doc.id)));
                       }
                     },
                     child: Container(
@@ -82,24 +87,26 @@ class _allPostsState extends State<allPosts> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Column(children: <Widget>[
-                        Expanded(
-                          child: getImage(doc["images"]),
-                        ),
-                        Text(
-                          "${doc["productName"]}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: getImage(doc["images"]),
                           ),
-                        ),
-                        Text(
-                          "\$${doc["price"].toString()}",
-                          style: TextStyle(
-                            fontSize: 16,
+                          Text(
+                            "${doc["productName"]}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],),
+                          Text(
+                            "\$${doc["price"].toString()}",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),

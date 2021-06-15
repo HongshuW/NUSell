@@ -37,6 +37,8 @@ dependencies:
   image_picker: ^0.7.5+2
   firebase_storage: ^8.1.0
   material_floating_search_bar: ^0.3.4
+  loadmore: ^2.0.1
+  loading_more_list: ^4.0.0
 
 dev_dependencies:
   flutter_test:

@@ -17,6 +17,8 @@ class _SearchBarState extends State<SearchBar> {
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
   List<Map<String, dynamic>> queryResultSet = [];
   var tempSearchStore = [];
 
@@ -89,6 +91,9 @@ class _SearchBarState extends State<SearchBar> {
   }
 
   fullTextSearch(String value) {
+    setState(() {
+      searchHistory = [];
+    });
     if (value.length == 0) {
       setState(() {
         queryResultSet = [];
@@ -124,36 +129,128 @@ class _SearchBarState extends State<SearchBar> {
     }
   }
 
+  List<Map<String, dynamic>> dataStore = [];
+  var searchStore = [];
+
+  searchByWord(value) {
+    if (value.length == 0) {
+      setState(() {
+        queryResultSet = [];
+        tempSearchStore = [];
+      });
+    }
+    setState(() {
+      searchHistory = [];
+      tempSearchStore = [];
+    });
+    if (dataStore.length == 0) {
+      SearchService().fullTextSearch(value).then((docs) {
+        for (int i = 0; i < docs.size; ++i) {
+          Map<String, dynamic> data = docs.docs[i].data();
+          dataStore.add(data);
+          //print(dataStore.length);
+        }
+        compareName(value);
+      });
+    }
+    compareName(value);
+  }
+
+  compareName(value) {
+    dataStore.forEach((element) {
+      String name = element['nameForSearch'].toString().toLowerCase();
+      if (name.trim().contains(value)) {
+        setState(() {
+          tempSearchStore.add(element);
+          //print(tempSearchStore.length);
+        });
+      }
+    });
+  }
+
+  List<String> searchHistory = [];
+  List<String> toStore = [];
+  String userId = FirebaseAuth.instance.currentUser.uid;
+
+  storeSearchHistory(String value) {
+    bool contains = false;
+    for (var hist in toStore) {
+      if (value == hist) contains = true;
+    }
+    if (!contains) toStore.add(value);
+    users.doc(userId).update({'searchHistory': toStore});
+  }
+
+  readSearchHistory() async {
+    if (searchField.text == "") {
+      setState(() {
+        searchHistory = [];
+      });
+      final DocumentSnapshot<Map<String, dynamic>> doc =
+          await users.doc(userId).get();
+      var stored = doc.data()['searchHistory'];
+      for (var hist in stored) {
+        searchHistory.add(hist);
+      }
+      toStore = searchHistory;
+    }
+  }
+
+  TextEditingController searchField = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: Text('Search'),
+      appBar: AppBar(
+        // automaticallyImplyLeading: false,
+        backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+        elevation: 0,
+        title: Container(
+          margin: EdgeInsets.only(left: 10, right: 40),
+          child: TextField(
+            controller: searchField,
+            onChanged: (val) {
+              fullTextSearch(val);
+            },
+            onSubmitted: (val) {
+              searchByWord(val);
+              storeSearchHistory(val);
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              hintText: "Search",
+              isDense: true,
+              contentPadding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+              fillColor: Color.fromRGBO(249, 248, 253, 1),
+              filled: true,
+            ),
+          ),
+        ),
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (val) {
-                fullTextSearch(val);
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                hintText: "Search",
-                isDense: true,
-                contentPadding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
-                fillColor: Color.fromRGBO(249, 248, 253, 1),
-                filled: true,
-              ),
-            ),
-          ),
+          FutureBuilder(
+              future: readSearchHistory(),
+              builder: (context, snapshot) {
+                return ListView(
+                  primary: false,
+                  shrinkWrap: true,
+                  children: searchHistory.map((element) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        searchField.text = element;
+                      },
+                      child: Text(element),
+                    );
+                  }).toList(),
+                );
+              }),
           SizedBox(
             height: 10.0,
           ),

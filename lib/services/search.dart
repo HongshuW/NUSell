@@ -12,7 +12,7 @@ class SearchService {
   Future<QuerySnapshot> fullTextSearch(String searchField) {
     return FirebaseFirestore.instance
         .collection('posts')
-        .where('nameForSearch', isGreaterThanOrEqualTo: searchField)
+        //.where('nameForSearch', isGreaterThanOrEqualTo: searchField)
         .get();
   }
 }

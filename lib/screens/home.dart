@@ -128,7 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       radioButtonValue: (value) => {
-                        setState(() {this.type = value;})
+                        setState(() {
+                          this.type = value;
+                        })
                       },
                       unSelectedColor: Colors.transparent,
                       selectedColor: Color.fromRGBO(250, 190, 90, 0.5),
