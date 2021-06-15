@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // display posts
-                allPosts(posts: posts),
+                allPosts(),
               ],
             ),
           ),

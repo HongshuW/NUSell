@@ -14,11 +14,49 @@ class filtersProvider with ChangeNotifier {
   Location location;
   Price price;
 
-  // range of price
+  // values
+  Timestamp _timeRequested = Timestamp.fromDate(DateTime(2021));
+  List<String> _categorySelected = [
+    'Textbooks',
+    'Notes',
+    'Food',
+    'Appliances',
+    'Electronics',
+    'Cosmetics',
+    'Toys',
+    'Others',
+  ];
+  List<String> _locationSelected = [
+    "UTown",
+    "PGP",
+    "Kent Ridge MRT",
+    'Central Library',
+    'YIH',
+    'Outside NUS',
+    'Others',
+  ];
   List<double> _range = [double.negativeInfinity, double.infinity];
 
   List<Filter> get selectedFilters => _selectedFilters;
+  Timestamp get timeRequested => _timeRequested;
+  List<String> get categorySelected => _categorySelected;
+  List<String> get locationSelected => _locationSelected;
   List<double> get range => _range;
+
+  set timeRequested(Timestamp newTime) {
+    _timeRequested = newTime;
+    notifyListeners();
+  }
+
+  set categorySelected(List<String> selectedCat) {
+    _categorySelected = selectedCat;
+    notifyListeners();
+  }
+
+  set locationSelected(List<String> selectedLoc) {
+    _locationSelected = selectedLoc;
+    notifyListeners();
+  }
 
   set range(List<double> newRange) {
     _range = newRange;
@@ -40,7 +78,7 @@ class filtersProvider with ChangeNotifier {
       price = filterItem;
     }
     _selectedFilters.add(filterItem);
-    updateQuery();
+    // updateQuery();
     notifyListeners();
   }
 
@@ -60,6 +98,26 @@ class filtersProvider with ChangeNotifier {
   clear() {
     _selectedFilters = [];
     _query = null;
+    _timeRequested = Timestamp.fromDate(DateTime(2021));
+    _categorySelected = [
+      'Textbooks',
+      'Notes',
+      'Food',
+      'Appliances',
+      'Electronics',
+      'Cosmetics',
+      'Toys',
+      'Others',
+    ];
+    _locationSelected = [
+      "UTown",
+      "PGP",
+      "Kent Ridge MRT",
+      'Central Library',
+      'YIH',
+      'Outside NUS',
+      'Others',
+    ];
     _range = [double.negativeInfinity, double.infinity];
   }
 

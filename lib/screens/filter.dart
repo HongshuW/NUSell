@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,8 @@ class _FilterState extends State<Filter> {
             timeRequested = now.add(Duration(days: -1 * value)),
             filter = Time(posts: posts, selected: selected, value: value),
             selected.update(filter),
-            posts.snapshot = selected.getQuery(),
+            selected.timeRequested = Timestamp.fromDate(timeRequested),
+            // posts.snapshot = selected.getQuery(),
           },
         ),
       );
@@ -107,7 +109,8 @@ class _FilterState extends State<Filter> {
           radioButtonValue: (value) => {
             filter = Category(posts: posts, selected: selected, value: value),
             selected.update(filter),
-            posts.snapshot = selected.getQuery(),
+            selected.categorySelected = [value],
+            // posts.snapshot = selected.getQuery(),
           },
         ),
       );
@@ -155,7 +158,8 @@ class _FilterState extends State<Filter> {
           radioButtonValue: (value) => {
             filter = Location(posts: posts, selected: selected, value: value),
             selected.update(filter),
-            posts.snapshot = selected.getQuery(),
+            selected.locationSelected = [value],
+            // posts.snapshot = selected.getQuery(),
           },
         ),
       );

@@ -8,8 +8,7 @@ import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:provider/provider.dart';
 
 class allPosts extends StatefulWidget {
-  final posts;
-  allPosts({Key key, this.posts}) : super(key: key);
+  allPosts({Key key}) : super(key: key);
 
   @override
   _allPostsState createState() => _allPostsState();
@@ -50,11 +49,15 @@ class _allPostsState extends State<allPosts> {
     });
     QuerySnapshot querySnapshot;
     if (lastDoc == null) {
-      querySnapshot = await widget.posts.snapshot
+      querySnapshot = await FirebaseFirestore.instance
+          .collection("posts")
+          .orderBy("time", descending: true)
           .limit(numPerPage)
           .get();
     } else {
-      querySnapshot = await widget.posts.snapshot
+      querySnapshot = await FirebaseFirestore.instance
+          .collection("posts")
+          .orderBy("time", descending: true)
           .startAfterDocument(lastDoc)
           .limit(numPerPage)
           .get();
@@ -114,6 +117,9 @@ class _allPostsState extends State<allPosts> {
             scrollDirection: Axis.vertical,
             physics: ScrollPhysics(),
             children: products
+                .where((doc) => doc["time"].millisecondsSinceEpoch >= filterState.timeRequested.millisecondsSinceEpoch)
+                .where((doc) => filterState.categorySelected.contains(doc["category"]))
+                .where((doc) => filterState.locationSelected.contains(doc["location"]))
                 .where((doc) => doc["price"] < filterState.range[1]
                   && doc["price"] >= filterState.range[0])
                 .map<Widget>((doc) {
