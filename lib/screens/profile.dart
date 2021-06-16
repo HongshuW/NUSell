@@ -117,12 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ElevatedButton(
                               child: Text('My posts'),
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pushReplacement(MaterialPageRoute(
-                                        builder: (context) => AllPostsScreen(
-                                              userId:
-                                                  AuthService().getCurrentUID(),
-                                            )));
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => myPosts()));
                               },
                             ),
                             ElevatedButton(
@@ -231,4 +228,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     UserDatabaseService(uid: AuthService().getCurrentUID())
         .updateUserData(user);
   }
+}
+
+Widget myPosts() {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text("My posts"),
+    ),
+    body: AllPostsScreen(
+      userId: AuthService().getCurrentUID(),
+    ),
+  );
 }

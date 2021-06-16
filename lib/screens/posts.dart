@@ -74,79 +74,72 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
           //   return Text("Loading");
           // }
 
-          return ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: [
-              Container(
-                  padding:
-                      EdgeInsets.only(left: 10, right: 10, top: 60, bottom: 90),
-                  child: FutureBuilder<Object>(
-                      future: _getMyPosts(),
-                      builder: (context, snapshot) {
-                        return GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          shrinkWrap: true,
-                          children: postAddresses.map((docId) {
-                            return FutureBuilder<DocumentSnapshot>(
-                                future: db.collection("posts").doc(docId).get(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
+          return Container(
+              padding:
+                  EdgeInsets.only(left: 10, right: 10, top: 60, bottom: 90),
+              child: FutureBuilder<Object>(
+                  future: _getMyPosts(),
+                  builder: (context, snapshot) {
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      shrinkWrap: true,
+                      children: postAddresses.map((docId) {
+                        return FutureBuilder<DocumentSnapshot>(
+                            future: db.collection("posts").doc(docId).get(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              Map<String, dynamic> post = snapshot.data.data();
+                              return InkWell(
+                                onTap: () {
+                                  if (auth.currentUser == null) {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginScreen()));
+                                  } else {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductInfoScreen(
+                                                    product: docId)));
                                   }
-                                  Map<String, dynamic> post =
-                                      snapshot.data.data();
-                                  return InkWell(
-                                    onTap: () {
-                                      if (auth.currentUser == null) {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginScreen()));
-                                      } else {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ProductInfoScreen(
-                                                        product: docId)));
-                                      }
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: getImage(post['images']),
                                       ),
-                                      child: Column(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: getImage(post['images']),
-                                          ),
-                                          Text(
-                                            "${post['productName']}",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${post['price']}",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        "${post['productName']}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                });
-                          }).toList(),
-                        );
-                      })),
-            ],
-          );
+                                      Text(
+                                        "${post['price']}",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      }).toList(),
+                    );
+                  }));
         });
   }
 }
