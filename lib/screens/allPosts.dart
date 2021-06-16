@@ -54,7 +54,6 @@ class _allPostsState extends State<allPosts> {
           .orderBy("time", descending: true)
           .limit(numPerPage)
           .get();
-      print('lastdoc is null');
     } else {
       querySnapshot = await FirebaseFirestore.instance
           .collection("posts")
@@ -62,7 +61,6 @@ class _allPostsState extends State<allPosts> {
           .startAfterDocument(lastDoc)
           .limit(numPerPage)
           .get();
-      print('loading');
     }
     int len = querySnapshot.docs.length;
     if (len < numPerPage) {
