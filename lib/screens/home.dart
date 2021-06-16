@@ -55,6 +55,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // search bar
           appBar: AppBar(
+            actions: [
+              IconButton(
+                  color: Colors.black,
+                  icon: Icon(Icons.shopping_cart),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MyShoppingCartsScreen(
+                              userId: AuthService().getCurrentUID(),
+                            )));
+                  }),
+            ],
             automaticallyImplyLeading: false,
             backgroundColor: Color.fromRGBO(242, 195, 71, 1),
             elevation: 0,
@@ -115,14 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   // filters
                   child: Column(
                     children: [
-                      IconButton(
-                          icon: Icon(Icons.shopping_cart),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyShoppingCartsScreen(
-                                      userId: AuthService().getCurrentUID(),
-                                    )));
-                          }),
                       CustomRadioButton(
                         elevation: 0,
                         padding: 0,
