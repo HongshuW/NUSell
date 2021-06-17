@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orbital2796_nusell/models/chat.dart';
 import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
@@ -161,6 +162,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
           ],
         );
       } else {
+        Chat chat = new Chat(seller, user);
         return FutureBuilder(
             future: db.collection("posts").doc(widget.product).get(),
             builder: (context, snapshot) {
@@ -173,9 +175,18 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
+                      String docID = seller + '_' + user;
+                      db.collection("chats").doc(docID).get()
+                        .then((snapshot) => {
+                          if (!snapshot.exists) {
+                            db.collection("chats").doc(docID).set(chat.toMap()),
+                            db.collection("users").doc(seller).update({"chats": FieldValue.arrayUnion([docID])}),
+                            db.collection("users").doc(user).update({"chats": FieldValue.arrayUnion([docID])}),
+                          }
+                      });
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
-                              ContactSellerScreen(seller: post['user'])));
+                              ContactSellerScreen(chatID: docID)));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(100, 170, 255, 1),
