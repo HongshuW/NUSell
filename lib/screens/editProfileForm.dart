@@ -12,27 +12,32 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  String _username, _phoneNumber, _password, _gender;
+  String _username, _phoneNumber, _password, _gender, _email;
   TextEditingController password = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final Stream<DocumentSnapshot> _userStream = FirebaseFirestore.instance
       .collection('users')
       .doc(FirebaseAuth.instance.currentUser.uid)
       .snapshots();
-  NUSellUser user;
+  NUSellUser user = NUSellUser(
+    gender: "",
+    username: "",
+    phoneNumber: "",
+    password: "",
+  );
 
-  _setUser() async {
-    user =
-        await UserDatabaseService(uid: AuthService().getCurrentUID()).getUser();
+  _setUserEmail() async {
+    user.email = FirebaseAuth.instance.currentUser.email;
   }
 
   @override
   Widget build(BuildContext context) {
+    _setUserEmail();
     return StreamBuilder<DocumentSnapshot>(
         stream: _userStream,
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          _setUser();
+          _setUserEmail();
           return Scaffold(
               backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
               appBar: AppBar(
@@ -249,6 +254,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     user.phoneNumber = _phoneNumber;
                                     user.gender = _gender;
                                     user.password = _password;
+                                    _setUserEmail();
                                     print(user.username);
                                     UserDatabaseService(
                                             uid: FirebaseAuth

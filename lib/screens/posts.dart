@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 
@@ -20,7 +19,6 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
 
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  NUSellUser user = NUSellUser();
   List<String> postAddresses = [];
   List postImages = [];
   String postProductName;
@@ -53,8 +51,9 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
         .collection('users')
         .doc(widget.userId)
         .get();
-    user = NUSellUser.fromJson(doc.data());
-    postAddresses = user.myPosts;
+    // user = NUSellUser.fromJson(doc.data());
+
+    postAddresses = List.from(doc.data()['posts']);
   }
 
   @override

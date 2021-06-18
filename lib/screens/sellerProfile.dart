@@ -15,7 +15,7 @@ class SellerProfileScreen extends StatefulWidget {
 }
 
 class _SellerProfileScreenState extends State<SellerProfileScreen> {
-  NUSellUser user = NUSellUser();
+  Map<String, dynamic> user = new Map();
 
   File newProfilePic;
 
@@ -28,7 +28,6 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
             .snapshots(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          _readUserInfo();
           if (snapshot.hasError) {
             return Text('Something went wrong');
           }
@@ -37,86 +36,83 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
           //   return Center(child: CircularProgressIndicator());
           // }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: FutureBuilder(
-                  future: _readUserInfo(),
-                  builder: (context, snapshot) {
-                    return Text("${user.username} 's Profile");
-                  }),
-              leading: BackButton(
-                color: Colors.white,
-              ),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    height: 240,
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
-                      ),
+          return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(widget.sellerId)
+                  .get(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                Map<String, dynamic> doc = snapshot.data.data();
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text("${doc['username']} 's Profile"),
+                    leading: BackButton(
+                      color: Colors.white,
                     ),
-                    child: FutureBuilder(
-                        future: _readUserInfo(),
-                        builder: (context, snapshot) {
-                          print(user.username);
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Avatar(
-                                avatarUrl: user.avatarUrl,
-                                onTap: () {},
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Username: ${user.username}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Email: ${user.email}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Phone number: ${user.phoneNumber}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
                   ),
-                  AllPostsScreen(
-                    userId: widget.sellerId,
-                  )
-                ],
-              ),
-            ),
+                  body: SingleChildScrollView(
+                    child: Column(
+                      //crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 240,
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade100,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            ),
+                          ),
+                          child: FutureBuilder<DocumentSnapshot>(
+                              future: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(widget.sellerId)
+                                  .get(),
+                              builder: (context, snapshot) {
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Avatar(
+                                      avatarUrl: doc['avatarUrl'],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Username: ${doc['username']}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Email: ${doc['email']}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Phone number: ${doc['phoneNumber']}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        ),
+                        AllPostsScreen(
+                          userId: widget.sellerId,
+                        )
+                      ],
+                    ),
+                  ),
 
-            //a collection of the three buttons
-          );
+                  //a collection of the three buttons
+                );
+              });
         });
-  }
-
-  _readUserInfo() async {
-    final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .doc(widget.sellerId)
-        .get();
-    print(doc.data());
-    user = NUSellUser.fromJson(doc.data());
-    print(user.email);
   }
 }

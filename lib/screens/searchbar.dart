@@ -17,7 +17,8 @@ class _SearchBarState extends State<SearchBar> {
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference searchHist =
+      FirebaseFirestore.instance.collection('searchHistory');
 
   List<Map<String, dynamic>> queryResultSet = [];
   var tempSearchStore = [];
@@ -173,12 +174,13 @@ class _SearchBarState extends State<SearchBar> {
   String userId = FirebaseAuth.instance.currentUser.uid;
 
   storeSearchHistory(String value) {
+    var options = SetOptions(merge: true);
     bool contains = false;
     for (var hist in toStore) {
       if (value == hist) contains = true;
     }
     if (!contains) toStore.add(value);
-    users.doc(userId).update({'searchHistory': toStore});
+    searchHist.doc(userId).set({'searchHistory': toStore}, options);
   }
 
   readSearchHistory() async {
@@ -187,7 +189,7 @@ class _SearchBarState extends State<SearchBar> {
         searchHistory = [];
       });
       final DocumentSnapshot<Map<String, dynamic>> doc =
-          await users.doc(userId).get();
+          await searchHist.doc(userId).get();
       var stored = doc.data()['searchHistory'];
       for (var hist in stored) {
         searchHistory.add(hist);
