@@ -48,12 +48,12 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
   _getMyPosts() async {
     final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
         .instance
-        .collection('users')
+        .collection('myPosts')
         .doc(widget.userId)
         .get();
     // user = NUSellUser.fromJson(doc.data());
 
-    postAddresses = List.from(doc.data()['posts']);
+    postAddresses = List.from(doc.data()['myPosts']);
   }
 
   @override

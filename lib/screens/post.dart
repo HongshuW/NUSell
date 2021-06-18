@@ -32,6 +32,8 @@ class _PostScreenState extends State<PostScreen> {
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   FirebaseStorage storage = FirebaseStorage.instance;
+  CollectionReference myPosts =
+      FirebaseFirestore.instance.collection('myPosts');
 
   Future getImage(bool gallery) async {
     ImagePicker picker = ImagePicker();
@@ -123,8 +125,9 @@ class _PostScreenState extends State<PostScreen> {
               posts.doc(this.docId).update({"productId": this.docId});
             })
             .then((value) => addedPost.add(this.docId))
-            .then((value) =>
-                currentUser.update({"posts": FieldValue.arrayUnion(addedPost)}))
+            .then((value) => myPosts.doc(userId).set({
+                  'myPosts': FieldValue.arrayUnion([this.docId])
+                }, SetOptions(merge: true)))
             .then((value) => Fluttertoast.showToast(
                 msg: 'You have added a post successfully!',
                 gravity: ToastGravity.CENTER))
@@ -136,13 +139,13 @@ class _PostScreenState extends State<PostScreen> {
     displayImages() {
       List<Widget> result = [];
       if (_images.isEmpty) {
-        result.add(
-            InkWell(
-              onTap: () {
-                getImage(true);
-                },
-              child: Image.network("https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
-            ));
+        result.add(InkWell(
+          onTap: () {
+            getImage(true);
+          },
+          child: Image.network(
+              "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
+        ));
       } else {
         for (File img in _images) {
           result.add(InkWell(

@@ -22,7 +22,8 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
 
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference shoppingCart =
+      FirebaseFirestore.instance.collection('shopping cart');
 
   NUSellUser user = NUSellUser();
   List<String> postAddresses = [];
@@ -53,9 +54,9 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
 
   _getMyPosts() async {
     final DocumentSnapshot<Map<String, dynamic>> doc =
-        await users.doc(widget.userId).get();
-    user = NUSellUser.fromJson(doc.data());
-    postAddresses = user.myCart;
+        await shoppingCart.doc(widget.userId).get();
+    //print(doc.data()['shopping cart']);
+    postAddresses = List.from(doc.data()['shopping cart']);
   }
 
   @override
@@ -168,7 +169,7 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                               IconButton(
                                                   icon: Icon(Icons.delete),
                                                   onPressed: () {
-                                                    users
+                                                    shoppingCart
                                                         .doc(widget.userId)
                                                         .update({
                                                       "shopping carts":

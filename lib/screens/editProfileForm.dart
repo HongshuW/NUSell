@@ -256,10 +256,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     user.password = _password;
                                     _setUserEmail();
                                     print(user.username);
-                                    UserDatabaseService(
-                                            uid: FirebaseAuth
-                                                .instance.currentUser.uid)
-                                        .updateUserData(user);
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(AuthService().getCurrentUID())
+                                        .set({
+                                      'username': _username,
+                                      'phoneNumber': _phoneNumber,
+                                      'gender': _gender,
+                                      'password': _password
+                                    }, SetOptions(merge: true));
                                     print('saved');
                                     Navigator.of(context).push(
                                         MaterialPageRoute(

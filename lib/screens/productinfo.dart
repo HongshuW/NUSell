@@ -8,7 +8,7 @@ import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
-import 'package:orbital2796_nusell/screens/shoppingCarts.dart';
+import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class ProductInfoScreen extends StatefulWidget {
@@ -26,7 +26,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  List<String> shoppingCarts = [];
+  CollectionReference shoppingCart =
+      FirebaseFirestore.instance.collection('shopping cart');
 
   int index = 0;
   var len;
@@ -176,14 +177,25 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   ElevatedButton(
                     onPressed: () {
                       String docID = seller + '_' + user;
-                      db.collection("chats").doc(docID).get()
-                        .then((snapshot) => {
-                          if (!snapshot.exists) {
-                            db.collection("chats").doc(docID).set(chat.toMap()),
-                            db.collection("users").doc(seller).update({"chats": FieldValue.arrayUnion([docID])}),
-                            db.collection("users").doc(user).update({"chats": FieldValue.arrayUnion([docID])}),
-                          }
-                      });
+                      db
+                          .collection("chats")
+                          .doc(docID)
+                          .get()
+                          .then((snapshot) => {
+                                if (!snapshot.exists)
+                                  {
+                                    db
+                                        .collection("chats")
+                                        .doc(docID)
+                                        .set(chat.toMap()),
+                                    db.collection("users").doc(seller).update({
+                                      "chats": FieldValue.arrayUnion([docID])
+                                    }),
+                                    db.collection("users").doc(user).update({
+                                      "chats": FieldValue.arrayUnion([docID])
+                                    }),
+                                  }
+                              });
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
                               ContactSellerScreen(chatID: docID)));
@@ -217,10 +229,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                           }),
                       ElevatedButton(
                         onPressed: () {
-                          users.doc(AuthService().getCurrentUID()).update({
-                            'shopping carts':
+                          shoppingCart.doc(AuthService().getCurrentUID()).set({
+                            'shopping cart':
                                 FieldValue.arrayUnion([widget.product]),
-                          });
+                          }, SetOptions(merge: true));
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(100, 170, 255, 1),

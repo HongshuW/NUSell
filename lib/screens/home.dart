@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:orbital2796_nusell/screens/shoppingCarts.dart';
+import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
