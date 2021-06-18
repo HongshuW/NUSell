@@ -1,13 +1,12 @@
 class Chat {
-  String seller;
-  String customer;
+  // a list of user IDs.
+  List<String> users;
 
-  Chat(this.seller, this.customer);
+  Chat(this.users);
 
   Map<String, dynamic> toMap() {
     return {
-      'sellerID': seller,
-      'customerID': customer,
+      'users': users,
       'history': []
     };
   }

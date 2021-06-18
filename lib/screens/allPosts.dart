@@ -15,13 +15,15 @@ class allPosts extends StatefulWidget {
 }
 
 class _allPostsState extends State<allPosts> {
-  // firebase fields
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  // pagination fields
+  // a list of document snapshots, each represents a product.
   List<DocumentSnapshot> products = [];
+  // whether the page is loading.
   bool isLoading = false;
+  // whether there are more posts in the database.
   bool hasMore = true;
+  // number of posts on each load.
   int numPerPage = 6;
   DocumentSnapshot lastDoc;
   ScrollController _scrollController = ScrollController();
@@ -30,6 +32,7 @@ class _allPostsState extends State<allPosts> {
   void initState() {
     super.initState();
     getPosts();
+    // load more when the end of the screen is reached.
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -40,6 +43,7 @@ class _allPostsState extends State<allPosts> {
     });
   }
 
+  // Load posts (depend on the current state) from database.
   getPosts() async {
     if (!hasMore || isLoading) {
       return;
@@ -179,9 +183,7 @@ class _allPostsState extends State<allPosts> {
                   ),
                 ),
               )
-            : Container(
-                //child: Text("No more..."),
-                )
+            : Container()
       ]),
     );
   }

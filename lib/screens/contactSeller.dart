@@ -7,42 +7,49 @@ import 'package:orbital2796_nusell/models/message.dart';
 
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
-  ContactSellerScreen({Key key, this.chatID}) : super(key: key);
+  final String theOtherUserName;
+  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName}) : super(key: key);
 
   @override
   State<ContactSellerScreen> createState() => _ContactSellerScreenState();
 }
 
 class _ContactSellerScreenState extends State<ContactSellerScreen> {
-
   final FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  // information of this chat.
+  Map<String, dynamic> chat;
+  // content of a message.
   String content;
-  bool isSeller;
+  // the current user's id.
   String userId;
+  // the current user's index.
+  int userIndex;
   Message message;
 
+  // Display all previous messages as a list of widgets.
   displayMessages(List<dynamic> history) {
     return history.map((message) =>
         Row(
-          mainAxisAlignment: isSeller == message["seller"]
+          mainAxisAlignment: userIndex == message["user"]
               ? MainAxisAlignment.end
               : MainAxisAlignment.start,
           children: [
             Flexible(
               child: Bubble(
-                alignment: isSeller == message["seller"]
+                alignment: userIndex == message["user"]
                     ? Alignment.topRight
                     : Alignment.topLeft,
-                nip: isSeller == message["seller"]
+                nip: userIndex == message["user"]
                     ? BubbleNip.rightTop
                     : BubbleNip.leftTop,
-                color: isSeller == message["seller"]
+                color: userIndex == message["user"]
                     ? Color.fromRGBO(242, 195, 71, 0.5)
                     : Colors.white,
-                margin: isSeller == message["seller"]
-                    ? BubbleEdges.only(bottom: 5, left: 100)
-                    : BubbleEdges.only(bottom: 5, right: 100),
+                margin: userIndex == message["user"]
+                    ? BubbleEdges.only(bottom: 5, left: 50)
+                    : BubbleEdges.only(bottom: 5, right: 50),
                 child: Text(
                     message["message"],
                   style: TextStyle(fontSize: 16),
@@ -54,6 +61,19 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     ).toList();
   }
 
+  // In a chat, return the index of the user,
+  // return -1 if the user is not in the chat.
+  int getUserIndex(String userID, List<dynamic> users) {
+    int len = users.length;
+    var i;
+    for (i = 0; i < len; i++) {
+      if (users[i].toString() == userID) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   @override
   Widget build(BuildContext context) {
     this.userId = auth.currentUser.uid;
@@ -61,6 +81,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     return Scaffold(
       appBar: AppBar(
           leading: BackButton(),
+        title: Text(widget.theOtherUserName),
       ),
       body: GestureDetector(
         onTap: () {
@@ -73,17 +94,18 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
               Container(
                 height: MediaQuery.of(context).size.height * 0.8,
                 child: FutureBuilder<DocumentSnapshot>(
+                  // get information of the current chat.
                   future: db.collection("chats").doc(widget.chatID).get(),
                   builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
                     if (!snapshot.hasData) {
                       return Center(child: CircularProgressIndicator());
                     }
-                    Map<String, dynamic> chat = snapshot.data.data();
+                    this.chat = snapshot.data.data();
+                    // list of previous messages.
                     List<dynamic> history = [];
-                    isSeller = false;
                     if (chat != null) {
                       history = chat["history"];
-                      isSeller = chat["sellerID"] == this.userId;
+                      this.userIndex = getUserIndex(this.userId, chat["users"]);
                     }
                     return Container(
                       margin: EdgeInsets.all(30),
@@ -94,6 +116,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                   },
                 ),
               ),
+
+              // Input text, return to send message.
               Container(
                 margin: EdgeInsets.only(left: 30, right: 30),
                 child: TextField(
@@ -112,7 +136,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                   },
                   onSubmitted: (value) {
                     this.content = value;
-                    this.message = Message(isSeller, Timestamp.now(), this.content);
+                    this.message = Message(this.userIndex, Timestamp.now(), this.content);
                     db.collection("chats").doc(widget.chatID)
                         .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
                     this.content = "";

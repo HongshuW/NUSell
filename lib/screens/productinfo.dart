@@ -21,6 +21,7 @@ class ProductInfoScreen extends StatefulWidget {
 
 class _ProductInfoScreenState extends State<ProductInfoScreen> {
   var userId;
+  String sellerName;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
@@ -163,7 +164,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
           ],
         );
       } else {
-        Chat chat = new Chat(seller, user);
+        Chat chat = new Chat([seller, user]);
+        String docID;
         return FutureBuilder(
             future: db.collection("posts").doc(widget.product).get(),
             builder: (context, snapshot) {
@@ -176,29 +178,36 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      String docID = seller + '_' + user;
-                      db
-                          .collection("chats")
-                          .doc(docID)
-                          .get()
-                          .then((snapshot) => {
-                                if (!snapshot.exists)
-                                  {
-                                    db
-                                        .collection("chats")
-                                        .doc(docID)
-                                        .set(chat.toMap()),
-                                    db.collection("users").doc(seller).update({
-                                      "chats": FieldValue.arrayUnion([docID])
-                                    }),
-                                    db.collection("users").doc(user).update({
-                                      "chats": FieldValue.arrayUnion([docID])
-                                    }),
-                                  }
-                              });
+                      if (seller.compareTo(user) < 0) {
+                        docID = seller + "_" + user;
+                      } else {
+                        docID = user + "_" + seller;
+                      }
+                      db.collection("chats").doc(docID).get()
+                        .then((snapshot) => {
+                          if (!snapshot.exists) {
+                            db.collection("chats").doc(docID).set(chat.toMap()),
+                            db.collection("myChats").doc(seller).get()
+                              .then((sellerSnapshot) => {
+                                if (!sellerSnapshot.exists) {
+                                  db.collection("myChats").doc(seller).set({"myChats": [docID]})
+                                } else {
+                                  db.collection("myChats").doc(seller).update({"myChats": FieldValue.arrayUnion([docID])})
+                                }
+                            }),
+                            db.collection("myChats").doc(user).get()
+                                .then((userSnapshot) => {
+                              if (!userSnapshot.exists) {
+                                db.collection("myChats").doc(user).set({"myChats": [docID]})
+                              } else {
+                                db.collection("myChats").doc(user).update({"myChats": FieldValue.arrayUnion([docID])})
+                              }
+                            }),
+                          }
+                      });
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
-                              ContactSellerScreen(chatID: docID)));
+                              ContactSellerScreen(chatID: docID, theOtherUserName: sellerName)));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(100, 170, 255, 1),
@@ -280,11 +289,15 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       return Center(child: CircularProgressIndicator());
                     }
                     Map<String, dynamic> user = userSnapshot.data.data();
+                    sellerName = user["username"];
                     return InkWell(
                       onTap: () {
                         if (post['user'] == this.userId) {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => ProfileScreen()));
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => SellerProfileScreen(sellerId: post['user'])));
                         }
                       },
                       child: Container(
@@ -299,7 +312,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                   "${user["avatarUrl"]}",
                                   height: 60,
                                   width: 60,
-                                  fit: BoxFit.fitWidth,
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),

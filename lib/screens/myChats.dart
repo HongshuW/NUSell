@@ -12,15 +12,40 @@ class MyChatsScreen extends StatefulWidget{
 }
 
 class _MyChatsScreenState extends State<MyChatsScreen> {
+  // database
   final FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  // user id of the current user.
   String user;
+
+  // user id of the other user in a chat.
+  String theOtherUser;
+
+  // A list of all of the user's chats.
   List<dynamic> myChats;
 
+  // In a chat, return the index of the user,
+  // return -1 if the user is not in the chat.
+  int getUserIndex(String userID, List<dynamic> users) {
+    int len = users.length;
+    var i;
+    for (i = 0; i < len; i++) {
+      if (users[i].toString() == userID) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // Display the list of chats as widgets, each of which will lead to
+  // its corresponding page if tapped.
   displayChats() {
     List<Widget> chats = [];
     int len = myChats.length;
     var i;
+
+    // for each chat, add a corresponding widget to the list `chats`.
     for (i = 0; i < len; i++) {
       String chatID = myChats[i];
       chats.add(
@@ -31,22 +56,68 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                 return Center(child: CircularProgressIndicator());
               }
               Map<String, dynamic> chatInfo = snapshot.data.data();
-              String seller = chatInfo["sellerID"];
-              String customer = chatInfo["customerID"];
-              bool isSeller = seller == this.user;
-              return Container(
-                margin: EdgeInsets.all(20),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder:
-                              (context) => ContactSellerScreen(chatID: chatID)
-                      )
+              // the index of current user
+              int userIndex = getUserIndex(this.user, chatInfo["users"]);
+              theOtherUser = userIndex == 0 ? chatInfo["users"][1] : chatInfo["users"][0];
+
+              return FutureBuilder(
+                // get the information of the other user
+                future: db.collection("users").doc(this.theOtherUser).get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    Map<String, dynamic> userInfo = snapshot.data.data();
+                    return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder:
+                                (context) => ContactSellerScreen(chatID: chatID,
+                                    theOtherUserName: userInfo["username"]))
+                        );
+                      },
+                      child: Card(
+                        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                        child: Row(
+                          children: [
+                            // profile photo of the other user
+                            Container(
+                              margin: EdgeInsets.only(left: 5, right: 20),
+                              color: Color.fromRGBO(0, 0, 0, 0.1),
+                              child: Image.network(
+                                  userInfo["avatarUrl"],
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+
+                            // the other user's name and the last message for this chat
+                            Flexible(
+                              child: Container(
+                                height: 60,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                        userInfo["username"],
+                                    style: TextStyle(fontSize: 16),
+                                    ),
+                                    Text(
+                                      chatInfo["history"].last["message"],
+                                      style: TextStyle(color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
-                  },
-                  child: isSeller ? Text(customer) : Text(seller),
-                ),
-              );
+                  });
             })
       );
     }
@@ -56,17 +127,24 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   @override
   Widget build(BuildContext context) {
     this.user = auth.currentUser.uid;
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("My Chats"),
+      ),
       body: Container(
         child: FutureBuilder<DocumentSnapshot>(
-          future: db.collection("users").doc(this.user).get(),
+          // get information of all of the user's chats.
+          future: db.collection("myChats").doc(this.user).get(),
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
-            Map<String, dynamic> userData = snapshot.data.data();
-            myChats = userData["chats"];
+            Map<String, dynamic> chatData = snapshot.data.data();
+            if (chatData == null) {
+              return Center(child: Text("You don't have any conversation."));
+            }
+            this.myChats = chatData["myChats"];
             return ListView(
               children: displayChats(),
             );
