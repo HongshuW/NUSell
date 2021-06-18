@@ -10,6 +10,8 @@ import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
+import 'package:orbital2796_nusell/screens/post.dart';
+import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:orbital2796_nusell/services/db.dart';
@@ -128,6 +130,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => myPosts()));
+                              },
+                            ),
+                            ElevatedButton(
+                              child: Text('My Chats'),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => MyChatsScreen()));
                               },
                             ),
                             ElevatedButton(
