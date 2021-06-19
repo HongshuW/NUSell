@@ -105,7 +105,9 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                     style: TextStyle(fontSize: 16),
                                     ),
                                     Text(
-                                      chatInfo["history"].last["message"],
+                                      chatInfo["history"].last["message"] == null
+                                          ? "[photo]"
+                                          : chatInfo["history"].last["message"],
                                       style: TextStyle(color: Colors.grey),
                                       overflow: TextOverflow.ellipsis,
                                     ),

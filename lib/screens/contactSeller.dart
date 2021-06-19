@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:orbital2796_nusell/models/message.dart';
 
 class ContactSellerScreen extends StatefulWidget {
@@ -17,6 +21,7 @@ class ContactSellerScreen extends StatefulWidget {
 class _ContactSellerScreenState extends State<ContactSellerScreen> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
 
   // information of this chat.
   Map<String, dynamic> chat;
@@ -50,10 +55,11 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                 margin: userIndex == message["user"]
                     ? BubbleEdges.only(bottom: 5, left: 50)
                     : BubbleEdges.only(bottom: 5, right: 50),
-                child: Text(
-                    message["message"],
-                  style: TextStyle(fontSize: 16),
-                ),
+                child: message["message"] != null 
+                    ? Text(
+                    message["message"], 
+                    style: TextStyle(fontSize: 16))
+                    : Image.network(message["imgURL"])
               ),
             ),
           ],
@@ -72,6 +78,28 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
       }
     }
     return -1;
+  }
+
+  // upload image or take a photo from device.
+  Future<String> uploadImage(bool gallery) async {
+    ImagePicker picker = ImagePicker();
+    PickedFile pickedFile;
+    if (gallery) {
+      pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 30,
+      );
+    } else {
+      pickedFile = await picker.getImage(
+        source: ImageSource.camera,
+        imageQuality: 30,
+      );
+    }
+    File img = File(pickedFile.path);
+    Reference ref = storage.ref().child('chatpics/${basename(img.path)}');
+    await ref.putFile(File(img.path));
+    String url = await ref.getDownloadURL();
+    return url;
   }
 
   @override
@@ -108,7 +136,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                       this.userIndex = getUserIndex(this.userId, chat["users"]);
                     }
                     return Container(
-                      margin: EdgeInsets.all(30),
+                      margin: EdgeInsets.only(left: 30, right: 30),
                       child: ListView(
                         children: displayMessages(history),
                       ),
@@ -119,29 +147,82 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
 
               // Input text, return to send message.
               Container(
-                margin: EdgeInsets.only(left: 30, right: 30),
-                child: TextField(
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue)),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black45),
+                color: Color.fromRGBO(0, 0, 0, 0.05),
+                padding: EdgeInsets.only(top: 5, bottom: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 20, right: 10),
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      height: 40,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black45),
+                          ),
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
+                        controller: TextEditingController(text: this.content),
+                        onChanged: (value) {
+                          this.content = value;
+                        },
+                        onSubmitted: (value) {
+                          this.content = value;
+                          this.message = Message(this.userIndex, Timestamp.now(), this.content);
+                          db.collection("chats").doc(widget.chatID)
+                              .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                          this.content = "";
+                          this.message = null;
+                        },
+                      ),
                     ),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
-                  controller: TextEditingController(text: this.content),
-                  onChanged: (value) {
-                    this.content = value;
-                  },
-                  onSubmitted: (value) {
-                    this.content = value;
-                    this.message = Message(this.userIndex, Timestamp.now(), this.content);
-                    db.collection("chats").doc(widget.chatID)
-                        .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
-                    this.content = "";
-                    this.message = null;
-                  },
+                    InkWell(
+                      onTap: () async {
+                        String url = await uploadImage(true);
+                        this.message = ImageMessage(userIndex, Timestamp.now(), url);
+                        db.collection("chats").doc(widget.chatID)
+                            .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                        this.message = null;
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        height: MediaQuery.of(context).size.width * 0.1,
+                        margin: EdgeInsets.only(right: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.black,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.1),
+                        ),
+                        child: Icon(Icons.add_photo_alternate, size: 20),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        String url = await uploadImage(false);
+                        this.message = ImageMessage(userIndex, Timestamp.now(), url);
+                        db.collection("chats").doc(widget.chatID)
+                            .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                        this.message = null;
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        height: MediaQuery.of(context).size.width * 0.1,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.1),
+                        ),
+                        child: Icon(Icons.camera_alt, size: 20),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
