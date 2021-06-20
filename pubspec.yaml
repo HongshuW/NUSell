@@ -40,6 +40,8 @@ dependencies:
   loadmore: ^2.0.1
   loading_more_list: ^4.0.0
   bubble: ^1.2.1
+  firebase_messaging: ^10.0.2
+  flutter_local_notifications: ^5.0.0+4
 
 dev_dependencies:
   flutter_test:

@@ -25,141 +25,144 @@ class _SignupScreenState extends State<SignupScreen> {
             style: TextStyle(color: Colors.black),
           ),
         ),
-        body: Center(
-          child: Form(
-            key: _formkey,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(hintText: 'Email'),
-                    onChanged: (value) {
-                      setState(() {
-                        _email = value.trim();
-                      });
-                    },
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
+        body: Container(
+          child: Center(
+            child: Form(
+              key: _formkey,
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(hintText: 'Email'),
+                      onChanged: (value) {
+                        setState(() {
+                          _email = value.trim();
+                        });
+                      },
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: password,
-                    obscureText: true,
-                    decoration: InputDecoration(hintText: 'Password'),
-                    onChanged: (value) {
-                      setState(() {
-                        _password = value.trim();
-                      });
-                    },
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please enter password';
-                      }
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: password,
+                      obscureText: true,
+                      decoration: InputDecoration(hintText: 'Password'),
+                      onChanged: (value) {
+                        setState(() {
+                          _password = value.trim();
+                        });
+                      },
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please enter password';
+                        }
 
-                      return null;
-                    },
+                        return null;
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: confirmPassword,
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please re-enter password';
-                      }
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: confirmPassword,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please re-enter password';
+                        }
 
-                      if (confirmPassword.text != _password) {
-                        return 'Password does not match';
-                      }
+                        if (confirmPassword.text != _password) {
+                          return 'Password does not match';
+                        }
 
-                      return null;
-                    },
-                    obscureText: true,
-                    decoration: InputDecoration(hintText: 'Confirm Password'),
-                    onChanged: (value) {
-                      setState(() {
-                        _confirmPassword = value.trim();
-                      });
-                    },
+                        return null;
+                      },
+                      obscureText: true,
+                      decoration: InputDecoration(hintText: 'Confirm Password'),
+                      onChanged: (value) {
+                        setState(() {
+                          _confirmPassword = value.trim();
+                        });
+                      },
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Text('New user? Welcome!'),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formkey.currentState.validate()) {
-                              print('successful!');
-                              AuthService().signup(_email, _password, context);
-                            } else {
-                              print('unsuccessful!');
-                            }
-                          },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          Text('New user? Welcome!'),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formkey.currentState.validate()) {
+                                print('successful!');
+                                AuthService()
+                                    .signup(_email, _password, context);
+                              } else {
+                                print('unsuccessful!');
+                              }
+                            },
+                            child: Text(
+                              'Sign Up',
+                              //style: TextStyle(fontSize: 18),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary:
+                                  Color.fromRGBO(242, 195, 71, 1), // background
+                              onPrimary: Colors.black, // foreground
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text('Or already have an account?'),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            },
+                            child: Text('Sign In'),
+                            style: ElevatedButton.styleFrom(
+                              primary:
+                                  Color.fromRGBO(242, 195, 71, 1), // background
+                              onPrimary: Colors.black, // foreground
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => ResetScreen())),
                           child: Text(
-                            'Sign Up',
-                            //style: TextStyle(fontSize: 18),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary:
-                                Color.fromRGBO(242, 195, 71, 1), // background
-                            onPrimary: Colors.black, // foreground
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text('Or already have an account?'),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
-                          },
-                          child: Text('Sign In'),
-                          style: ElevatedButton.styleFrom(
-                            primary:
-                                Color.fromRGBO(242, 195, 71, 1), // background
-                            onPrimary: Colors.black, // foreground
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => ResetScreen())),
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(fontSize: 16),
-                        ))
-                  ],
-                ),
-                Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Positioned(
-                        child: Image.asset('assets/images/wavingLion.png'))
-                  ],
-                ),
-              ],
+                            'Forgot Password?',
+                            style: TextStyle(fontSize: 16),
+                          ))
+                    ],
+                  ),
+                  Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Positioned(
+                          child: Image.asset('assets/images/wavingLion.png'))
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ));

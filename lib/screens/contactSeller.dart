@@ -1,5 +1,7 @@
 import 'dart:io';
-import 'package:path/path.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
@@ -12,7 +14,8 @@ import 'package:orbital2796_nusell/models/message.dart';
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
   final String theOtherUserName;
-  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName}) : super(key: key);
+  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName})
+      : super(key: key);
 
   @override
   State<ContactSellerScreen> createState() => _ContactSellerScreenState();
@@ -31,40 +34,38 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
   String userId;
   // the current user's index.
   int userIndex;
-  Message message;
+  AppMessage message;
 
   // Display all previous messages as a list of widgets.
   displayMessages(List<dynamic> history) {
-    return history.map((message) =>
-        Row(
-          mainAxisAlignment: userIndex == message["user"]
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Bubble(
-                alignment: userIndex == message["user"]
-                    ? Alignment.topRight
-                    : Alignment.topLeft,
-                nip: userIndex == message["user"]
-                    ? BubbleNip.rightTop
-                    : BubbleNip.leftTop,
-                color: userIndex == message["user"]
-                    ? Color.fromRGBO(242, 195, 71, 0.5)
-                    : Colors.white,
-                margin: userIndex == message["user"]
-                    ? BubbleEdges.only(bottom: 5, left: 50)
-                    : BubbleEdges.only(bottom: 5, right: 50),
-                child: message["message"] != null 
-                    ? Text(
-                    message["message"], 
-                    style: TextStyle(fontSize: 16))
-                    : Image.network(message["imgURL"])
-              ),
-            ),
-          ],
-        )
-    ).toList();
+    return history
+        .map((message) => Row(
+              mainAxisAlignment: userIndex == message["user"]
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Bubble(
+                      alignment: userIndex == message["user"]
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
+                      nip: userIndex == message["user"]
+                          ? BubbleNip.rightTop
+                          : BubbleNip.leftTop,
+                      color: userIndex == message["user"]
+                          ? Color.fromRGBO(242, 195, 71, 0.5)
+                          : Colors.white,
+                      margin: userIndex == message["user"]
+                          ? BubbleEdges.only(bottom: 5, left: 50)
+                          : BubbleEdges.only(bottom: 5, right: 50),
+                      child: message["message"] != null
+                          ? Text(message["message"],
+                              style: TextStyle(fontSize: 16))
+                          : Image.network(message["imgURL"])),
+                ),
+              ],
+            ))
+        .toList();
   }
 
   // In a chat, return the index of the user,
@@ -96,7 +97,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
       );
     }
     File img = File(pickedFile.path);
-    Reference ref = storage.ref().child('chatpics/${basename(img.path)}');
+    Reference ref = storage.ref().child('chatpics/${Path.basename(img.path)}');
     await ref.putFile(File(img.path));
     String url = await ref.getDownloadURL();
     return url;
@@ -108,7 +109,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: BackButton(),
+        leading: BackButton(),
         title: Text(widget.theOtherUserName),
       ),
       body: GestureDetector(
@@ -119,31 +120,38 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
           color: Color.fromRGBO(0, 0, 0, 0.1),
           child: ListView(
             children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: FutureBuilder<DocumentSnapshot>(
-                  // get information of the current chat.
-                  future: db.collection("chats").doc(widget.chatID).get(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                    if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    this.chat = snapshot.data.data();
-                    // list of previous messages.
-                    List<dynamic> history = [];
-                    if (chat != null) {
-                      history = chat["history"];
-                      this.userIndex = getUserIndex(this.userId, chat["users"]);
-                    }
+              StreamBuilder(
+                  stream: db.collection("chats").doc(widget.chatID).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return LinearProgressIndicator();
                     return Container(
-                      margin: EdgeInsets.only(left: 30, right: 30),
-                      child: ListView(
-                        children: displayMessages(history),
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: FutureBuilder<DocumentSnapshot>(
+                        // get information of the current chat.
+                        future: db.collection("chats").doc(widget.chatID).get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          this.chat = snapshot.data.data();
+                          // list of previous messages.
+                          List<dynamic> history = [];
+                          if (chat != null) {
+                            history = chat["history"];
+                            this.userIndex =
+                                getUserIndex(this.userId, chat["users"]);
+                          }
+                          return Container(
+                            margin: EdgeInsets.only(left: 30, right: 30),
+                            child: ListView(
+                              children: displayMessages(history),
+                            ),
+                          );
+                        },
                       ),
                     );
-                  },
-                ),
-              ),
+                  }),
 
               // Input text, return to send message.
               Container(
@@ -171,9 +179,12 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         },
                         onSubmitted: (value) {
                           this.content = value;
-                          this.message = Message(this.userIndex, Timestamp.now(), this.content);
-                          db.collection("chats").doc(widget.chatID)
-                              .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                          this.message = AppMessage(
+                              this.userIndex, Timestamp.now(), this.content);
+                          db.collection("chats").doc(widget.chatID).update({
+                            "history":
+                                FieldValue.arrayUnion([this.message.toMap()])
+                          });
                           this.content = "";
                           this.message = null;
                         },
@@ -182,9 +193,12 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     InkWell(
                       onTap: () async {
                         String url = await uploadImage(true);
-                        this.message = ImageMessage(userIndex, Timestamp.now(), url);
-                        db.collection("chats").doc(widget.chatID)
-                            .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                        this.message =
+                            ImageMessage(userIndex, Timestamp.now(), url);
+                        db.collection("chats").doc(widget.chatID).update({
+                          "history":
+                              FieldValue.arrayUnion([this.message.toMap()])
+                        });
                         this.message = null;
                       },
                       child: Container(
@@ -193,10 +207,11 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         margin: EdgeInsets.only(right: 10),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: Colors.black,
+                            color: Colors.black,
                             width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.1),
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * 0.1),
                         ),
                         child: Icon(Icons.add_photo_alternate, size: 20),
                       ),
@@ -204,9 +219,12 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     InkWell(
                       onTap: () async {
                         String url = await uploadImage(false);
-                        this.message = ImageMessage(userIndex, Timestamp.now(), url);
-                        db.collection("chats").doc(widget.chatID)
-                            .update({"history": FieldValue.arrayUnion([this.message.toMap()])});
+                        this.message =
+                            ImageMessage(userIndex, Timestamp.now(), url);
+                        db.collection("chats").doc(widget.chatID).update({
+                          "history":
+                              FieldValue.arrayUnion([this.message.toMap()])
+                        });
                         this.message = null;
                       },
                       child: Container(
@@ -217,7 +235,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                             color: Colors.black,
                             width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.1),
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * 0.1),
                         ),
                         child: Icon(Icons.camera_alt, size: 20),
                       ),

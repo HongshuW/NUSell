@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: Column(
+      body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
