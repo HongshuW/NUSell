@@ -8,11 +8,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:orbital2796_nusell/models/message.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
   final String theOtherUserName;
-  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName}) : super(key: key);
+  final String theOtherUserPhoto;
+  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName, this.theOtherUserPhoto}) : super(key: key);
 
   @override
   State<ContactSellerScreen> createState() => _ContactSellerScreenState();
@@ -40,6 +42,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
           mainAxisAlignment: userIndex == message["user"]
               ? MainAxisAlignment.end
               : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Flexible(
               child: Bubble(
@@ -50,16 +53,24 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     ? BubbleNip.rightTop
                     : BubbleNip.leftTop,
                 color: userIndex == message["user"]
-                    ? Color.fromRGBO(242, 195, 71, 0.5)
+                    ? Color.fromRGBO(242, 195, 71, 0.7)
                     : Colors.white,
                 margin: userIndex == message["user"]
-                    ? BubbleEdges.only(bottom: 5, left: 50)
-                    : BubbleEdges.only(bottom: 5, right: 50),
+                    ? BubbleEdges.only(bottom: 15, left: 70)
+                    : BubbleEdges.only(bottom: 15, right: 70),
                 child: message["message"] != null 
                     ? Text(
                     message["message"], 
                     style: TextStyle(fontSize: 16))
-                    : Image.network(message["imgURL"])
+                    : ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: 200,
+                          maxWidth: 150,
+                        ),
+                        child: CachedNetworkImage(
+                          imageUrl: message["imgURL"],
+                          fadeInDuration: const Duration(milliseconds: 10),),
+                      )
               ),
             ),
           ],
@@ -132,12 +143,13 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     // list of previous messages.
                     List<dynamic> history = [];
                     if (chat != null) {
-                      history = chat["history"];
+                      history = List.from(chat["history"].reversed);
                       this.userIndex = getUserIndex(this.userId, chat["users"]);
                     }
                     return Container(
                       margin: EdgeInsets.only(left: 30, right: 30),
                       child: ListView(
+                        reverse: true,
                         children: displayMessages(history),
                       ),
                     );

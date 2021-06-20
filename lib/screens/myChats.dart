@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:orbital2796_nusell/screens/profile.dart';
 
 class MyChatsScreen extends StatefulWidget{
   MyChatsScreen({Key key}) : super(key: key);
@@ -49,8 +51,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     for (i = 0; i < len; i++) {
       String chatID = myChats[i];
       chats.add(
-        FutureBuilder(
-          future: db.collection("chats").doc(chatID).get(),
+        StreamBuilder(
+          stream: db.collection("chats").doc(chatID).snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
@@ -73,7 +75,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                         Navigator.of(context).push(
                             MaterialPageRoute(builder:
                                 (context) => ContactSellerScreen(chatID: chatID,
-                                    theOtherUserName: userInfo["username"]))
+                                    theOtherUserName: userInfo["username"],
+                                theOtherUserPhoto: userInfo['avatarUrl'],))
                         );
                       },
                       child: Card(
@@ -84,8 +87,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                             Container(
                               margin: EdgeInsets.only(left: 5, right: 20),
                               color: Color.fromRGBO(0, 0, 0, 0.1),
-                              child: Image.network(
-                                  userInfo["avatarUrl"],
+                              child: CachedNetworkImage(
+                                imageUrl: userInfo["avatarUrl"],
                                 width: 60,
                                 height: 60,
                                 fit: BoxFit.fill,
@@ -130,29 +133,40 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   Widget build(BuildContext context) {
     this.user = auth.currentUser.uid;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("My Chats"),
-      ),
-      body: Container(
-        child: FutureBuilder<DocumentSnapshot>(
-          // get information of all of the user's chats.
-          future: db.collection("myChats").doc(this.user).get(),
-          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            Map<String, dynamic> chatData = snapshot.data.data();
-            if (chatData == null) {
-              return Center(child: Text("You don't have any conversation."));
-            }
-            this.myChats = chatData["myChats"];
-            return ListView(
-              children: displayChats(),
+    return StreamBuilder<DocumentSnapshot>(
+        // get information of all of the user's chats.
+        stream: db.collection("myChats").doc(this.user).snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          Map<String, dynamic> chatData = snapshot.data.data();
+          if (chatData == null) {
+            return Scaffold(
+                appBar: AppBar(
+                  leading: BackButton(
+                      onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => ProfileScreen()))
+                  ),
+                  title: Text("My Chats"),
+                ),
+                body: Center(child: Text("You don't have any conversation.")),
             );
-          },
-        ),
-      ),
-    );
+          }
+          this.myChats = chatData["myChats"];
+          return Scaffold(
+            appBar: AppBar(
+              leading: BackButton(
+                onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => ProfileScreen()))
+              ),
+              title: Text("My Chats"),
+            ),
+            body: ListView(
+              children: displayChats(),
+            ),
+          );
+        },
+      );
   }
 }

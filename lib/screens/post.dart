@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PostScreen extends StatefulWidget {
   PostScreen({Key key}) : super(key: key);
@@ -143,8 +144,8 @@ class _PostScreenState extends State<PostScreen> {
           onTap: () {
             getImage(true);
           },
-          child: Image.network(
-              "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
+          child: CachedNetworkImage(
+              imageUrl: "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
         ));
       } else {
         for (File img in _images) {

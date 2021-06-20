@@ -10,6 +10,7 @@ import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductInfoScreen extends StatefulWidget {
   final String product;
@@ -22,6 +23,7 @@ class ProductInfoScreen extends StatefulWidget {
 class _ProductInfoScreenState extends State<ProductInfoScreen> {
   var userId;
   String sellerName;
+  String sellerPhoto;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
@@ -50,76 +52,88 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   }
 
   getImage(imgArr, index) {
-    var img;
     if (imgArr.isEmpty) {
-      img =
-          "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd";
+      return Column(
+        children: [
+          Container(
+            height: 300,
+            child: Image.asset(
+                'assets/images/defaultPostImage.png',
+              fit: BoxFit.fitWidth,
+              width: 0.7 * MediaQuery.of(context).size.width,
+            ),
+          ),
+        ],
+      );
     } else {
-      img = imgArr[index];
-    }
-    return Column(
-      children: [
-        Container(
-          height: 300,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Listener(
-                  onPointerUp: previousPage, child: Icon(Icons.arrow_back_ios)),
-              InkWell(
-                onTap: () {
-                  showDialog(
-                      barrierColor: Colors.black,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Dialog(
-                          child: Container(
-                            color: Colors.black,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(bottom: 50),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.transparent,
+      return Column(
+        children: [
+          Container(
+            height: 300,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Listener(
+                    onPointerUp: previousPage, child: Icon(Icons.arrow_back_ios)),
+                InkWell(
+                  onTap: () {
+                    showDialog(
+                        barrierColor: Colors.black,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            child: Container(
+                              color: Colors.black,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 50),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Icon(
+                                        Icons.arrow_back,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.transparent,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Image.network(img),
-                              ],
+                                  CachedNetworkImage(
+                                    imageUrl: imgArr[index],
+                                    fadeInDuration: Duration.zero,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          insetPadding: EdgeInsets.all(0),
-                        );
-                      });
-                },
-                child: Image.network(
-                  img,
-                  fit: BoxFit.fitWidth,
-                  width: 0.7 * MediaQuery.of(context).size.width,
+                            insetPadding: EdgeInsets.all(0),
+                          );
+                        });
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: imgArr[index],
+                    fit: BoxFit.fitWidth,
+                    width: 0.7 * MediaQuery.of(context).size.width,
+                    fadeInDuration: Duration.zero,
+                  ),
                 ),
-              ),
-              Listener(
-                  onPointerUp: nextPage, child: Icon(Icons.arrow_forward_ios)),
-            ],
+                Listener(
+                    onPointerUp: nextPage, child: Icon(Icons.arrow_forward_ios)),
+              ],
+            ),
           ),
-        ),
-        Container(
-            margin: EdgeInsets.only(top: 10),
-            child:
-                Text(this.len > 0 ? "${this.index + 1} / ${this.len}" : "0/0")),
-      ],
-    );
+          Container(
+              margin: EdgeInsets.only(top: 10),
+              child:
+              Text("${this.index + 1} / ${this.len}")),
+        ],
+      );
+    }
   }
 
   @override
@@ -166,8 +180,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       } else {
         Chat chat = new Chat([seller, user]);
         String docID;
-        return FutureBuilder(
-            future: db.collection("posts").doc(widget.product).get(),
+        return StreamBuilder(
+            stream: db.collection("posts").doc(widget.product).snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
@@ -207,7 +221,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       });
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
-                              ContactSellerScreen(chatID: docID, theOtherUserName: sellerName)));
+                              ContactSellerScreen(chatID: docID,
+                                  theOtherUserName: sellerName,
+                              theOtherUserPhoto: sellerPhoto,)));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(100, 170, 255, 1),
@@ -257,170 +273,172 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
     }
 
     // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: BackButton(
-          color: Colors.black,
-        ),
-      ),
-      body: Container(
-        padding: EdgeInsets.only(left: 30, right: 30),
-        child: FutureBuilder<DocumentSnapshot>(
-          future: db.collection("posts").doc(widget.product).get(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            Map<String, dynamic> post = snapshot.data.data();
-            len = post['images'].length;
-            return ListView(
-              children: [
-                // Product Images
-                getImage(post['images'], index),
+    return StreamBuilder<DocumentSnapshot>(
+        stream: db.collection("posts").doc(widget.product).snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          Map<String, dynamic> post = snapshot.data.data();
+          len = post['images'].length;
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              leading: BackButton(
+                color: Colors.black,
+              ),
+            ),
+            body: Container(
+              padding: EdgeInsets.only(left: 30, right: 30),
+              child: ListView(
+                children: [
+                  // Product Images
+                  getImage(post['images'], index),
 
-                // User
-                FutureBuilder<DocumentSnapshot>(
-                  future: db.collection("users").doc("${post['user']}").get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                    if (!userSnapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    Map<String, dynamic> user = userSnapshot.data.data();
-                    sellerName = user["username"];
-                    return InkWell(
-                      onTap: () {
-                        if (post['user'] == this.userId) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ProfileScreen()));
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SellerProfileScreen(sellerId: post['user'])));
-                        }
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 10),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(60),
-                                child: Image.network(
-                                  "${user["avatarUrl"]}",
-                                  height: 60,
-                                  width: 60,
-                                  fit: BoxFit.fill,
+                  // User
+                  FutureBuilder<DocumentSnapshot>(
+                    future: db.collection("users").doc("${post['user']}").get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                      if (!userSnapshot.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      Map<String, dynamic> user = userSnapshot.data.data();
+                      sellerName = user["username"];
+                      sellerPhoto = user["avatarUrl"];
+                      return InkWell(
+                        onTap: () {
+                          if (post['user'] == this.userId) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ProfileScreen()));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SellerProfileScreen(sellerId: post['user'])));
+                          }
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(right: 10),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(60),
+                                  child: CachedNetworkImage(
+                                    imageUrl: sellerPhoto,
+                                    height: 60,
+                                    width: 60,
+                                    fit: BoxFit.fill,
+                                    fadeInDuration: Duration.zero,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              "${user["username"]}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  letterSpacing: 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                // Time and Location
-                Container(
-                  margin: EdgeInsets.only(bottom: 15),
-                  child: Row(
-                    children: [
-                      Text(
-                        "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
-                            .substring(0, 10),
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w300,
-                            letterSpacing: 1),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 15),
-                        padding: EdgeInsets.only(left: 5, right: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Color.fromRGBO(0, 0, 0, 0.1),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 15,
-                            ),
-                            Text(
-                              "${post['location']}",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w300,
+                              Text(
+                                "${user["username"]}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    letterSpacing: 1),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Time and Location
+                  Container(
+                    margin: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
+                              .substring(0, 10),
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w300,
+                              letterSpacing: 1),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 15),
+                          padding: EdgeInsets.only(left: 5, right: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(10),
+                            color: Color.fromRGBO(0, 0, 0, 0.1),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 15,
+                              ),
+                              Text(
+                                "${post['location']}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Product Name
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.article,
+                      ),
+                      Text(
+                        " ${post['productName']}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
                   ),
-                ),
 
-                // Product Name
-                Row(
-                  children: [
-                    Icon(
-                      Icons.article,
-                    ),
-                    Text(
-                      " ${post['productName']}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        letterSpacing: 1,
+                  // Price
+                  Row(
+                    children: [
+                      Icon(Icons.attach_money),
+                      Text(
+                        " ${post['price']}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          letterSpacing: 1,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                // Price
-                Row(
-                  children: [
-                    Icon(Icons.attach_money),
-                    Text(
-                      " ${post['price']}",
-                      style: TextStyle(
+                  // Description
+                  Text(
+                    "\nDescription: ",
+                    style: TextStyle(
                         fontSize: 16,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 5, bottom: 20),
+                    child: Text("${post['description']} \n"),
+                  ),
 
-                // Description
-                Text(
-                  "\nDescription: ",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 5, bottom: 20),
-                  child: Text("${post['description']} \n"),
-                ),
-
-                // Interactions
-                interactions(post['user'], this.userId),
-              ],
-            );
-          },
-        ),
-      ),
-    );
+                  // Interactions
+                  interactions(post['user'], this.userId),
+                ],
+              ),
+            ),
+          );
+        },
+      );
   }
 }

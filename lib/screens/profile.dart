@@ -187,7 +187,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future getImage() async {
-    var tempImage = await ImagePicker().getImage(source: ImageSource.gallery);
+    var tempImage = await ImagePicker().getImage(
+        source: ImageSource.gallery,
+      imageQuality: 15
+    );
     print('gotten tempImage');
     setState(() {
       newProfilePic = File(tempImage.path);
