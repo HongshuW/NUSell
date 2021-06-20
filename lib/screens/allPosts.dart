@@ -6,6 +6,7 @@ import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class allPosts extends StatefulWidget {
   allPosts({Key key}) : super(key: key);
@@ -79,24 +80,31 @@ class _allPostsState extends State<allPosts> {
 
   // Display the first image of a post.
   getImage(imgArr) {
-    var img;
     if (imgArr.isEmpty) {
-      img =
-          'https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault.png?alt=media&token=c1100242-206c-44d9-a51b-181937932156';
+      return ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(5),
+          topRight: Radius.circular(5),
+        ),
+        child: Image.asset(
+            'assets/images/defaultPreview.png',
+          fit: BoxFit.fitWidth,
+          width: 200,
+        ),
+      );
     } else {
-      img = imgArr[0];
+      return ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(5),
+          topRight: Radius.circular(5),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: imgArr[0],
+          fit: BoxFit.fitWidth,
+          width: 200,
+        ),
+      );
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(5),
-        topRight: Radius.circular(5),
-      ),
-      child: Image.network(
-        img,
-        fit: BoxFit.fitWidth,
-        width: 200,
-      ),
-    );
   }
 
   @override

@@ -196,10 +196,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   heroTag: "post",
                   onPressed: () {
                     if (auth.currentUser == null) {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => LoginScreen()));
                     } else {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => PostScreen()));
                     }
                   },
@@ -210,10 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   heroTag: "profile",
                   onPressed: () {
                     if (auth.currentUser == null) {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => LoginScreen()));
                     } else {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => ProfileScreen()));
                     }
                   },
@@ -222,20 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                   backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                ),
-                FloatingActionButton(
-                  heroTag: "top",
-                  onPressed: () {
-                    scrollController.animateTo(
-                        scrollController.position.minScrollExtent,
-                        duration: Duration(microseconds: 500),
-                        curve: Curves.fastOutSlowIn);
-                  },
-                  child: Icon(
-                    Icons.arrow_upward,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.blue,
                 )
               ],
             ),
