@@ -83,7 +83,30 @@ class filtersProvider with ChangeNotifier {
   }
 
   remove(Filter filterItem) {
-    if (filterItem is Price) {
+    if (filterItem is Time) {
+      _timeRequested = Timestamp.fromDate(DateTime(2021));
+    } else if (filterItem is Category) {
+      _categorySelected = [
+        'Textbooks',
+        'Notes',
+        'Food',
+        'Appliances',
+        'Electronics',
+        'Cosmetics',
+        'Toys',
+        'Others',
+      ];
+    } else if (filterItem is Location) {
+      _locationSelected = [
+        "UTown",
+        "PGP",
+        "Kent Ridge MRT",
+        'Central Library',
+        'YIH',
+        'Outside NUS',
+        'Others',
+      ];
+    } else if (filterItem is Price) {
       _range = [double.negativeInfinity, double.infinity];
     }
     _selectedFilters.remove(filterItem);

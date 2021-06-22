@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   // filters fields
-  int type;
+  int type = 5;
 
   // back to top fields
   ScrollController scrollController = ScrollController();
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Color.fromRGBO(249, 248, 253, 1),
             ),
             child: ListView(
-              controller: scrollController,
+              // controller: scrollController,
               children: [
                 Container(
                   padding: EdgeInsets.only(left: 30, right: 30),
@@ -127,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       CustomRadioButton(
+                        defaultSelected: 5,
                         elevation: 0,
                         padding: 0,
                         enableShape: true,
@@ -138,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Category',
                           'Location',
                           'Price',
-                          'Clear Filters'
+                          'View All'
                         ],
                         buttonValues: [1, 2, 3, 4, 5],
                         buttonTextStyle: ButtonTextStyle(
@@ -166,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // display posts
-                allPosts(),
+                allPosts(hasPagination: this.type == 5),
               ],
             ),
           ),
