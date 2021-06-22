@@ -18,7 +18,7 @@ class Filter {
     return InkWell(
       onTap: () {
         selected.remove(this);
-        posts.snapshot = selected.getQuery();
+        // posts.snapshot = selected.getQuery();
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 10, right: 5),

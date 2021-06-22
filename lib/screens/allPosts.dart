@@ -1,15 +1,19 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
+import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class allPosts extends StatefulWidget {
-  allPosts({Key key}) : super(key: key);
+  final bool hasPagination;
+  allPosts({Key key, this.hasPagination}) : super(key: key);
 
   @override
   _allPostsState createState() => _allPostsState();
@@ -32,16 +36,18 @@ class _allPostsState extends State<allPosts> {
   @override
   void initState() {
     super.initState();
-    getPosts();
-    // load more when the end of the screen is reached.
-    _scrollController.addListener(() {
-      double maxScroll = _scrollController.position.maxScrollExtent;
-      double currentScroll = _scrollController.position.pixels;
-      double criteria = MediaQuery.of(context).size.height * 0.2;
-      if (maxScroll - currentScroll < criteria) {
-        getPosts();
-      }
-    });
+    if (widget.hasPagination) {
+      getPosts();
+      // load more when the end of the screen is reached.
+      _scrollController.addListener(() {
+        double maxScroll = _scrollController.position.maxScrollExtent;
+        double currentScroll = _scrollController.position.pixels;
+        double criteria = MediaQuery.of(context).size.height * 0.2;
+        if (maxScroll - currentScroll < criteria) {
+          getPosts();
+        }
+      });
+    }
   }
 
   // Load posts (depend on the current state) from database.
@@ -111,88 +117,145 @@ class _allPostsState extends State<allPosts> {
   Widget build(BuildContext context) {
     // Providers
     final filterState = Provider.of<filtersProvider>(context);
+    final postsState = Provider.of<postsProvider>(context);
 
-    return Container(
-      height: 400,
-      margin: EdgeInsets.all(20),
-      child: Column(children: [
-        Expanded(
-          child: products.length == 0
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : GridView.count(
-                  controller: _scrollController,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  physics: ScrollPhysics(),
-                  children: products
-                      .where((doc) =>
-                          doc["time"].millisecondsSinceEpoch >=
-                          filterState.timeRequested.millisecondsSinceEpoch)
-                      .where((doc) => filterState.categorySelected
-                          .contains(doc["category"]))
-                      .where((doc) => filterState.locationSelected
-                          .contains(doc["location"]))
-                      .where((doc) =>
-                          doc["price"] < filterState.range[1] &&
-                          doc["price"] >= filterState.range[0])
-                      .map<Widget>((doc) {
-                    return InkWell(
-                      onTap: () {
-                        if (auth.currentUser == null) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => LoginScreen()));
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductInfoScreen(product: doc.id)));
-                        }
-                      },
-                      child: Card(
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              child: getImage(doc["images"]),
-                            ),
-                            Text(
-                              "${doc["productName"]}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              "\$${doc["price"].toString()}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 17,
-                                  height: 1.5),
-                            )
-                          ],
+    if (widget.hasPagination) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        margin: EdgeInsets.all(20),
+        child: Column(children: [
+          Expanded(
+            child: products.length == 0
+                ? Center(
+              child: CircularProgressIndicator(),
+            )
+                : GridView.count(
+              controller: _scrollController,
+              crossAxisCount: 2,
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
+              children: products
+                  .map<Widget>((doc) {
+                return InkWell(
+                  onTap: () {
+                    if (auth.currentUser == null) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              ProductInfoScreen(product: doc.id)));
+                    }
+                  },
+                  child: Card(
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: getImage(doc["images"]),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-        ),
-        isLoading
-            ? Container(
-                margin: EdgeInsets.all(5),
-                child: Text(
-                  "loading...",
-                  style: TextStyle(
-                    color: Color.fromRGBO(252, 228, 70, 1),
-                    fontWeight: FontWeight.w300,
-                    letterSpacing: 1,
+                        Text(
+                          "${doc["productName"]}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          "\$${doc["price"].toString()}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 17,
+                              height: 1.5),
+                        )
+                      ],
+                    ),
                   ),
-                ),
+                );
+              }).toList(),
+            ),
+          ),
+          isLoading
+              ? Container(
+            margin: EdgeInsets.all(5),
+            child: Text(
+              "loading...",
+              style: TextStyle(
+                color: Color.fromRGBO(252, 228, 70, 1),
+                fontWeight: FontWeight.w300,
+                letterSpacing: 1,
+              ),
+            ),
+          )
+              : Container()
+        ]),
+      );
+    } else {
+      return StreamBuilder(
+          stream: postsState.snapshot.snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Container(
+                margin: EdgeInsets.all(20),
+                child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                physics: ScrollPhysics(),
+                children: snapshot.data.docs
+                    .where((doc) => DateTime.fromMillisecondsSinceEpoch(doc["time"].millisecondsSinceEpoch).isAfter(DateTime.fromMillisecondsSinceEpoch(filterState.timeRequested.millisecondsSinceEpoch)))
+                    .where((doc) => filterState.categorySelected.contains(doc["category"]))
+                    .where((doc) => filterState.locationSelected.contains(doc["location"]))
+                    .where((doc) => doc["price"] < filterState.range[1] && doc["price"] >= filterState.range[0])
+                    .map<Widget>((doc) {
+                  return InkWell(
+                    onTap: () {
+                      if (auth.currentUser == null) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => LoginScreen()));
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                ProductInfoScreen(product: doc.id)));
+                      }
+                    },
+                    child: Card(
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: getImage(doc["images"]),
+                          ),
+                          Text(
+                            "${doc["productName"]}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            "\$${doc["price"].toString()}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 17,
+                                height: 1.5),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               )
-            : Container()
-      ]),
-    );
+            );
+          }
+      );
+    }
   }
 }
