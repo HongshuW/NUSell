@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:orbital2796_nusell/screens/notifications.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -255,6 +256,25 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         child: Icon(Icons.camera_alt, size: 20),
                       ),
                     ),
+                    // InkWell(
+                    //   onTap: () async {
+                    //     Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    //         builder: (context) => Notifications()));
+                    //   },
+                    //   child: Container(
+                    //     width: MediaQuery.of(context).size.width * 0.1,
+                    //     height: MediaQuery.of(context).size.width * 0.1,
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(
+                    //         color: Colors.black,
+                    //         width: 1.5,
+                    //       ),
+                    //       borderRadius: BorderRadius.circular(
+                    //           MediaQuery.of(context).size.width * 0.1),
+                    //     ),
+                    //     child: Icon(Icons.add, size: 20),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
