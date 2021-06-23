@@ -106,7 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              Positioned(child: Image.asset('assets/images/wavingLion.png'))
+              Positioned(child: Image.asset(
+                  'assets/images/wavingLion.png',
+                width: MediaQuery.of(context).size.width * 0.7
+              ))
             ],
           ),
         ],

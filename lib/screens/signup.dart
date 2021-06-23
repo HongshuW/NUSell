@@ -158,7 +158,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     alignment: Alignment.bottomCenter,
                     children: [
                       Positioned(
-                          child: Image.asset('assets/images/wavingLion.png'))
+                          child: Image.asset(
+                              'assets/images/wavingLion.png',
+                            width: MediaQuery.of(context).size.width * 0.7
+                          ))
                     ],
                   ),
                 ],

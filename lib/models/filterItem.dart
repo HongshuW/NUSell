@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Filter {
+  // postsProvider
   final posts;
+  // filtersProvider
   final selected;
+  // type of filter
   int type;
+  // value of filter
   var value;
 
   Filter({

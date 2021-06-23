@@ -75,8 +75,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                         Navigator.of(context).push(
                             MaterialPageRoute(builder:
                                 (context) => ContactSellerScreen(chatID: chatID,
-                                    theOtherUserName: userInfo["username"],
-                                theOtherUserPhoto: userInfo['avatarUrl'],))
+                                    theOtherUserName: userInfo["username"]))
                         );
                       },
                       child: Card(
@@ -104,13 +103,17 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
-                                        userInfo["username"],
+                                        userInfo["username"] == null
+                                            ? theOtherUser
+                                            : userInfo["username"],
                                     style: TextStyle(fontSize: 16),
                                     ),
                                     Text(
-                                      chatInfo["history"].last["message"] == null
-                                          ? "[photo]"
-                                          : chatInfo["history"].last["message"],
+                                      chatInfo["history"].isEmpty
+                                          ? ""
+                                          : chatInfo["history"].last["message"] == null
+                                            ? "[photo]"
+                                            : chatInfo["history"].last["message"],
                                       style: TextStyle(color: Colors.grey),
                                       overflow: TextOverflow.ellipsis,
                                     ),

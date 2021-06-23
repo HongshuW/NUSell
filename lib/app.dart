@@ -26,7 +26,20 @@ class App extends StatelessWidget {
       child: MaterialApp(
         title: 'Login App',
         theme:
-            ThemeData(accentColor: Colors.orange, primarySwatch: Colors.blue),
+            ThemeData(
+                accentColor: Color.fromRGBO(242, 195, 71, 1),
+                primarySwatch: MaterialColor(0xFFF2C347, {
+                  50: Color.fromRGBO(242, 195, 71, .1),
+                  100: Color.fromRGBO(242, 195, 71, .2),
+                  200: Color.fromRGBO(242, 195, 71, .3),
+                  300: Color.fromRGBO(242, 195, 71, .4),
+                  400: Color.fromRGBO(242, 195, 71, .5),
+                  500: Color.fromRGBO(242, 195, 71, .6),
+                  600: Color.fromRGBO(242, 195, 71, .7),
+                  700: Color.fromRGBO(242, 195, 71, .8),
+                  800: Color.fromRGBO(242, 195, 71, .9),
+                  900: Color.fromRGBO(242, 195, 71, 1)
+                })),
         home: SignupScreen(),
       ),
     );

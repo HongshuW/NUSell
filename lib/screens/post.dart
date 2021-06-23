@@ -144,8 +144,10 @@ class _PostScreenState extends State<PostScreen> {
           onTap: () {
             getImage(true);
           },
-          child: CachedNetworkImage(
-              imageUrl: "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"),
+          child: Image.asset(
+              'assets/images/defaultPostImage.png',
+            fit: BoxFit.fitWidth
+          ),
         ));
       } else {
         for (File img in _images) {

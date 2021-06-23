@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orbital2796_nusell/screens/notifications.dart';
 import 'package:path/path.dart' as Path;
@@ -16,9 +17,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
   final String theOtherUserName;
-  final String theOtherUserPhoto;
   ContactSellerScreen(
-      {Key key, this.chatID, this.theOtherUserName, this.theOtherUserPhoto})
+      {Key key, this.chatID, this.theOtherUserName})
       : super(key: key);
 
   @override
@@ -39,6 +39,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
   // the current user's index.
   int userIndex;
   AppMessage message;
+  TextEditingController _controller = TextEditingController();
 
   // Display all previous messages as a list of widgets.
   displayMessages(List<dynamic> history) {
@@ -121,11 +122,14 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
   @override
   Widget build(BuildContext context) {
     this.userId = auth.currentUser.uid;
+    // set cursor position to be end of the text.
+    _controller.text = this.content;
+    _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
 
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(),
-        title: Text(widget.theOtherUserName),
+        title: Text(widget.theOtherUserName == null ? widget.chatID : widget.theOtherUserName),
       ),
       body: GestureDetector(
         onTap: () {
@@ -153,13 +157,14 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                           // list of previous messages.
                           List<dynamic> history = [];
                           if (chat != null) {
-                            history = chat["history"];
+                            history = List.from(chat["history"].reversed);
                             this.userIndex =
                                 getUserIndex(this.userId, chat["users"]);
                           }
                           return Container(
                             margin: EdgeInsets.only(left: 30, right: 30),
                             child: ListView(
+                              reverse: true,
                               children: displayMessages(history),
                             ),
                           );
@@ -177,31 +182,41 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     Container(
                       margin: EdgeInsets.only(left: 20, right: 10),
                       width: MediaQuery.of(context).size.width * 0.65,
-                      height: 40,
                       child: TextField(
+                        textInputAction: TextInputAction.send,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: null,
+                        cursorRadius: Radius.circular(1),
+                        toolbarOptions: ToolbarOptions(
+                          copy: true, cut: true, paste: true, selectAll: true
+                        ),
                         decoration: InputDecoration(
+                          isDense: true,
                           focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue)),
+                              borderSide: BorderSide(color: Colors.transparent)),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black45),
-                          ),
+                            borderSide: BorderSide(color: Colors.transparent)),
                           fillColor: Colors.white,
                           filled: true,
+                          contentPadding: EdgeInsets.all(10),
                         ),
-                        controller: TextEditingController(text: this.content),
+                        controller: _controller,
                         onChanged: (value) {
                           this.content = value;
                         },
                         onSubmitted: (value) {
                           this.content = value;
-                          this.message = AppMessage(
-                              this.userIndex, Timestamp.now(), this.content);
-                          db.collection("chats").doc(widget.chatID).update({
-                            "history":
-                                FieldValue.arrayUnion([this.message.toMap()])
-                          });
-                          this.content = "";
-                          this.message = null;
+                          if (this.content != "") {
+                            this.message = AppMessage(
+                                this.userIndex, Timestamp.now(), this.content);
+                            db.collection("chats").doc(widget.chatID).update({
+                              "history":
+                              FieldValue.arrayUnion([this.message.toMap()])
+                            });
+                            this.content = "";
+                            this.message = null;
+                          }
                         },
                       ),
                     ),
@@ -256,25 +271,6 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         child: Icon(Icons.camera_alt, size: 20),
                       ),
                     ),
-                    // InkWell(
-                    //   onTap: () async {
-                    //     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    //         builder: (context) => Notifications()));
-                    //   },
-                    //   child: Container(
-                    //     width: MediaQuery.of(context).size.width * 0.1,
-                    //     height: MediaQuery.of(context).size.width * 0.1,
-                    //     decoration: BoxDecoration(
-                    //       border: Border.all(
-                    //         color: Colors.black,
-                    //         width: 1.5,
-                    //       ),
-                    //       borderRadius: BorderRadius.circular(
-                    //           MediaQuery.of(context).size.width * 0.1),
-                    //     ),
-                    //     child: Icon(Icons.add, size: 20),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

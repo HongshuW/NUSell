@@ -222,8 +222,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
                               ContactSellerScreen(chatID: docID,
-                                  theOtherUserName: sellerName,
-                              theOtherUserPhoto: sellerPhoto,)));
+                                  theOtherUserName: sellerName,)));
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromRGBO(100, 170, 255, 1),
