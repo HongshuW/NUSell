@@ -14,6 +14,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String _email, _password;
   TextEditingController password = TextEditingController();
+  bool _obscureText = true;
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,42 +35,139 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: ListView(
         children: [
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: TextFormField(
+          //     keyboardType: TextInputType.emailAddress,
+          //     decoration: InputDecoration(hintText: 'Email'),
+          //     onChanged: (value) {
+          //       setState(() {
+          //         _email = value.trim();
+          //       });
+          //     },
+          //     validator: (String value) {
+          //       if (value.isEmpty) {
+          //         return 'Please enter your email';
+          //       }
+          //       return null;
+          //     },
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: 'Email'),
-              onChanged: (value) {
-                setState(() {
-                  _email = value.trim();
-                });
-              },
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Email',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                TextFormField(
+                  //controller: controller,
+                  style: TextStyle(fontSize: 20),
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(),
+                  )),
+                  onChanged: (value) {
+                    setState(() {
+                      _email = value.trim();
+                    });
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      _email = value.trim();
+                    });
+                  },
+                  validator: (String value) {
+                    if (value.isEmpty) {
+                      return 'Please enter your username';
+                    }
+                    return null;
+                  },
+                ),
+              ],
             ),
           ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: TextFormField(
+          //     controller: password,
+          //     obscureText: true,
+          //     decoration: InputDecoration(hintText: 'Password'),
+          //     onChanged: (value) {
+          //       setState(() {
+          //         _password = value.trim();
+          //       });
+          //     },
+          //     validator: (String value) {
+          //       if (value.isEmpty) {
+          //         return 'Please enter password';
+          //       }
+
+          //       return null;
+          //     },
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: password,
-              obscureText: true,
-              decoration: InputDecoration(hintText: 'Password'),
-              onChanged: (value) {
-                setState(() {
-                  _password = value.trim();
-                });
-              },
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter password';
-                }
-
-                return null;
-              },
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Password',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                TextFormField(
+                  //controller: controller,
+                  style: TextStyle(fontSize: 20),
+                  obscureText: _obscureText,
+                  keyboardType: TextInputType.visiblePassword,
+                  controller: password,
+                  decoration: InputDecoration(
+                      border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(),
+                  )),
+                  onChanged: (value) {
+                    setState(() {
+                      _password = value.trim();
+                    });
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      _password = value.trim();
+                    });
+                  },
+                  validator: (String value) {
+                    if (value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                        icon: _obscureText
+                            ? Icon(Icons.check_box_outline_blank_sharp)
+                            : Icon(Icons.check_box_outlined),
+                        onPressed: _toggle),
+                    Text(_obscureText ? "Show Password" : "Hide Password"),
+                  ],
+                )
+              ],
             ),
           ),
           Row(
@@ -106,10 +210,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              Positioned(child: Image.asset(
-                  'assets/images/wavingLion.png',
-                width: MediaQuery.of(context).size.width * 0.7
-              ))
+              Positioned(
+                  child: Image.asset('assets/images/wavingLion.png',
+                      width: MediaQuery.of(context).size.width * 0.7))
             ],
           ),
         ],

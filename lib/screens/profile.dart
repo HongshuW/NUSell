@@ -12,6 +12,7 @@ import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
 import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
+import 'package:orbital2796_nusell/screens/resetPassword.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -148,6 +149,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                             ),
                             ElevatedButton(
+                              child: Text('Reset your password'),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ResetPasswordScreen()));
+                              },
+                            ),
+                            ElevatedButton(
                               child: Text('Log Out'),
                               onPressed: () {
                                 AuthService().signout();
@@ -187,10 +197,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future getImage() async {
-    var tempImage = await ImagePicker().getImage(
-        source: ImageSource.gallery,
-      imageQuality: 15
-    );
+    var tempImage = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 15);
     print('gotten tempImage');
     setState(() {
       newProfilePic = File(tempImage.path);
