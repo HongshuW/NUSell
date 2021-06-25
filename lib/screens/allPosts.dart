@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +40,7 @@ class _allPostsState extends State<allPosts> {
       _scrollController.addListener(() {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
-        double criteria = MediaQuery.of(context).size.height * 0.2;
+        double criteria = 2;
         if (maxScroll - currentScroll < criteria) {
           getPosts();
         }
@@ -177,19 +175,6 @@ class _allPostsState extends State<allPosts> {
               }).toList(),
             ),
           ),
-          isLoading
-              ? Container(
-            margin: EdgeInsets.all(5),
-            child: Text(
-              "loading...",
-              style: TextStyle(
-                color: Color.fromRGBO(252, 228, 70, 1),
-                fontWeight: FontWeight.w300,
-                letterSpacing: 1,
-              ),
-            ),
-          )
-              : Container()
         ]),
       );
     } else {
@@ -211,7 +196,11 @@ class _allPostsState extends State<allPosts> {
                 scrollDirection: Axis.vertical,
                 physics: ScrollPhysics(),
                 children: snapshot.data.docs
-                    .where((doc) => DateTime.fromMillisecondsSinceEpoch(doc["time"].millisecondsSinceEpoch).isAfter(DateTime.fromMillisecondsSinceEpoch(filterState.timeRequested.millisecondsSinceEpoch)))
+                    .where((doc) =>
+                      DateTime.fromMillisecondsSinceEpoch(
+                          doc["time"].millisecondsSinceEpoch)
+                          .isAfter(DateTime.fromMillisecondsSinceEpoch(
+                            filterState.timeRequested.millisecondsSinceEpoch)))
                     .where((doc) => filterState.categorySelected.contains(doc["category"]))
                     .where((doc) => filterState.locationSelected.contains(doc["location"]))
                     .where((doc) => doc["price"] < filterState.range[1] && doc["price"] >= filterState.range[0])

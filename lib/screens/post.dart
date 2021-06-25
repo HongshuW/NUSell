@@ -12,7 +12,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class PostScreen extends StatefulWidget {
   PostScreen({Key key}) : super(key: key);
@@ -88,21 +87,21 @@ class _PostScreenState extends State<PostScreen> {
       } else if (productName == null || productName == "") {
         Fluttertoast.showToast(
           msg: 'Please enter the name of your product.',
-          gravity: ToastGravity.TOP,
+          gravity: ToastGravity.BOTTOM,
           textColor: Colors.red,
         );
         return null;
       } else if (description == null || description == "") {
         Fluttertoast.showToast(
           msg: 'Please fill in description of your product.',
-          gravity: ToastGravity.TOP,
+          gravity: ToastGravity.BOTTOM,
           textColor: Colors.red,
         );
         return null;
-      } else if (price == null) {
+      } else if (price == null || price < 0) {
         Fluttertoast.showToast(
           msg: 'Please enter a valid price for your product.',
-          gravity: ToastGravity.TOP,
+          gravity: ToastGravity.BOTTOM,
           textColor: Colors.red,
         );
         return null;
@@ -256,7 +255,7 @@ class _PostScreenState extends State<PostScreen> {
                     isDense: true,
                     contentPadding: EdgeInsets.all(10),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.blue),
+                      borderSide: const BorderSide(color: Color.fromRGBO(242, 195, 71, 1)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black45),
@@ -323,7 +322,8 @@ class _PostScreenState extends State<PostScreen> {
                   hintText:
                       "Share some description about the product to sell...",
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)),
+                    borderSide: const BorderSide(color: Color.fromRGBO(242, 195, 71, 1)),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black45),
                   ),
@@ -428,6 +428,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: 70.0,
                       margin: const EdgeInsets.only(left: 140.0),
                       child: TextField(
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           isDense: true,
@@ -439,6 +440,13 @@ class _PostScreenState extends State<PostScreen> {
                         onChanged: (value) {
                           try {
                             this.price = double.parse(value);
+                            if (this.price < 0) {
+                              Fluttertoast.showToast(
+                                  msg: "price is invalid!",
+                                gravity: ToastGravity.CENTER,
+                                textColor: Colors.red,
+                              );
+                            }
                           } catch (FormatException) {
                             Fluttertoast.showToast(
                               msg: "Please enter a numerical value!",

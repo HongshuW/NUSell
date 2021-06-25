@@ -16,7 +16,7 @@ class filtersProvider with ChangeNotifier {
 
   // values
   Timestamp _timeRequested = Timestamp.fromDate(DateTime(2021));
-  List<String> _categorySelected = [
+  List<dynamic> _categorySelected = [
     'Textbooks',
     'Notes',
     'Food',
@@ -26,7 +26,7 @@ class filtersProvider with ChangeNotifier {
     'Toys',
     'Others',
   ];
-  List<String> _locationSelected = [
+  List<dynamic> _locationSelected = [
     "UTown",
     "PGP",
     "Kent Ridge MRT",
@@ -39,8 +39,8 @@ class filtersProvider with ChangeNotifier {
 
   List<Filter> get selectedFilters => _selectedFilters;
   Timestamp get timeRequested => _timeRequested;
-  List<String> get categorySelected => _categorySelected;
-  List<String> get locationSelected => _locationSelected;
+  List<dynamic> get categorySelected => _categorySelected;
+  List<dynamic> get locationSelected => _locationSelected;
   List<double> get range => _range;
 
   set timeRequested(Timestamp newTime) {
@@ -48,12 +48,12 @@ class filtersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set categorySelected(List<String> selectedCat) {
+  set categorySelected(List<dynamic> selectedCat) {
     _categorySelected = selectedCat;
     notifyListeners();
   }
 
-  set locationSelected(List<String> selectedLoc) {
+  set locationSelected(List<dynamic> selectedLoc) {
     _locationSelected = selectedLoc;
     notifyListeners();
   }
@@ -78,7 +78,6 @@ class filtersProvider with ChangeNotifier {
       price = filterItem;
     }
     _selectedFilters.add(filterItem);
-    // updateQuery();
     notifyListeners();
   }
 
@@ -147,7 +146,7 @@ class filtersProvider with ChangeNotifier {
   List<InkWell> toWidgets() {
     List<InkWell> list = [];
     for (Filter filter in _selectedFilters) {
-      list.add(filter.toButton());
+      list.addAll(filter.listOfButtons());
     }
     return list;
   }

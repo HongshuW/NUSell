@@ -1,8 +1,11 @@
+import 'dart:io';
+import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -21,23 +24,54 @@ class _EditProductScreenState extends State<EditProductScreen> {
   String location;
   String category;
   String description;
-  List<dynamic> _imgRef;
+  List<File> _images = [];
+  List<String> _imgRef = [];
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
-  updateButton() {
-    return Container(
-      child: ElevatedButton(onPressed: () {}, child: Text("update")),
-    );
-  }
-
   @override
   void initState() {
     _future = db.collection("posts").doc(widget.product).get();
     super.initState();
+  }
+
+  // Get image from device.
+  Future getImage(bool gallery) async {
+    ImagePicker picker = ImagePicker();
+    PickedFile pickedFile;
+    if (gallery) {
+      pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 30,
+      );
+    } else {
+      pickedFile = await picker.getImage(
+        source: ImageSource.camera,
+        imageQuality: 30,
+      );
+    }
+
+    setState(() {
+      if (pickedFile != null) {
+        _images.add(File(pickedFile.path));
+      }
+    });
+  }
+
+  // upload images to firebase
+  uploadImages() async {
+    var len = _images.length;
+    for (var i = 0; i < len; i++) {
+      var img = _images[i];
+      Reference ref = storage.ref().child('productpics/${basename(img.path)}');
+      await ref.putFile(File(img.path));
+      String url = await ref.getDownloadURL();
+      _imgRef.add(url);
+    }
+    posts.doc(this.docId).update({"images": FieldValue.arrayUnion(_imgRef)});
   }
 
   @override
@@ -80,13 +114,95 @@ class _EditProductScreenState extends State<EditProductScreen> {
       }
     }
 
+    // display original images from firebase
+    displayOriginalImages() {
+      return StreamBuilder(
+        stream: db.collection("posts").doc(widget.product).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+          if (snapshot.data['images'].isEmpty) {
+            return GridView.count(
+              crossAxisCount: 3,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1,
+              shrinkWrap: true,
+              children: [
+                Image.asset(
+                  'assets/images/defaultPostImage.png',
+                  fit: BoxFit.fitWidth
+                )
+              ],
+            );
+          }
+          return GridView.count(
+            crossAxisCount: 3,
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1,
+            shrinkWrap: true,
+            children: snapshot.data['images'].map<Widget>((img) {
+              return InkWell(
+                onTap: () {
+                  showDialog(context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.transparent,
+                          title: Container(
+                            margin: EdgeInsets.only(right: 180),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Icon(Icons.arrow_back),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white30,
+                              ),
+                            ),
+                          ),
+                          content: Image.network(img),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                db.collection('posts').doc(widget.product).update({'images': FieldValue.arrayRemove([img])});
+                                storage.refFromURL(img).delete();
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("delete"),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromRGBO(220, 80, 60, 1),
+                              ),
+                            )
+                          ],
+                        );
+                      });
+                },
+                child: Image.network(
+                    img,
+                  fit: BoxFit.fitWidth,
+                ),
+              );
+            }).toList(),
+          );
+        },
+      );
+    }
+
+    // display added images
     displayImages() {
       List<Widget> result = [];
-      if (this._imgRef.isEmpty) {
-        result.add(Image.network(
-            "https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault%20image.png?alt=media&token=1be9ee11-e256-46f8-81b2-41f1181e44cd"));
+      if (_images.isEmpty) {
+        result.add(InkWell(
+          onTap: () {
+            getImage(true);
+          },
+          child: Image.asset(
+              'assets/images/defaultPostImage.png',
+              fit: BoxFit.fitWidth
+          ),
+        ));
       } else {
-        for (String img in this._imgRef) {
+        for (File img in _images) {
           result.add(InkWell(
             onTap: () {
               showDialog(
@@ -106,11 +222,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           ),
                         ),
                       ),
-                      content: Image.network(img),
+                      content: Image.file(img),
                       actions: <Widget>[
                         ElevatedButton(
                           onPressed: () {
-                            this._imgRef.remove(img);
+                            this._images.remove(img);
                             Navigator.of(context).pop();
                           },
                           child: Text("delete"),
@@ -122,7 +238,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     );
                   });
             },
-            child: Image.network(
+            child: Image.file(
               img,
               fit: BoxFit.fitWidth,
             ),
@@ -164,19 +280,53 @@ class _EditProductScreenState extends State<EditProductScreen> {
               this.location = post['location'];
               this.category = post['category'];
               this.description = post['description'];
-              this._imgRef = post['images'];
 
               return ListView(
                 children: [
                   // Images
-                  // Text("Photos: \n"),
-                  // GridView.count(
-                  //   crossAxisCount: 3,
-                  //   crossAxisSpacing: 1,
-                  //   mainAxisSpacing: 1,
-                  //   shrinkWrap: true,
-                  //   children: displayImages(),
-                  // ),
+                  Text("Original Photos: \n"),
+                  displayOriginalImages(),
+                  Text("\nAdded Photos: \n"),
+                GridView.count(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                  shrinkWrap: true,
+                  children: displayImages(),
+                ),
+
+                  // upload photos
+                  Container(
+                    margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        ElevatedButton(
+                          child: Icon(
+                            Icons.add_photo_alternate,
+                            color: Color.fromRGBO(242, 195, 71, 1),
+                          ),
+                          onPressed: () {
+                            getImage(true);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white70,
+                          ),
+                        ),
+                        ElevatedButton(
+                          child: Icon(
+                            Icons.add_a_photo,
+                            color: Color.fromRGBO(242, 195, 71, 1),
+                          ),
+                          onPressed: () {
+                            getImage(false);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                   // Product Name
                   Text("\n\nProduct Name: "),
@@ -311,6 +461,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ElevatedButton(
                     onPressed: () {
                       updatePost();
+                      uploadImages();
                       Navigator.of(context).pop();
                     },
                     child: Text("Update"),
