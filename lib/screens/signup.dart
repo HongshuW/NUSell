@@ -13,6 +13,13 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController password = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  bool _obscureText = true;
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,64 +40,149 @@ class _SignupScreenState extends State<SignupScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(hintText: 'Email'),
-                      onChanged: (value) {
-                        setState(() {
-                          _email = value.trim();
-                        });
-                      },
-                      validator: (String value) {
-                        if (value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Email',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          //controller: controller,
+                          style: TextStyle(fontSize: 20),
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                              border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(25.0),
+                            borderSide: new BorderSide(),
+                          )),
+                          onChanged: (value) {
+                            setState(() {
+                              _email = value.trim();
+                            });
+                          },
+                          onSaved: (value) {
+                            setState(() {
+                              _email = value.trim();
+                            });
+                          },
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: password,
-                      obscureText: true,
-                      decoration: InputDecoration(hintText: 'Password'),
-                      onChanged: (value) {
-                        setState(() {
-                          _password = value.trim();
-                        });
-                      },
-                      validator: (String value) {
-                        if (value.isEmpty) {
-                          return 'Please enter password';
-                        }
-
-                        return null;
-                      },
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Password',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          //controller: controller,
+                          style: TextStyle(fontSize: 20),
+                          obscureText: _obscureText,
+                          keyboardType: TextInputType.visiblePassword,
+                          controller: password,
+                          decoration: InputDecoration(
+                              border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(25.0),
+                            borderSide: new BorderSide(),
+                          )),
+                          onChanged: (value) {
+                            setState(() {
+                              _password = value.trim();
+                            });
+                          },
+                          onSaved: (value) {
+                            setState(() {
+                              _password = value.trim();
+                            });
+                          },
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: confirmPassword,
-                      validator: (String value) {
-                        if (value.isEmpty) {
-                          return 'Please re-enter password';
-                        }
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Confirm Password',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          //controller: controller,
+                          style: TextStyle(fontSize: 20),
+                          obscureText: _obscureText,
+                          keyboardType: TextInputType.visiblePassword,
+                          controller: password,
+                          decoration: InputDecoration(
+                              border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(25.0),
+                            borderSide: new BorderSide(),
+                          )),
+                          onChanged: (value) {
+                            setState(() {
+                              _confirmPassword = value.trim();
+                            });
+                          },
+                          onSaved: (value) {
+                            setState(() {
+                              _confirmPassword = value.trim();
+                            });
+                          },
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please re-enter password';
+                            }
 
-                        if (confirmPassword.text != _password) {
-                          return 'Password does not match';
-                        }
-
-                        return null;
-                      },
-                      obscureText: true,
-                      decoration: InputDecoration(hintText: 'Confirm Password'),
-                      onChanged: (value) {
-                        setState(() {
-                          _confirmPassword = value.trim();
-                        });
-                      },
+                            if (confirmPassword.text != _password) {
+                              return 'Password does not match';
+                            }
+                            return null;
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                                icon: _obscureText
+                                    ? Icon(Icons.check_box_outline_blank_sharp)
+                                    : Icon(Icons.check_box_outlined),
+                                onPressed: _toggle),
+                            Text(_obscureText
+                                ? "Show Password"
+                                : "Hide Password"),
+                          ],
+                        )
+                      ],
                     ),
                   ),
                   Row(

@@ -128,7 +128,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: () {
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (context) => myPosts()));
+                                        builder: (context) =>
+                                            myPosts(context)));
                               },
                             ),
                             ElevatedButton(
@@ -226,10 +227,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-Widget myPosts() {
+Widget myPosts(context) {
   return Scaffold(
     appBar: AppBar(
       title: Text("My posts"),
+      leading: BackButton(
+        color: Colors.white,
+        onPressed: () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => ProfileScreen()));
+        },
+      ),
     ),
     body: AllPostsScreen(
       userId: AuthService().getCurrentUID(),
