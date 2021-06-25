@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:orbital2796_nusell/models/chat.dart';
+import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
@@ -75,7 +76,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               children: [
                 Listener(
                     onPointerUp: previousPage, child: Icon(Icons.arrow_back_ios)),
-                InkWell(
+                GestureDetector(
                   onTap: () {
                     showDialog(
                         barrierColor: Colors.black,
@@ -115,11 +116,23 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                           );
                         });
                   },
-                  child: CachedNetworkImage(
-                    imageUrl: imgArr[index],
-                    fit: BoxFit.fitWidth,
-                    width: 0.7 * MediaQuery.of(context).size.width,
-                    fadeInDuration: Duration.zero,
+                  child: Listener(
+                    onPointerMove: (PointerMoveEvent event) {
+                      int sensitivity = 8;
+                      if (event.delta.dx > sensitivity) {
+                        // previous image
+                        previousPage(event);
+                      } else if (event.delta.dx < -sensitivity) {
+                        // next image
+                        nextPage(event);
+                      }
+                    },
+                    child: CachedNetworkImage(
+                      imageUrl: imgArr[index],
+                      fit: BoxFit.fitWidth,
+                      width: 0.7 * MediaQuery.of(context).size.width,
+                      fadeInDuration: Duration(milliseconds: 250),
+                    ),
                   ),
                 ),
                 Listener(
@@ -157,19 +170,83 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 ),
                 child: Text("Update")),
             ElevatedButton(
-                onPressed: () async {
-                  DocumentReference docRef =
-                      db.collection("posts").doc(widget.product);
-                  var doc = await docRef.get();
-                  List<dynamic> images = doc["images"];
-                  for (var img in images) {
-                    storage.refFromURL(img).delete();
-                  }
-                  docRef.delete();
-                  db.collection("users").doc(user).update({
-                    "posts": FieldValue.arrayRemove([widget.product])
-                  });
-                  Navigator.of(context).pop();
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        elevation: 10,
+                        backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                        child: Container(
+                          margin: EdgeInsets.all(30),
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 10, bottom: 10),
+                                child: Text(
+                                    "Are you sure you want to delete this post?",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                    "This action is irreversible!"
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      side: BorderSide(color: Color.fromRGBO(100, 170, 255, 1)),
+                                    ),
+                                    child: Text("Cancel"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      DocumentReference docRef =
+                                        db.collection("posts").doc(widget.product);
+                                      var doc = await docRef.get();
+                                      List<dynamic> images = doc["images"];
+                                      for (var img in images) {
+                                        storage.refFromURL(img).delete();
+                                      }
+                                      docRef.delete();
+                                      db.collection("users").doc(user).update({
+                                        "posts": FieldValue.arrayRemove([widget.product])
+                                      });
+                                      db.collection("myPosts").doc(user).update({
+                                        "myPosts": FieldValue.arrayRemove([widget.product])
+                                      });
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (context) => ProfileScreen())
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Color.fromRGBO(100, 170, 255, 1),
+                                    ),
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(255, 88, 68, 1),
@@ -347,7 +424,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     },
                   ),
 
-                  // Time and Location
+                  // Time, Location, Category
                   Container(
                     margin: EdgeInsets.only(bottom: 15),
                     child: Row(
@@ -361,7 +438,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                               letterSpacing: 1),
                         ),
                         Container(
-                          margin: EdgeInsets.only(left: 15),
+                          margin: EdgeInsets.only(left: 10),
                           padding: EdgeInsets.only(left: 5, right: 5),
                           decoration: BoxDecoration(
                             border: Border.all(),
@@ -381,6 +458,27 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 5),
+                          padding: EdgeInsets.only(left: 5, right: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(10),
+                            color: Color.fromRGBO(0, 0, 0, 0.1),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.category, size: 15),
+                              Text(
+                                "${post['category']}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              )
                             ],
                           ),
                         ),

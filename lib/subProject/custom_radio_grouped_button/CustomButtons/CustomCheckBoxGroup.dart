@@ -223,17 +223,14 @@ class _CustomCheckBoxGroupState extends State<CustomCheckBoxGroup> {
               setState(() {});
               widget.checkBoxButtonValues(selectedLables);
             },
-            child: Center(
-              child: Text(
-                widget.buttonLables[index],
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: widget.buttonTextStyle.textStyle.copyWith(
-                  color: selectedLables.contains(e)
-                      ? widget.buttonTextStyle.selectedColor
-                      : widget.buttonTextStyle.unSelectedColor,
-                ),
+            child: Text(
+              widget.buttonLables[index],
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              style: widget.buttonTextStyle.textStyle.copyWith(
+                color: selectedLables.contains(e)
+                    ? widget.buttonTextStyle.selectedColor
+                    : widget.buttonTextStyle.unSelectedColor,
               ),
             ),
           ),

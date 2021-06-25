@@ -23,189 +23,199 @@ class _FilterState extends State<Filter> {
   Widget build(BuildContext context) {
     final posts = Provider.of<postsProvider>(context);
     final selected = Provider.of<filtersProvider>(context);
-    var filter;
+    Time time;
+    Category category;
+    Location location;
+    Price price;
 
-    // 1: filter by time posted
-    if (widget.type == 1) {
-      var now = DateTime.now();
-      var timeRequested;
-      return Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: CustomRadioButton(
-          elevation: 0,
-          enableShape: true,
-          autoWidth: true,
-          height: 25,
-          buttonLables: [
-            'past 24 hours',
-            'past 7 days',
-            'past 30 days',
-          ],
-          buttonValues: [1, 7, 30],
-          buttonTextStyle: ButtonTextStyle(
-            selectedColor: Colors.white,
-            unSelectedColor: Colors.black,
-            textStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          unSelectedColor: Colors.transparent,
-          selectedColor: Color.fromRGBO(242, 195, 71, 1),
-          unSelectedBorderColor: Colors.black45,
-          selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
-          radioButtonValue: (value) => {
-            timeRequested = now.add(Duration(days: -1 * value)),
-            filter = Time(posts: posts, selected: selected, value: value),
-            selected.update(filter),
-            selected.timeRequested = Timestamp.fromDate(timeRequested),
-            // posts.snapshot = selected.getQuery(),
-          },
-        ),
-      );
-    }
-    // 2: filter by category
-    else if (widget.type == 2) {
-      return Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: CustomRadioButton(
-          elevation: 0,
-          enableShape: true,
-          enableButtonWrap: true,
-          autoWidth: true,
-          height: 25,
-          buttonLables: [
-            'Textbooks',
-            'Notes',
-            'Food',
-            'Appliances',
-            'Electronics',
-            'Cosmetics',
-            'Toys',
-            'Others',
-          ],
-          buttonValues: [
-            'Textbooks',
-            'Notes',
-            'Food',
-            'Appliances',
-            'Electronics',
-            'Cosmetics',
-            'Toys',
-            'Others',
-          ],
-          buttonTextStyle: ButtonTextStyle(
-            selectedColor: Colors.white,
-            unSelectedColor: Colors.black,
-            textStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          unSelectedColor: Colors.transparent,
-          selectedColor: Color.fromRGBO(242, 195, 71, 1),
-          unSelectedBorderColor: Colors.black45,
-          selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
-          radioButtonValue: (value) => {
-            filter = Category(posts: posts, selected: selected, value: value),
-            selected.update(filter),
-            selected.categorySelected = [value],
-            // posts.snapshot = selected.getQuery(),
-          },
-        ),
-      );
-    }
-    // 3: filter by location
-    else if (widget.type == 3) {
-      return Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: CustomRadioButton(
-          elevation: 0,
-          enableShape: true,
-          enableButtonWrap: true,
-          autoWidth: true,
-          height: 25,
-          buttonLables: [
-            'UTown',
-            'PGP',
-            'Kent Ridge MRT',
-            'Central Library',
-            'YIH',
-            'Outside NUS',
-            'Others',
-          ],
-          buttonValues: [
-            "UTown",
-            "PGP",
-            "Kent Ridge MRT",
-            'Central Library',
-            'YIH',
-            'Outside NUS',
-            'Others',
-          ],
-          buttonTextStyle: ButtonTextStyle(
-            selectedColor: Colors.white,
-            unSelectedColor: Colors.black,
-            textStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          unSelectedColor: Colors.transparent,
-          selectedColor: Color.fromRGBO(242, 195, 71, 1),
-          unSelectedBorderColor: Colors.black45,
-          selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
-          radioButtonValue: (value) => {
-            filter = Location(posts: posts, selected: selected, value: value),
-            selected.update(filter),
-            selected.locationSelected = [value],
-            // posts.snapshot = selected.getQuery(),
-          },
-        ),
-      );
-    }
-    // 4: filter by price
-    else if (widget.type == 4) {
-      return Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: CustomRadioButton(
-          elevation: 0,
-          enableShape: true,
-          autoWidth: true,
-          height: 25,
-          buttonLables: [
-            '< 10',
-            '10 - 50',
-            '50 - 100',
-            '≥ 100'
-          ],
-          buttonValues: [[0.0,10.0],[10.0,50.0],[50.0,100.0],[100.0,double.infinity]],
-          buttonTextStyle: ButtonTextStyle(
-            selectedColor: Colors.white,
-            unSelectedColor: Colors.black,
-            textStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          unSelectedColor: Colors.transparent,
-          selectedColor: Color.fromRGBO(242, 195, 71, 1),
-          unSelectedBorderColor: Colors.black45,
-          selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
-          radioButtonValue: (value) => {
-            filter = Price(posts: posts, selected: selected, value: value),
-            selected.update(filter),
-            selected.range = value,
-            posts.snapshot = selected.getQuery(),
-          },
-        ),
-      );
-    } else {
+    var timeRequested;
+    // 5: view all
+    if (widget.type == 0 || widget.type == 5) {
       posts.clear();
-      selected.clear();
-      return Container(
-        margin: EdgeInsets.all(10),
-      );
+        selected.clear();
+        return Container(
+          margin: EdgeInsets.all(10),
+        );
     }
+    return Container(
+      height: 40,
+      child: ListView(
+        children: [
+          // 1: filter by time posted
+          widget.type == 1
+            ? Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: CustomRadioButton(
+                  elevation: 0,
+                  enableShape: true,
+                  autoWidth: true,
+                  height: 25,
+                  buttonLables: [
+                    'past 24 hours',
+                    'past 7 days',
+                    'past 30 days',
+                  ],
+                  buttonValues: [1, 7, 30],
+                  buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  unSelectedColor: Colors.transparent,
+                  selectedColor: Color.fromRGBO(242, 195, 71, 1),
+                  unSelectedBorderColor: Colors.black45,
+                  selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
+                  radioButtonValue: (value) => {
+                    timeRequested = DateTime.now().add(Duration(days: -1 * value)),
+                    time = Time(posts: posts, selected: selected, value: value),
+                    selected.update(time),
+                    selected.timeRequested = Timestamp.fromDate(timeRequested),
+                    // posts.snapshot = selected.getQuery(),
+                  },
+                ),
+              )
+              : Container(),
+          // 2: filter by category
+          widget.type == 2
+            ? Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: new CustomCheckBoxGroup(
+                  key: Key("category"),
+                  elevation: 0,
+                  enableShape: true,
+                  // enableButtonWrap: true,
+                  autoWidth: true,
+                  height: 25,
+                  buttonLables: [
+                    'Textbooks',
+                    'Notes',
+                    'Food',
+                    'Appliances',
+                    'Electronics',
+                    'Cosmetics',
+                    'Toys',
+                    'Others',
+                  ],
+                  buttonValuesList: [
+                    'Textbooks',
+                    'Notes',
+                    'Food',
+                    'Appliances',
+                    'Electronics',
+                    'Cosmetics',
+                    'Toys',
+                    'Others',
+                  ],
+                  buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  unSelectedColor: Colors.transparent,
+                  selectedColor: Color.fromRGBO(242, 195, 71, 1),
+                  unSelectedBorderColor: Colors.black45,
+                  selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
+                  checkBoxButtonValues: (values) => {
+                    category = Category(posts: posts, selected: selected, value: values),
+                    selected.update(category),
+                    selected.categorySelected = values
+                  },
+                ),
+              )
+              : Container(),
+          // 3: filter by location
+          widget.type == 3
+            ? Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: new CustomCheckBoxGroup(
+                  key: Key("location"),
+                  elevation: 0,
+                  enableShape: true,
+                  // enableButtonWrap: true,
+                  autoWidth: true,
+                  height: 25,
+                  buttonLables: [
+                    'UTown',
+                    'PGP',
+                    'Kent Ridge MRT',
+                    'Central Library',
+                    'YIH',
+                    'Outside NUS',
+                    'Others',
+                  ],
+                  buttonValuesList: [
+                    "UTown",
+                    "PGP",
+                    "Kent Ridge MRT",
+                    'Central Library',
+                    'YIH',
+                    'Outside NUS',
+                    'Others',
+                  ],
+                  buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  unSelectedColor: Colors.transparent,
+                  selectedColor: Color.fromRGBO(242, 195, 71, 1),
+                  unSelectedBorderColor: Colors.black45,
+                  selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
+                  checkBoxButtonValues: (values) => {
+                    location = Location(posts: posts, selected: selected, value: values),
+                    selected.update(location),
+                    selected.locationSelected = values,
+                  },
+                ),
+              )
+              : Container(),
+          // 4: filter by price
+          widget.type == 4
+            ? Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: CustomRadioButton(
+                  elevation: 0,
+                  enableShape: true,
+                  autoWidth: true,
+                  height: 25,
+                  buttonLables: [
+                    '< 10',
+                    '10 - 50',
+                    '50 - 100',
+                    '≥ 100'
+                  ],
+                  buttonValues: [[0.0,10.0],[10.0,50.0],[50.0,100.0],[100.0,double.infinity]],
+                  buttonTextStyle: ButtonTextStyle(
+                    selectedColor: Colors.white,
+                    unSelectedColor: Colors.black,
+                    textStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  unSelectedColor: Colors.transparent,
+                  selectedColor: Color.fromRGBO(242, 195, 71, 1),
+                  unSelectedBorderColor: Colors.black45,
+                  selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
+                  radioButtonValue: (value) => {
+                    price = Price(posts: posts, selected: selected, value: value),
+                    selected.update(price),
+                    selected.range = value,
+                  },
+                ),
+              )
+              : Container(),
+        ],
+      ),
+    );
   }
 }
