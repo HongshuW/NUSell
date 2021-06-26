@@ -90,6 +90,16 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                     child: FutureBuilder<Object>(
                         future: _getMyPosts(),
                         builder: (context, snapshot) {
+                          if (postAddresses.length == 0) {
+                            return Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Center(
+                                  child: Text(
+                                'Your shopping cart is empty for now.',
+                                style: TextStyle(fontSize: 16),
+                              )),
+                            );
+                          }
                           return ListView(
                             scrollDirection: Axis.vertical,
                             padding: const EdgeInsets.all(8),
@@ -130,55 +140,63 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(20),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                16, 0, 16, 0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  child:
+                                                      getImage(post['images']),
                                                 ),
-                                                child: getImage(post['images']),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(30.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      "${post['productName']}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      30.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        "${post['productName']}",
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      "${post['price']}",
-                                                      style: TextStyle(
-                                                        fontSize: 16,
+                                                      Text(
+                                                        "${post['price']}",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                              IconButton(
-                                                  icon: Icon(Icons.delete),
-                                                  onPressed: () {
-                                                    shoppingCart
-                                                        .doc(widget.userId)
-                                                        .update({
-                                                      "shopping carts":
-                                                          FieldValue
-                                                              .arrayRemove(
-                                                                  [docId])
-                                                    });
-                                                  })
-                                            ],
+                                                IconButton(
+                                                    icon: Icon(Icons.delete),
+                                                    onPressed: () {
+                                                      shoppingCart
+                                                          .doc(widget.userId)
+                                                          .update({
+                                                        "shopping cart":
+                                                            FieldValue
+                                                                .arrayRemove(
+                                                                    [docId])
+                                                      });
+                                                    })
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),

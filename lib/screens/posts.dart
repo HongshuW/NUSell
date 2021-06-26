@@ -67,6 +67,20 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    interactions(String seller, String user) {
+      if (seller == user) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(child: Text('You have not posted anything yet.')),
+        );
+      } else {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(child: Text('The user has not posted anything yet.')),
+        );
+      }
+    }
+
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -88,6 +102,10 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
               child: FutureBuilder<Object>(
                   future: _getMyPosts(),
                   builder: (context, snapshot) {
+                    if (postAddresses.length == 0) {
+                      return interactions(
+                          widget.userId, FirebaseAuth.instance.currentUser.uid);
+                    }
                     return GridView.count(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,

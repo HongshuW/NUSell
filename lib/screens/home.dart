@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
@@ -192,6 +193,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Icon(Icons.house, color: Colors.white),
                   backgroundColor: Color.fromRGBO(247, 215, 140, 1),
+                ),
+                FloatingActionButton(
+                  heroTag: "chat",
+                  onPressed: () {
+                    if (auth.currentUser == null) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
+                    } else {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => MyChatsScreen()));
+                    }
+                  },
+                  child: Icon(Icons.chat_bubble_rounded, color: Colors.white),
+                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
                 ),
                 FloatingActionButton(
                   heroTag: "post",

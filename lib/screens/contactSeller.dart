@@ -17,8 +17,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
   final String theOtherUserName;
-  ContactSellerScreen(
-      {Key key, this.chatID, this.theOtherUserName})
+  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName})
       : super(key: key);
 
   @override
@@ -124,12 +123,15 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     this.userId = auth.currentUser.uid;
     // set cursor position to be end of the text.
     _controller.text = this.content;
-    _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
+    _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length));
 
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(),
-        title: Text(widget.theOtherUserName == null ? widget.chatID : widget.theOtherUserName),
+        title: Text(widget.theOtherUserName == null
+            ? widget.chatID
+            : widget.theOtherUserName),
       ),
       body: GestureDetector(
         onTap: () {
@@ -189,14 +191,18 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         maxLines: null,
                         cursorRadius: Radius.circular(1),
                         toolbarOptions: ToolbarOptions(
-                          copy: true, cut: true, paste: true, selectAll: true
-                        ),
+                            copy: true,
+                            cut: true,
+                            paste: true,
+                            selectAll: true),
                         decoration: InputDecoration(
                           isDense: true,
                           focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.transparent)),
+                              borderSide:
+                                  BorderSide(color: Colors.transparent)),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent)),
+                              borderSide:
+                                  BorderSide(color: Colors.transparent)),
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(10),
@@ -212,8 +218,9 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                 this.userIndex, Timestamp.now(), this.content);
                             db.collection("chats").doc(widget.chatID).update({
                               "history":
-                              FieldValue.arrayUnion([this.message.toMap()])
+                                  FieldValue.arrayUnion([this.message.toMap()])
                             });
+                            _controller.text = "";
                             this.content = "";
                             this.message = null;
                           }

@@ -98,7 +98,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           style: TextStyle(fontSize: 20),
                           obscureText: _obscureText,
                           keyboardType: TextInputType.visiblePassword,
-                          controller: password,
+                          controller: confirmPassword,
                           decoration: InputDecoration(
                               border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(25.0),

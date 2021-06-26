@@ -26,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       .doc(AuthService().getCurrentUID())
       .snapshots();
   NUSellUser user = NUSellUser();
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   File newProfilePic;
 
@@ -158,26 +160,204 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             ResetPasswordScreen()));
                               },
                             ),
+                            // ElevatedButton(
+                            //   child: Text('Log Out'),
+                            //   onPressed: () {
+                            //     AuthService().signout();
+                            //     Navigator.of(context).pushReplacement(
+                            //         MaterialPageRoute(
+                            //             builder: (context) => LoginScreen()));
+                            //   },
+                            // ),
                             ElevatedButton(
-                              child: Text('Log Out'),
-                              onPressed: () {
-                                AuthService().signout();
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginScreen()));
-                              },
-                            ),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          elevation: 10,
+                                          backgroundColor:
+                                              Color.fromRGBO(250, 250, 250, 1),
+                                          child: Container(
+                                            margin: EdgeInsets.all(30),
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.2,
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: Text(
+                                                    "Are you sure you want to log out?",
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 10),
+                                                  child: Text(
+                                                      "You will need to sign in again to view your account!"),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary: Colors.white,
+                                                        side: BorderSide(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    100,
+                                                                    170,
+                                                                    255,
+                                                                    1)),
+                                                      ),
+                                                      child: Text("Cancel"),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        AuthService().signout();
+                                                        Navigator.of(context)
+                                                            .pushReplacement(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            LoginScreen()));
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary: Color.fromRGBO(
+                                                            100, 170, 255, 1),
+                                                      ),
+                                                      child: Text("Log out",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromRGBO(255, 88, 68, 1),
+                                ),
+                                child: Text("Log out")),
                             ElevatedButton(
-                              child: Text('Delete Account'),
-                              onPressed: () {
-                                User user = FirebaseAuth.instance.currentUser;
-                                user.delete();
-                                print('Deleted successfully!');
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginScreen()));
-                              },
-                            ),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          elevation: 10,
+                                          backgroundColor:
+                                              Color.fromRGBO(250, 250, 250, 1),
+                                          child: Container(
+                                            margin: EdgeInsets.all(30),
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.2,
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: Text(
+                                                    "Are you sure you want to delete your account?",
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 10),
+                                                  child: Text(
+                                                      "This action is irreversible!"),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary: Colors.white,
+                                                        side: BorderSide(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    100,
+                                                                    170,
+                                                                    255,
+                                                                    1)),
+                                                      ),
+                                                      child: Text("Cancel"),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        User user = FirebaseAuth
+                                                            .instance
+                                                            .currentUser;
+                                                        user.delete();
+                                                        print(
+                                                            'Deleted successfully!');
+                                                        Navigator.of(context)
+                                                            .pushReplacement(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            LoginScreen()));
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary: Color.fromRGBO(
+                                                            100, 170, 255, 1),
+                                                      ),
+                                                      child: Text("Delete",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromRGBO(255, 88, 68, 1),
+                                ),
+                                child: Text("Delete")),
                           ],
                         ),
                       ],

@@ -183,7 +183,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   }
                                 },
                                 child: Text(
-                                  'Save your profile',
+                                  'Save new password',
                                   //style: TextStyle(fontSize: 18),
                                 ),
                                 style: ElevatedButton.styleFrom(
