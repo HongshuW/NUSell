@@ -44,7 +44,7 @@ class _SearchBarState extends State<SearchBar> {
         ),
         child: Image.asset(
           'assets/images/defaultPreview.png',
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fitHeight,
           width: 200,
         ),
       );
@@ -157,7 +157,9 @@ class _SearchBarState extends State<SearchBar> {
       SearchService().fullTextSearch(value).then((docs) {
         for (int i = 0; i < docs.size; ++i) {
           Map<String, dynamic> data = docs.docs[i].data();
-          dataStore.add(data);
+          if (data["status"] == "Selling") {
+            dataStore.add(data);
+          }
           //print(dataStore.length);
         }
         compareName(value);

@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
@@ -378,6 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future getImage() async {
+    await Permission.mediaLibrary.request();
     var tempImage = await ImagePicker()
         .getImage(source: ImageSource.gallery, imageQuality: 15);
     print('gotten tempImage');

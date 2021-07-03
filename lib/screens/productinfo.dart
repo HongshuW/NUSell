@@ -33,9 +33,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   CollectionReference shoppingCart =
       FirebaseFirestore.instance.collection('shopping cart');
 
+  String status;
+
   int index = 0;
   var len;
-
   void previousPage(PointerEvent e) {
     if (index > 0) {
       setState(() {
@@ -159,7 +160,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
+            // selling: update; deleted: resume; sold: activate.
+            this.status == "Selling"
+            ? ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
@@ -168,8 +171,21 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(100, 170, 255, 1),
                 ),
-                child: Text("Update")),
-            ElevatedButton(
+                child: Text("Update"))
+            : ElevatedButton(
+                onPressed: () {
+                  DocumentReference docRef =
+                  db.collection("posts").doc(widget.product);
+                  docRef.update({"status": "Selling", "time": DateTime.parse(DateTime.now().toString())});
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ProfileScreen())
+                  );
+                },
+                child: Text(this.status == "Deleted" ? "Resume" : "Activate")),
+
+            // selling: delete; other status: disabled delete.
+            this.status == "Selling"
+              ? ElevatedButton(
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -180,7 +196,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                         backgroundColor: Color.fromRGBO(250, 250, 250, 1),
                         child: Container(
                           margin: EdgeInsets.all(30),
-                          height: MediaQuery.of(context).size.height * 0.2,
+                          height: MediaQuery.of(context).size.height * 0.15,
                           child: Column(
                             children: [
                               Container(
@@ -191,12 +207,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold
                                   ),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                    "This action is irreversible!"
                                 ),
                               ),
                               Row(
@@ -216,18 +226,19 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                     onPressed: () async {
                                       DocumentReference docRef =
                                         db.collection("posts").doc(widget.product);
-                                      var doc = await docRef.get();
-                                      List<dynamic> images = doc["images"];
-                                      for (var img in images) {
-                                        storage.refFromURL(img).delete();
-                                      }
-                                      docRef.delete();
-                                      db.collection("users").doc(user).update({
-                                        "posts": FieldValue.arrayRemove([widget.product])
-                                      });
-                                      db.collection("myPosts").doc(user).update({
-                                        "myPosts": FieldValue.arrayRemove([widget.product])
-                                      });
+                                      // var doc = await docRef.get();
+                                      // List<dynamic> images = doc["images"];
+                                      // for (var img in images) {
+                                      //   storage.refFromURL(img).delete();
+                                      // }
+                                      // docRef.delete();
+                                      // db.collection("users").doc(user).update({
+                                      //   "posts": FieldValue.arrayRemove([widget.product])
+                                      // });
+                                      // db.collection("myPosts").doc(user).update({
+                                      //   "myPosts": FieldValue.arrayRemove([widget.product])
+                                      // });
+                                      docRef.update({"status": "Deleted"});
                                       Navigator.of(context).push(
                                         MaterialPageRoute(builder: (context) => ProfileScreen())
                                       );
@@ -251,7 +262,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromRGBO(255, 88, 68, 1),
                 ),
-                child: Text("Delete")),
+                child: Text("Delete"))
+                : ElevatedButton(child: Text("Delete")),
           ],
         );
       } else {
@@ -357,6 +369,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
             return Center(child: CircularProgressIndicator());
           }
           Map<String, dynamic> post = snapshot.data.data();
+          this.status = post["status"];
           len = post['images'].length;
           return Scaffold(
             appBar: AppBar(
