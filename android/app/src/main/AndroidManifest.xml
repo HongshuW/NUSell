@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.orbital2796_nusell">
    <application
+        android:name=".Application"
         android:label="orbital2796_nusell"
         android:icon="@mipmap/ic_launcher">
         <activity

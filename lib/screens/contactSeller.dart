@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:orbital2796_nusell/main.dart';
 import 'package:orbital2796_nusell/screens/notifications.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/cupertino.dart';
@@ -42,6 +43,14 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
 
   // Display all previous messages as a list of widgets.
   displayMessages(List<dynamic> history) {
+    // bool isReceiver = (userIndex != history.first['user']);
+    // print(isReceiver);
+    // if ((history.first['time'].seconds - Timestamp.now().seconds) > -50 &&
+    //     isReceiver) {
+    //   _showNotification(history.first['message']);
+    // }
+    // print(history.first['time'].seconds);
+    // print(Timestamp.now().seconds);
     return history
         .map((message) => Row(
               mainAxisAlignment: userIndex == message["user"]
@@ -211,7 +220,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         onChanged: (value) {
                           this.content = value;
                         },
-                        onSubmitted: (value) {
+                        onSubmitted: (value) async {
                           this.content = value;
                           if (this.content != "") {
                             this.message = AppMessage(
@@ -220,6 +229,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                               "history":
                                   FieldValue.arrayUnion([this.message.toMap()])
                             });
+                            //_showNotification(value);
                             _controller.text = "";
                             this.content = "";
                             this.message = null;
@@ -286,5 +296,15 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
         ),
       ),
     );
+  }
+
+  Future _showNotification(String message) async {
+    var androidDetails = AndroidNotificationDetails(
+        "channelId", "NUSell", "This is channel for chat notifications");
+    var generalNotificationDetails =
+        new NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, "New Message", message, generalNotificationDetails);
   }
 }

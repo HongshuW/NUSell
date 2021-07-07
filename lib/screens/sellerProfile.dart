@@ -85,20 +85,20 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Email: ${doc['email']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Phone number: ${doc['phoneNumber']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
+                                    // Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: Text(
+                                    //     'Email: ${doc['email']}',
+                                    //     style: TextStyle(fontSize: 16),
+                                    //   ),
+                                    // ),
+                                    // Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: Text(
+                                    //     'Phone number: ${doc['phoneNumber']}',
+                                    //     style: TextStyle(fontSize: 16),
+                                    //   ),
+                                    // ),
                                   ],
                                 );
                               }),
