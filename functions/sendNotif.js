@@ -8,9 +8,6 @@ admin.initializeApp({
 });
 // var registrationToken = 'dgLTCnRhQoqIIVH_Tu6LD4:APA91bFjqsuTB8sZWmaDPn2QpjUUUoes9DtR5qtayDdcopMU5fPnURFHZgUq0cA2ZBnrKBDtVOB9doSq4CrVP10O9RRokeUFllLLj8GSQduVN8NPrVSv100xU3HIMec2Lz8a_Y4O0KO_';
 
-
-
-
 // var message = {
 //     notification: {
 //       title: '850',
@@ -132,3 +129,6 @@ exports.onMessageSendNotification = functions.firestore
 
         // }        
     });
+exports.helloWorld = functions.https.onRequest((request, response) => {
+    response.send("Hello from Firebase!");
+})
