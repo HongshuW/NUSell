@@ -170,13 +170,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                             ),
-                            // inputFormField(
-                            //   'Phone number',
-                            //   _phoneNumber,
-                            //   'Please enter your phone number',
-                            //   TextInputType.phone,
-                            //   false,
-                            // ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
@@ -222,50 +215,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               ),
                             ),
-                            // Padding(
-                            //   padding: const EdgeInsets.all(8.0),
-                            //   child: Column(
-                            //     children: [
-                            //       Row(
-                            //         mainAxisAlignment: MainAxisAlignment.start,
-                            //         children: [
-                            //           Text(
-                            //             'Password',
-                            //             style: TextStyle(fontSize: 20),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //       TextFormField(
-                            //         //controller: controller,
-                            //         obscureText: true,
-                            //         keyboardType: TextInputType.visiblePassword,
-                            //         controller: password,
-                            //         decoration: InputDecoration(
-                            //             border: new OutlineInputBorder(
-                            //           borderRadius:
-                            //               new BorderRadius.circular(25.0),
-                            //           borderSide: new BorderSide(),
-                            //         )),
-                            //         onChanged: (value) {
-                            //           setState(() {
-                            //             _password = value.trim();
-                            //           });
-                            //         },
-                            //         onSaved: (value) {
-                            //           setState(() {
-                            //             _password = value.trim();
-                            //           });
-                            //         },
-                            //         validator: (String value) {
-                            //           if (value.isEmpty) {
-                            //             return 'Please enter your password';
-                            //           }
-                            //           return null;
-                            //         },
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [

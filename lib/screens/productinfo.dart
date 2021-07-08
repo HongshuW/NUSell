@@ -8,6 +8,7 @@ import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/editProductForm.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/review.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -424,7 +425,13 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       child: Text("Contact the seller"),
                     ),
                     ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ReviewScreen(
+                                    product: widget.product,
+                                    seller: post['user'],
+                                  )));
+                        },
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(100, 170, 255, 1),
                         ),
