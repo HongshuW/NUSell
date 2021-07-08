@@ -272,6 +272,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       } else {
         Chat chat = new Chat([seller, user]);
         String docID;
+        int numOfLikes;
         return StreamBuilder(
             stream: db.collection("posts").doc(widget.product).snapshots(),
             builder: (context, snapshot) {
@@ -280,7 +281,11 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               }
 
               Map<String, dynamic> post = snapshot.data.data();
-
+              if (post['likes'] == null) {
+                print(post['likes']);
+                post['likes'] = 0;
+              }
+              //print("it is ${post['likes']}");
               return BottomAppBar(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -293,18 +298,48 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     //                 userId: AuthService().getCurrentUID(),
                     //               )));
                     //     }),
-                    ElevatedButton(
+                    IconButton(
                       onPressed: () {
-                        shoppingCart.doc(AuthService().getCurrentUID()).set({
-                          'shopping cart':
-                              FieldValue.arrayUnion([widget.product]),
-                        }, SetOptions(merge: true));
+                        bool liked = post['liked'];
+                        if (liked == null) {
+                          db
+                              .collection("posts")
+                              .doc(widget.product)
+                              .set({'liked': false}, SetOptions(merge: true));
+                        }
+                        print("liked is ${post['liked']}");
+                        if (post['liked'] == false) {
+                          numOfLikes = post['likes'] + 1;
+                          print("+1");
+                          db.collection("posts").doc(widget.product).set(
+                              {'likes': numOfLikes, 'liked': true},
+                              SetOptions(merge: true));
+                          shoppingCart.doc(AuthService().getCurrentUID()).set({
+                            'shopping cart':
+                                FieldValue.arrayUnion([widget.product]),
+                          }, SetOptions(merge: true));
+                        } else {
+                          numOfLikes = post['likes'] - 1;
+                          db.collection("posts").doc(widget.product).set(
+                              {'likes': numOfLikes, 'liked': false},
+                              SetOptions(merge: true));
+                          shoppingCart
+                              .doc(AuthService().getCurrentUID())
+                              .update({
+                            "shopping cart":
+                                FieldValue.arrayRemove([widget.product])
+                          });
+                        }
+                        print(liked);
                       },
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromRGBO(100, 170, 255, 1),
-                      ),
-                      child: Text("Add to cart"),
+                      icon: post['liked']
+                          ? Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                            )
+                          : Icon(Icons.favorite_outline_rounded),
                     ),
+                    Text("${post['likes']}"),
                     ElevatedButton(
                       onPressed: () {
                         if (seller.compareTo(user) < 0) {
@@ -388,6 +423,12 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       ),
                       child: Text("Contact the seller"),
                     ),
+                    ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          primary: Color.fromRGBO(100, 170, 255, 1),
+                        ),
+                        child: Text('Make an offer'))
                   ],
                 ),
               );

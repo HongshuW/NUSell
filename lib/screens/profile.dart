@@ -200,12 +200,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                             FontWeight.bold),
                                                   ),
                                                 ),
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      bottom: 10),
-                                                  child: Text(
-                                                      "You will need to sign in again to view your account!"),
-                                                ),
+                                                // Container(
+                                                //   margin: EdgeInsets.only(
+                                                //       bottom: 10),
+                                                //   child: Text(
+                                                //       "You will need to sign in again to view your account!"),
+                                                // ),
                                                 Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
