@@ -59,7 +59,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
           Container(
             height: 300,
             child: Image.asset(
-                'assets/images/defaultPostImage.png',
+              'assets/images/defaultPostImage.png',
               fit: BoxFit.fitWidth,
               width: 0.7 * MediaQuery.of(context).size.width,
             ),
@@ -75,7 +75,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Listener(
-                    onPointerUp: previousPage, child: Icon(Icons.arrow_back_ios)),
+                    onPointerUp: previousPage,
+                    child: Icon(Icons.arrow_back_ios)),
                 GestureDetector(
                   onTap: () {
                     showDialog(
@@ -136,14 +137,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   ),
                 ),
                 Listener(
-                    onPointerUp: nextPage, child: Icon(Icons.arrow_forward_ios)),
+                    onPointerUp: nextPage,
+                    child: Icon(Icons.arrow_forward_ios)),
               ],
             ),
           ),
           Container(
               margin: EdgeInsets.only(top: 10),
-              child:
-              Text("${this.index + 1} / ${this.len}")),
+              child: Text("${this.index + 1} / ${this.len}")),
         ],
       );
     }
@@ -156,103 +157,117 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
     interactions(String seller, String user) {
       if (seller == user) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          EditProductScreen(product: widget.product)));
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(100, 170, 255, 1),
-                ),
-                child: Text("Update")),
-            ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        elevation: 10,
-                        backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-                        child: Container(
-                          margin: EdgeInsets.all(30),
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          child: Column(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(top: 10, bottom: 10),
-                                child: Text(
-                                    "Are you sure you want to delete this post?",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                    "This action is irreversible!"
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+        return BottomAppBar(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            EditProductScreen(product: widget.product)));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(100, 170, 255, 1),
+                  ),
+                  child: Text("Update")),
+              ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5)),
+                            elevation: 10,
+                            backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                            child: Container(
+                              margin: EdgeInsets.all(30),
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              child: Column(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.white,
-                                      side: BorderSide(color: Color.fromRGBO(100, 170, 255, 1)),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 10, bottom: 10),
+                                    child: Text(
+                                      "Are you sure you want to delete this post?",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                    child: Text("Cancel"),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      DocumentReference docRef =
-                                        db.collection("posts").doc(widget.product);
-                                      var doc = await docRef.get();
-                                      List<dynamic> images = doc["images"];
-                                      for (var img in images) {
-                                        storage.refFromURL(img).delete();
-                                      }
-                                      docRef.delete();
-                                      db.collection("users").doc(user).update({
-                                        "posts": FieldValue.arrayRemove([widget.product])
-                                      });
-                                      db.collection("myPosts").doc(user).update({
-                                        "myPosts": FieldValue.arrayRemove([widget.product])
-                                      });
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) => ProfileScreen())
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color.fromRGBO(100, 170, 255, 1),
-                                    ),
-                                      child: Text(
-                                        "Delete",
-                                        style: TextStyle(color: Colors.white)),
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 10),
+                                    child: Text("This action is irreversible!"),
                                   ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.white,
+                                          side: BorderSide(
+                                              color: Color.fromRGBO(
+                                                  100, 170, 255, 1)),
+                                        ),
+                                        child: Text("Cancel"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          DocumentReference docRef = db
+                                              .collection("posts")
+                                              .doc(widget.product);
+                                          var doc = await docRef.get();
+                                          List<dynamic> images = doc["images"];
+                                          for (var img in images) {
+                                            storage.refFromURL(img).delete();
+                                          }
+                                          docRef.delete();
+                                          db
+                                              .collection("users")
+                                              .doc(user)
+                                              .update({
+                                            "posts": FieldValue.arrayRemove(
+                                                [widget.product])
+                                          });
+                                          db
+                                              .collection("myPosts")
+                                              .doc(user)
+                                              .update({
+                                            "myPosts": FieldValue.arrayRemove(
+                                                [widget.product])
+                                          });
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProfileScreen()));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary:
+                                              Color.fromRGBO(100, 170, 255, 1),
+                                        ),
+                                        child: Text("Delete",
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(255, 88, 68, 1),
-                ),
-                child: Text("Delete")),
-          ],
+                              ),
+                            ),
+                          );
+                        });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(255, 88, 68, 1),
+                  ),
+                  child: Text("Delete")),
+            ],
+          ),
         );
       } else {
         Chat chat = new Chat([seller, user]);
@@ -265,84 +280,116 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               }
 
               Map<String, dynamic> post = snapshot.data.data();
-              return Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (seller.compareTo(user) < 0) {
-                        docID = seller + "_" + user;
-                      } else {
-                        docID = user + "_" + seller;
-                      }
-                      db.collection("chats").doc(docID).get()
-                        .then((snapshot) => {
-                          if (!snapshot.exists) {
-                            db.collection("chats").doc(docID).set(chat.toMap()),
-                            db.collection("myChats").doc(seller).get()
-                              .then((sellerSnapshot) => {
-                                if (!sellerSnapshot.exists) {
-                                  db.collection("myChats").doc(seller).set({"myChats": [docID]})
-                                } else {
-                                  db.collection("myChats").doc(seller).update({"myChats": FieldValue.arrayUnion([docID])})
-                                }
-                            }),
-                            db.collection("myChats").doc(user).get()
-                                .then((userSnapshot) => {
-                              if (!userSnapshot.exists) {
-                                db.collection("myChats").doc(user).set({"myChats": [docID]})
-                              } else {
-                                db.collection("myChats").doc(user).update({"myChats": FieldValue.arrayUnion([docID])})
-                              }
-                            }),
-                          }
-                      });
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              ContactSellerScreen(chatID: docID,
-                                  theOtherUserName: sellerName,)));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(100, 170, 255, 1),
-                    ),
-                    child: Text("Contact the seller"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              SellerProfileScreen(sellerId: post['user'])));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(100, 170, 255, 1),
-                    ),
-                    child: Text("See the seller's profile"),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      IconButton(
-                          icon: Icon(Icons.shopping_cart),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyShoppingCartsScreen(
-                                      userId: AuthService().getCurrentUID(),
-                                    )));
-                          }),
-                      ElevatedButton(
-                        onPressed: () {
-                          shoppingCart.doc(AuthService().getCurrentUID()).set({
-                            'shopping cart':
-                                FieldValue.arrayUnion([widget.product]),
-                          }, SetOptions(merge: true));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(100, 170, 255, 1),
-                        ),
-                        child: Text("Add to cart"),
+
+              return BottomAppBar(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // IconButton(
+                    //     icon: Icon(Icons.shopping_cart),
+                    //     onPressed: () {
+                    //       Navigator.of(context).push(MaterialPageRoute(
+                    //           builder: (context) => MyShoppingCartsScreen(
+                    //                 userId: AuthService().getCurrentUID(),
+                    //               )));
+                    //     }),
+                    ElevatedButton(
+                      onPressed: () {
+                        shoppingCart.doc(AuthService().getCurrentUID()).set({
+                          'shopping cart':
+                              FieldValue.arrayUnion([widget.product]),
+                        }, SetOptions(merge: true));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(100, 170, 255, 1),
                       ),
-                    ],
-                  )
-                ],
+                      child: Text("Add to cart"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (seller.compareTo(user) < 0) {
+                          docID = seller + "_" + user;
+                        } else {
+                          docID = user + "_" + seller;
+                        }
+                        db
+                            .collection("chats")
+                            .doc(docID)
+                            .get()
+                            .then((snapshot) => {
+                                  if (!snapshot.exists)
+                                    {
+                                      db
+                                          .collection("chats")
+                                          .doc(docID)
+                                          .set(chat.toMap()),
+                                      db
+                                          .collection("myChats")
+                                          .doc(seller)
+                                          .get()
+                                          .then((sellerSnapshot) => {
+                                                if (!sellerSnapshot.exists)
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(seller)
+                                                        .set({
+                                                      "myChats": [docID]
+                                                    })
+                                                  }
+                                                else
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(seller)
+                                                        .update({
+                                                      "myChats":
+                                                          FieldValue.arrayUnion(
+                                                              [docID])
+                                                    })
+                                                  }
+                                              }),
+                                      db
+                                          .collection("myChats")
+                                          .doc(user)
+                                          .get()
+                                          .then((userSnapshot) => {
+                                                if (!userSnapshot.exists)
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(user)
+                                                        .set({
+                                                      "myChats": [docID]
+                                                    })
+                                                  }
+                                                else
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(user)
+                                                        .update({
+                                                      "myChats":
+                                                          FieldValue.arrayUnion(
+                                                              [docID])
+                                                    })
+                                                  }
+                                              }),
+                                    }
+                                });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ContactSellerScreen(
+                                  chatID: docID,
+                                  theOtherUserName: sellerName,
+                                )));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(100, 170, 255, 1),
+                      ),
+                      child: Text("Contact the seller"),
+                    ),
+                  ],
+                ),
               );
             });
       }
@@ -350,192 +397,194 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
     // TODO: implement build
     return StreamBuilder<DocumentSnapshot>(
-        stream: db.collection("posts").doc(widget.product).snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          Map<String, dynamic> post = snapshot.data.data();
-          len = post['images'].length;
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              leading: BackButton(
-                color: Colors.black,
-              ),
+      stream: db.collection("posts").doc(widget.product).snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        Map<String, dynamic> post = snapshot.data.data();
+        len = post['images'].length;
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            leading: BackButton(
+              color: Colors.black,
             ),
-            body: Container(
-              padding: EdgeInsets.only(left: 30, right: 30),
-              child: ListView(
-                children: [
-                  // Product Images
-                  getImage(post['images'], index),
+          ),
+          body: Container(
+            padding: EdgeInsets.only(left: 30, right: 30),
+            child: ListView(
+              children: [
+                // Product Images
+                getImage(post['images'], index),
 
-                  // User
-                  FutureBuilder<DocumentSnapshot>(
-                    future: db.collection("users").doc("${post['user']}").get(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                      if (!userSnapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      Map<String, dynamic> user = userSnapshot.data.data();
-                      sellerName = user["username"];
-                      sellerPhoto = user["avatarUrl"];
-                      return InkWell(
-                        onTap: () {
-                          if (post['user'] == this.userId) {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ProfileScreen()));
-                          } else {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => SellerProfileScreen(sellerId: post['user'])));
-                          }
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(right: 10),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(60),
-                                  child: CachedNetworkImage(
-                                    imageUrl: sellerPhoto,
-                                    height: 60,
-                                    width: 60,
-                                    fit: BoxFit.fill,
-                                    fadeInDuration: Duration.zero,
-                                  ),
+                // User
+                FutureBuilder<DocumentSnapshot>(
+                  future: db.collection("users").doc("${post['user']}").get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                    if (!userSnapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    Map<String, dynamic> user = userSnapshot.data.data();
+                    sellerName = user["username"];
+                    sellerPhoto = user["avatarUrl"];
+                    return InkWell(
+                      onTap: () {
+                        if (post['user'] == this.userId) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ProfileScreen()));
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  SellerProfileScreen(sellerId: post['user'])));
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: 10),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: CachedNetworkImage(
+                                  imageUrl: sellerPhoto,
+                                  height: 60,
+                                  width: 60,
+                                  fit: BoxFit.fill,
+                                  fadeInDuration: Duration.zero,
                                 ),
                               ),
-                              Text(
-                                "${user["username"]}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                    letterSpacing: 1),
-                              ),
-                            ],
-                          ),
+                            ),
+                            Text(
+                              "${user["username"]}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  letterSpacing: 1),
+                            ),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                    );
+                  },
+                ),
+
+                // Time, Location, Category
+                Container(
+                  margin: EdgeInsets.only(bottom: 15),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
+                            .substring(0, 10),
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w300,
+                            letterSpacing: 1),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 10),
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(0, 0, 0, 0.1),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 15,
+                            ),
+                            Text(
+                              "${post['location']}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 5),
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(0, 0, 0, 0.1),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.category, size: 15),
+                            Text(
+                              "${post['category']}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  // Time, Location, Category
-                  Container(
-                    margin: EdgeInsets.only(bottom: 15),
-                    child: Row(
-                      children: [
-                        Text(
-                          "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
-                              .substring(0, 10),
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                              letterSpacing: 1),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 10),
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Color.fromRGBO(0, 0, 0, 0.1),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                size: 15,
-                              ),
-                              Text(
-                                "${post['location']}",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 5),
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Color.fromRGBO(0, 0, 0, 0.1),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.category, size: 15),
-                              Text(
-                                "${post['category']}",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                // Product Name
+                Row(
+                  children: [
+                    Icon(
+                      Icons.article,
                     ),
-                  ),
-
-                  // Product Name
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.article,
-                      ),
-                      Text(
-                        " ${post['productName']}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Price
-                  Row(
-                    children: [
-                      Icon(Icons.attach_money),
-                      Text(
-                        " ${post['price']}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Description
-                  Text(
-                    "\nDescription: ",
-                    style: TextStyle(
+                    Text(
+                      " ${post['productName']}",
+                      style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 5, bottom: 20),
-                    child: Text("${post['description']} \n"),
-                  ),
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
 
-                  // Interactions
-                  interactions(post['user'], this.userId),
-                ],
-              ),
+                // Price
+                Row(
+                  children: [
+                    Icon(Icons.attach_money),
+                    Text(
+                      " ${post['price']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Description
+                Text(
+                  "\nDescription: ",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 5, bottom: 20),
+                  child: Text("${post['description']} \n"),
+                ),
+
+                // Interactions
+                //interactions(post['user'], this.userId),
+              ],
             ),
-          );
-        },
-      );
+          ),
+          bottomNavigationBar: interactions(post['user'], this.userId),
+        );
+      },
+    );
   }
 }
