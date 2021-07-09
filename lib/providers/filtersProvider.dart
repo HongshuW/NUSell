@@ -13,6 +13,7 @@ class filtersProvider with ChangeNotifier {
   Category category;
   Location location;
   Price price;
+  SellerScore sellerScore;
 
   // values
   Timestamp _timeRequested = Timestamp.fromDate(DateTime(2021));
@@ -36,12 +37,14 @@ class filtersProvider with ChangeNotifier {
     'Others',
   ];
   List<double> _range = [double.negativeInfinity, double.infinity];
+  List<double> _range2 = [0.0, 5.0];
 
   List<Filter> get selectedFilters => _selectedFilters;
   Timestamp get timeRequested => _timeRequested;
   List<dynamic> get categorySelected => _categorySelected;
   List<dynamic> get locationSelected => _locationSelected;
   List<double> get range => _range;
+  List<double> get range2 => _range2;
 
   set timeRequested(Timestamp newTime) {
     _timeRequested = newTime;
@@ -63,6 +66,11 @@ class filtersProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  set range2(List<double> newRange) {
+    _range2 = newRange;
+    notifyListeners();
+  }
+
   update(Filter filterItem) {
     if (filterItem is Time) {
       remove(time);
@@ -76,6 +84,9 @@ class filtersProvider with ChangeNotifier {
     } else if (filterItem is Price) {
       remove(price);
       price = filterItem;
+    } else if (filterItem is SellerScore) {
+      remove(sellerScore);
+      sellerScore = filterItem;
     }
     _selectedFilters.add(filterItem);
     notifyListeners();
@@ -107,6 +118,8 @@ class filtersProvider with ChangeNotifier {
       ];
     } else if (filterItem is Price) {
       _range = [double.negativeInfinity, double.infinity];
+    } else if (filterItem is SellerScore) {
+      _range2 = [0.0, 5.0];
     }
     _selectedFilters.remove(filterItem);
     if (_selectedFilters.length != 0) {
@@ -141,6 +154,7 @@ class filtersProvider with ChangeNotifier {
       'Others',
     ];
     _range = [double.negativeInfinity, double.infinity];
+    _range2 = [0.0, 5.0];
   }
 
   List<InkWell> toWidgets() {

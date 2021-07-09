@@ -145,6 +145,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                         FieldValue.arrayUnion([review.toMap()]),
                                     'averageRating': averageRating
                                   }, SetOptions(merge: true));
+                                  db
+                                      .collection('posts')
+                                      .doc(widget.product)
+                                      .set({'sellerScore': averageRating},
+                                          SetOptions(merge: true));
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => HomeScreen()));
                                 } else {

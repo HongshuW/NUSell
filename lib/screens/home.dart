@@ -140,9 +140,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Category',
                           'Location',
                           'Price',
+                          'SellerScore',
                           'View All'
                         ],
-                        buttonValues: [1, 2, 3, 4, 5],
+                        buttonValues: [1, 2, 3, 4, 11, 5],
                         buttonTextStyle: ButtonTextStyle(
                           selectedColor: Color.fromRGBO(190, 140, 90, 1),
                           unSelectedColor: Colors.white,

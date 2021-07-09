@@ -29,6 +29,7 @@ class _PostScreenState extends State<PostScreen> {
   String docId;
   String location = "UTown";
   String category = "Textbooks";
+  double sellerScore;
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   FirebaseStorage storage = FirebaseStorage.instance;
@@ -74,11 +75,20 @@ class _PostScreenState extends State<PostScreen> {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
 
-    DocumentReference currentUser =
-        FirebaseFirestore.instance.collection('users').doc(this.userId);
     List<String> addedPost = [];
+    DocumentReference sellerReview =
+        FirebaseFirestore.instance.collection('reviews').doc(this.userId);
+    getSellerScore() async {
+      final DocumentSnapshot<Map<String, dynamic>> doc =
+          await sellerReview.get();
+      if (doc.data() != null) {
+        sellerScore = doc.data()['averageRating'];
+      } else {
+        sellerScore = 5;
+      }
+    }
 
-    addPost() {
+    addPost() async {
       if (userId == null || userId == "") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
@@ -106,6 +116,7 @@ class _PostScreenState extends State<PostScreen> {
         );
         return null;
       } else {
+        await getSellerScore();
         return posts
             .add({
               'user': userId,
@@ -119,6 +130,7 @@ class _PostScreenState extends State<PostScreen> {
               'searchKey': productName.substring(0, 1).toLowerCase(),
               'nameForSearch': productName.toLowerCase().trim() +
                   description.toLowerCase().trim(),
+              'sellerScore': sellerScore
             })
             .then((docRef) {
               this.docId = docRef.id;

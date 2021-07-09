@@ -11,12 +11,7 @@ class Filter {
   // value of filter
   var value;
 
-  Filter({
-    this.posts,
-    this.selected,
-    this.type,
-    this.value
-  });
+  Filter({this.posts, this.selected, this.type, this.value});
 
   InkWell toButton() {
     return InkWell(
@@ -35,7 +30,7 @@ class Filter {
         child: Row(
           children: [
             Text(
-                this.toString(),
+              this.toString(),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w300,
@@ -43,7 +38,7 @@ class Filter {
               ),
             ),
             Icon(
-                Icons.clear,
+              Icons.clear,
               size: 12,
               color: Colors.white,
             ),
@@ -69,8 +64,8 @@ class Filter {
 
 class Time extends Filter {
   var timeRequested;
-  Time({posts, selected, value}) :
-        super(posts: posts, selected: selected, type: 1, value: value);
+  Time({posts, selected, value})
+      : super(posts: posts, selected: selected, type: 1, value: value);
 
   @override
   Query<Map<String, dynamic>> updateQuery(var query) {
@@ -93,8 +88,8 @@ class Time extends Filter {
 }
 
 class Category extends Filter {
-  Category({posts, selected, value}) :
-        super(posts: posts, selected: selected, type: 2, value: value);
+  Category({posts, selected, value})
+      : super(posts: posts, selected: selected, type: 2, value: value);
 
   @override
   Query<Map<String, dynamic>> updateQuery(var query) {
@@ -105,55 +100,53 @@ class Category extends Filter {
   List<InkWell> listOfButtons() {
     List<InkWell> result = [];
     for (var val in value) {
-      result.add(
-          InkWell(
-            onTap: () {
-              var categories = selected.categorySelected;
-              categories.remove(val);
-              if (categories.isEmpty) {
-                selected.categorySelected = [
-                  'Textbooks',
-                  'Notes',
-                  'Food',
-                  'Appliances',
-                  'Electronics',
-                  'Cosmetics',
-                  'Toys',
-                  'Others',
-                ];
-              } else {
-                selected.categorySelected = categories;
-              }
-              print(selected.categorySelected);
-            },
-            child: Container(
-              margin: EdgeInsets.only(bottom: 10, right: 5),
-              padding: EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 2),
-              decoration: BoxDecoration(
-                border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: Color.fromRGBO(0, 0, 0, 0.5),
+      result.add(InkWell(
+        onTap: () {
+          var categories = selected.categorySelected;
+          categories.remove(val);
+          if (categories.isEmpty) {
+            selected.categorySelected = [
+              'Textbooks',
+              'Notes',
+              'Food',
+              'Appliances',
+              'Electronics',
+              'Cosmetics',
+              'Toys',
+              'Others',
+            ];
+          } else {
+            selected.categorySelected = categories;
+          }
+          print(selected.categorySelected);
+        },
+        child: Container(
+          margin: EdgeInsets.only(bottom: 10, right: 5),
+          padding: EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 2),
+          decoration: BoxDecoration(
+            border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.5)),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+          ),
+          child: Row(
+            children: [
+              Text(
+                val == "Others" ? "Category: others" : val,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white,
+                ),
               ),
-              child: Row(
-                children: [
-                  Text(
-                    val == "Others" ? "Category: others" : val,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Icon(
-                    Icons.clear,
-                    size: 12,
-                    color: Colors.white,
-                  ),
-                ],
+              Icon(
+                Icons.clear,
+                size: 12,
+                color: Colors.white,
               ),
-            ),
-          )
-      );
+            ],
+          ),
+        ),
+      ));
     }
     return result;
   }
@@ -169,8 +162,8 @@ class Category extends Filter {
 }
 
 class Location extends Filter {
-  Location({posts, selected, value}) :
-        super(posts: posts, selected: selected, type: 3, value: value);
+  Location({posts, selected, value})
+      : super(posts: posts, selected: selected, type: 3, value: value);
 
   @override
   Query<Map<String, dynamic>> updateQuery(var query) {
@@ -181,54 +174,52 @@ class Location extends Filter {
   List<InkWell> listOfButtons() {
     List<InkWell> result = [];
     for (var val in value) {
-      result.add(
-          InkWell(
-            onTap: () {
-              var locations = selected.locationSelected;
-              locations.remove(val);
-              if (locations.isEmpty) {
-                selected.locationSelected = [
-                  "UTown",
-                  "PGP",
-                  "Kent Ridge MRT",
-                  'Central Library',
-                  'YIH',
-                  'Outside NUS',
-                  'Others',
-                ];
-              } else {
-                selected.locationSelected = locations;
-              }
-              print(selected.locationSelected);
-            },
-            child: Container(
-              margin: EdgeInsets.only(bottom: 10, right: 5),
-              padding: EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 2),
-              decoration: BoxDecoration(
-                border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: Color.fromRGBO(0, 0, 0, 0.5),
+      result.add(InkWell(
+        onTap: () {
+          var locations = selected.locationSelected;
+          locations.remove(val);
+          if (locations.isEmpty) {
+            selected.locationSelected = [
+              "UTown",
+              "PGP",
+              "Kent Ridge MRT",
+              'Central Library',
+              'YIH',
+              'Outside NUS',
+              'Others',
+            ];
+          } else {
+            selected.locationSelected = locations;
+          }
+          print(selected.locationSelected);
+        },
+        child: Container(
+          margin: EdgeInsets.only(bottom: 10, right: 5),
+          padding: EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 2),
+          decoration: BoxDecoration(
+            border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.5)),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            color: Color.fromRGBO(0, 0, 0, 0.5),
+          ),
+          child: Row(
+            children: [
+              Text(
+                val == "Others" ? "Location: others" : val,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white,
+                ),
               ),
-              child: Row(
-                children: [
-                  Text(
-                    val == "Others" ? "Location: others" : val,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Icon(
-                    Icons.clear,
-                    size: 12,
-                    color: Colors.white,
-                  ),
-                ],
+              Icon(
+                Icons.clear,
+                size: 12,
+                color: Colors.white,
               ),
-            ),
-          )
-      );
+            ],
+          ),
+        ),
+      ));
     }
     return result;
   }
@@ -244,8 +235,8 @@ class Location extends Filter {
 }
 
 class Price extends Filter {
-  Price({posts, selected, value}) :
-        super(posts: posts, selected: selected, type: 4, value: value);
+  Price({posts, selected, value})
+      : super(posts: posts, selected: selected, type: 4, value: value);
 
   @override
   toString() {
@@ -257,6 +248,24 @@ class Price extends Filter {
       return '50 - 100';
     } else if (super.value[0] == 100) {
       return '≥ 100';
+    } else {
+      return '';
+    }
+  }
+}
+
+class SellerScore extends Filter {
+  SellerScore({posts, selected, value})
+      : super(posts: posts, selected: selected, type: 11, value: value);
+
+  @override
+  String toString() {
+    if (super.value[0] == 4.5) {
+      return '> 4.5';
+    } else if (super.value[0] == 4.0) {
+      return '> 4.0';
+    } else if (super.value[0] == 3.5) {
+      return '> 3.5';
     } else {
       return '';
     }
