@@ -112,32 +112,56 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 children: [
                   Column(
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formkey.currentState.validate()) {
-                            _formkey.currentState.save();
-                            review = Review(AuthService().getCurrentUID(),
-                                _rating, _comment, widget.product);
-                            print(widget.seller);
-                            db.collection('reviews').doc(widget.seller).set({
-                              'reviews': FieldValue.arrayUnion([review.toMap()])
-                            }, SetOptions(merge: true));
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
-                          } else {
-                            print('unsuccessful!');
-                          }
-                        },
-                        child: Text(
-                          'Submit the review',
-                          //style: TextStyle(fontSize: 18),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary:
-                              Color.fromRGBO(242, 195, 71, 1), // background
-                          onPrimary: Colors.black, // foreground
-                        ),
-                      ),
+                      StreamBuilder<DocumentSnapshot>(
+                          stream: db
+                              .collection('reviews')
+                              .doc(widget.seller)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                if (_formkey.currentState.validate()) {
+                                  _formkey.currentState.save();
+                                  double averageRating = _rating;
+                                  if (snapshot.data.data() != null) {
+                                    Map<String, dynamic> doc =
+                                        snapshot.data.data();
+                                    for (var review in doc['reviews']) {
+                                      averageRating =
+                                          averageRating + review['rating'];
+                                    }
+                                    averageRating = averageRating /
+                                        (doc['reviews'].length + 1);
+                                    print(averageRating);
+                                  }
+                                  review = Review(AuthService().getCurrentUID(),
+                                      _rating, _comment, widget.product);
+                                  print(widget.seller);
+                                  db
+                                      .collection('reviews')
+                                      .doc(widget.seller)
+                                      .set({
+                                    'reviews':
+                                        FieldValue.arrayUnion([review.toMap()]),
+                                    'averageRating': averageRating
+                                  }, SetOptions(merge: true));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => HomeScreen()));
+                                } else {
+                                  print('unsuccessful!');
+                                }
+                              },
+                              child: Text(
+                                'Submit the review',
+                                //style: TextStyle(fontSize: 18),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromRGBO(
+                                    242, 195, 71, 1), // background
+                                onPrimary: Colors.black, // foreground
+                              ),
+                            );
+                          }),
                     ],
                   ),
                 ],
