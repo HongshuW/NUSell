@@ -284,7 +284,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               Map<String, dynamic> post = snapshot.data.data();
               if (post['likes'] == null) {
                 print(post['likes']);
-                post['likes'] = 0;
+                db
+                    .collection("posts")
+                    .doc(widget.product)
+                    .set({'likes': 0}, SetOptions(merge: true));
               }
               //print("it is ${post['likes']}");
               return BottomAppBar(
@@ -299,48 +302,64 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     //                 userId: AuthService().getCurrentUID(),
                     //               )));
                     //     }),
-                    IconButton(
-                      onPressed: () {
-                        bool liked = post['liked'];
-                        if (liked == null) {
-                          db
-                              .collection("posts")
-                              .doc(widget.product)
-                              .set({'liked': false}, SetOptions(merge: true));
-                        }
-                        print("liked is ${post['liked']}");
-                        if (post['liked'] == false) {
-                          numOfLikes = post['likes'] + 1;
-                          print("+1");
-                          db.collection("posts").doc(widget.product).set(
-                              {'likes': numOfLikes, 'liked': true},
-                              SetOptions(merge: true));
-                          shoppingCart.doc(AuthService().getCurrentUID()).set({
-                            'shopping cart':
-                                FieldValue.arrayUnion([widget.product]),
-                          }, SetOptions(merge: true));
-                        } else {
-                          numOfLikes = post['likes'] - 1;
-                          db.collection("posts").doc(widget.product).set(
-                              {'likes': numOfLikes, 'liked': false},
-                              SetOptions(merge: true));
-                          shoppingCart
-                              .doc(AuthService().getCurrentUID())
-                              .update({
-                            "shopping cart":
-                                FieldValue.arrayRemove([widget.product])
-                          });
-                        }
-                        print(liked);
-                      },
-                      icon: post['liked']
-                          ? Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            )
-                          : Icon(Icons.favorite_outline_rounded),
-                    ),
-                    Text("${post['likes']}"),
+                    StreamBuilder(
+                        stream: db
+                            .collection('shopping cart')
+                            .doc(AuthService().getCurrentUID())
+                            .snapshots(),
+                        builder: (context, snapshot2) {
+                          bool liked = false;
+                          Map<String, dynamic> posts = snapshot2.data.data();
+                          var addresses = posts['shopping cart'];
+                          for (var post in addresses) {
+                            if (post == widget.product) liked = true;
+                          }
+                          return Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  if (liked == false) {
+                                    numOfLikes = post['likes'] + 1;
+                                    print("+1");
+                                    db
+                                        .collection("posts")
+                                        .doc(widget.product)
+                                        .set({'likes': numOfLikes},
+                                            SetOptions(merge: true));
+                                    shoppingCart
+                                        .doc(AuthService().getCurrentUID())
+                                        .set({
+                                      'shopping cart': FieldValue.arrayUnion(
+                                          [widget.product]),
+                                    }, SetOptions(merge: true));
+                                  } else {
+                                    numOfLikes = post['likes'] - 1;
+                                    db
+                                        .collection("posts")
+                                        .doc(widget.product)
+                                        .set({'likes': numOfLikes},
+                                            SetOptions(merge: true));
+                                    shoppingCart
+                                        .doc(AuthService().getCurrentUID())
+                                        .update({
+                                      "shopping cart": FieldValue.arrayRemove(
+                                          [widget.product])
+                                    });
+                                  }
+                                  print(liked);
+                                },
+                                icon: liked
+                                    ? Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                      )
+                                    : Icon(Icons.favorite_outline_rounded),
+                              ),
+                              Text("${post['likes']}"),
+                            ],
+                          );
+                        }),
+
                     ElevatedButton(
                       onPressed: () {
                         if (seller.compareTo(user) < 0) {

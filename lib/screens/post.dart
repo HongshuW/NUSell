@@ -118,7 +118,7 @@ class _PostScreenState extends State<PostScreen> {
               'time': DateTime.parse(DateTime.now().toString()),
               'searchKey': productName.substring(0, 1).toLowerCase(),
               'nameForSearch': productName.toLowerCase().trim() +
-                  description.toLowerCase().trim()
+                  description.toLowerCase().trim(),
             })
             .then((docRef) {
               this.docId = docRef.id;
@@ -143,10 +143,8 @@ class _PostScreenState extends State<PostScreen> {
           onTap: () {
             getImage(true);
           },
-          child: Image.asset(
-              'assets/images/defaultPostImage.png',
-            fit: BoxFit.fitWidth
-          ),
+          child: Image.asset('assets/images/defaultPostImage.png',
+              fit: BoxFit.fitWidth),
         ));
       } else {
         for (File img in _images) {
@@ -255,7 +253,8 @@ class _PostScreenState extends State<PostScreen> {
                     isDense: true,
                     contentPadding: EdgeInsets.all(10),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color.fromRGBO(242, 195, 71, 1)),
+                      borderSide: const BorderSide(
+                          color: Color.fromRGBO(242, 195, 71, 1)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black45),
@@ -322,7 +321,8 @@ class _PostScreenState extends State<PostScreen> {
                   hintText:
                       "Share some description about the product to sell...",
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color.fromRGBO(242, 195, 71, 1)),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(242, 195, 71, 1)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black45),
@@ -442,7 +442,7 @@ class _PostScreenState extends State<PostScreen> {
                             this.price = double.parse(value);
                             if (this.price < 0) {
                               Fluttertoast.showToast(
-                                  msg: "price is invalid!",
+                                msg: "price is invalid!",
                                 gravity: ToastGravity.CENTER,
                                 textColor: Colors.red,
                               );
