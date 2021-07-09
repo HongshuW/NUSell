@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
+import 'package:orbital2796_nusell/screens/sellerPosts.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   final String sellerId;
@@ -53,61 +54,59 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                       color: Colors.white,
                     ),
                   ),
-                  body: SingleChildScrollView(
-                    child: Column(
-                      //crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 240,
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade100,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20.0),
-                              bottomRight: Radius.circular(20.0),
-                            ),
+                  body: ListView(
+                    //crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        height: 240,
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
                           ),
-                          child: FutureBuilder<DocumentSnapshot>(
-                              future: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(widget.sellerId)
-                                  .get(),
-                              builder: (context, snapshot) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Avatar(
-                                      avatarUrl: doc['avatarUrl'],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Username: ${doc['username']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: Text(
-                                    //     'Email: ${doc['email']}',
-                                    //     style: TextStyle(fontSize: 16),
-                                    //   ),
-                                    // ),
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: Text(
-                                    //     'Phone number: ${doc['phoneNumber']}',
-                                    //     style: TextStyle(fontSize: 16),
-                                    //   ),
-                                    // ),
-                                  ],
-                                );
-                              }),
                         ),
-                        AllPostsScreen(
-                          userId: widget.sellerId,
-                        )
-                      ],
-                    ),
+                        child: FutureBuilder<DocumentSnapshot>(
+                            future: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(widget.sellerId)
+                                .get(),
+                            builder: (context, snapshot) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Avatar(
+                                    avatarUrl: doc['avatarUrl'],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Username: ${doc['username']}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Text(
+                                  //     'Email: ${doc['email']}',
+                                  //     style: TextStyle(fontSize: 16),
+                                  //   ),
+                                  // ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Text(
+                                  //     'Phone number: ${doc['phoneNumber']}',
+                                  //     style: TextStyle(fontSize: 16),
+                                  //   ),
+                                  // ),
+                                ],
+                              );
+                            }),
+                      ),
+                      SellerPostsScreen(
+                        userId: widget.sellerId,
+                      )
+                    ],
                   ),
 
                   //a collection of the three buttons

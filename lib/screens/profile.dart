@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
@@ -65,6 +66,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             builder: (context) => HomeScreen()));
                       },
                     ),
+                    actions: [
+                      Theme(
+                          data: Theme.of(context).copyWith(
+                              textTheme:
+                                  TextTheme().apply(bodyColor: Colors.black),
+                              dividerColor: Colors.white,
+                              iconTheme: IconThemeData(color: Colors.white)),
+                          child: IconButton(
+                            icon: Icon(Icons.settings),
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => SettingsScreen()));
+                            },
+                          )
+                          // PopupMenuButton<int>(
+                          //   color: Colors.black,
+                          //   itemBuilder: (context) => [
+                          //     PopupMenuItem<int>(
+                          //         value: 0,
+                          //         child: Row(
+                          //           children: [
+                          //             Icon(
+                          //               Icons.settings,
+                          //               color: Colors.grey,
+                          //             ),
+                          //             const SizedBox(
+                          //               width: 7,
+                          //             ),
+                          //             Text("Settings"),
+                          //           ],
+                          //         )),
+                          //     // PopupMenuItem<int>(
+                          //     //     value: 1, child: Text("Reset password")),
+                          //     //PopupMenuDivider(),
+                          //     PopupMenuItem<int>(
+                          //         value: 2,
+                          //         child: Row(
+                          //           children: [
+                          //             Icon(
+                          //               Icons.logout,
+                          //               color: Colors.red,
+                          //             ),
+                          //             const SizedBox(
+                          //               width: 7,
+                          //             ),
+                          //             Text("Logout")
+                          //           ],
+                          //         )),
+                          //   ],
+                          //   onSelected: (item) => SelectedItem(context, item),
+                          // ),
+                          ),
+                    ],
                   ),
                   body: SingleChildScrollView(
                     child: Column(
@@ -142,222 +197,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         builder: (context) => MyChatsScreen()));
                               },
                             ),
-                            ElevatedButton(
-                              child: Text('Edit your profile'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditProfileScreen()));
-                              },
-                            ),
-                            ElevatedButton(
-                              child: Text('Reset your password'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ResetPasswordScreen()));
-                              },
-                            ),
-                            // ElevatedButton(
-                            //   child: Text('Log Out'),
-                            //   onPressed: () {
-                            //     AuthService().signout();
-                            //     Navigator.of(context).pushReplacement(
-                            //         MaterialPageRoute(
-                            //             builder: (context) => LoginScreen()));
-                            //   },
-                            // ),
-                            ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return Dialog(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          elevation: 10,
-                                          backgroundColor:
-                                              Color.fromRGBO(250, 250, 250, 1),
-                                          child: Container(
-                                            margin: EdgeInsets.all(30),
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.2,
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: Text(
-                                                    "Are you sure you want to log out?",
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                // Container(
-                                                //   margin: EdgeInsets.only(
-                                                //       bottom: 10),
-                                                //   child: Text(
-                                                //       "You will need to sign in again to view your account!"),
-                                                // ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        primary: Colors.white,
-                                                        side: BorderSide(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    100,
-                                                                    170,
-                                                                    255,
-                                                                    1)),
-                                                      ),
-                                                      child: Text("Cancel"),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        AuthService().signout();
-                                                        Navigator.of(context)
-                                                            .pushReplacement(
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            LoginScreen()));
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        primary: Color.fromRGBO(
-                                                            100, 170, 255, 1),
-                                                      ),
-                                                      child: Text("Log out",
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .white)),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Color.fromRGBO(255, 88, 68, 1),
-                                ),
-                                child: Text("Log out")),
-                            ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return Dialog(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          elevation: 10,
-                                          backgroundColor:
-                                              Color.fromRGBO(250, 250, 250, 1),
-                                          child: Container(
-                                            margin: EdgeInsets.all(30),
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.2,
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: Text(
-                                                    "Are you sure you want to delete your account?",
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      bottom: 10),
-                                                  child: Text(
-                                                      "This action is irreversible!"),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        primary: Colors.white,
-                                                        side: BorderSide(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    100,
-                                                                    170,
-                                                                    255,
-                                                                    1)),
-                                                      ),
-                                                      child: Text("Cancel"),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        User user = FirebaseAuth
-                                                            .instance
-                                                            .currentUser;
-                                                        user.delete();
-                                                        print(
-                                                            'Deleted successfully!');
-                                                        Navigator.of(context)
-                                                            .pushReplacement(
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            LoginScreen()));
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        primary: Color.fromRGBO(
-                                                            100, 170, 255, 1),
-                                                      ),
-                                                      child: Text("Delete",
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .white)),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Color.fromRGBO(255, 88, 68, 1),
-                                ),
-                                child: Text("Delete")),
                           ],
                         ),
                       ],
@@ -367,6 +206,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               });
         });
   }
+
+  // void SelectedItem(BuildContext context, item) {
+  //   switch (item) {
+  //     case 0:
+  //       Navigator.of(context)
+  //           .push(MaterialPageRoute(builder: (context) => SettingsScreen()));
+  //       break;
+  //     case 1:
+  //       print("Privacy Clicked");
+  //       break;
+  //     case 2:
+  //       //print("User Logged out");
+
+  //       break;
+  //   }
+  // }
 
   _readUserInfo() async {
     final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore

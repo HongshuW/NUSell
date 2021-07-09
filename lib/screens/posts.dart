@@ -101,16 +101,8 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
                 margin: EdgeInsets.only(left: 10, top: 10),
                 child: CustomRadioButton(
                   defaultSelected: this.status,
-                  buttonLables: [
-                    "Selling",
-                    "Deleted",
-                    "Sold"
-                  ],
-                  buttonValues: [
-                    "Selling",
-                    "Deleted",
-                    "Sold"
-                  ],
+                  buttonLables: ["Selling", "Deleted", "Sold"],
+                  buttonValues: ["Selling", "Deleted", "Sold"],
                   radioButtonValue: (value) {
                     setState(() {
                       this.status = value;
@@ -132,8 +124,8 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
                       future: _getMyPosts(),
                       builder: (context, snapshot) {
                         if (postAddresses.length == 0) {
-                          return interactions(
-                              widget.userId, FirebaseAuth.instance.currentUser.uid);
+                          return interactions(widget.userId,
+                              FirebaseAuth.instance.currentUser.uid);
                         }
                         return StaggeredGridView.countBuilder(
                           crossAxisCount: 2,
@@ -142,62 +134,67 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
                           shrinkWrap: true,
                           itemCount: postAddresses.length,
                           staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-                          itemBuilder: (context, index) =>
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context).size.height * 0.23,
-                                    minHeight: 0),
-                                child: FutureBuilder<DocumentSnapshot>(
-                                  future: db.collection("posts").doc(postAddresses[index]).get(),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return Center(
-                                          child: CircularProgressIndicator());
-                                    }
-                                    Map<String, dynamic> post = snapshot.data.data();
-                                    if (post["status"] != this.status) {
-                                      return Container(height: 0, width: 0);
-                                    }
-                                    return InkWell(
-                                      onTap: () {
-                                        if (auth.currentUser == null) {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoginScreen()));
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfoScreen(
-                                                          product: postAddresses[index])));
-                                        }
-                                      },
-                                      child: Card(
-                                        child: Column(
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: getImage(post['images']),
+                          itemBuilder: (context, index) => ConstrainedBox(
+                            constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.23,
+                                minHeight: 0),
+                            child: FutureBuilder<DocumentSnapshot>(
+                                future: db
+                                    .collection("posts")
+                                    .doc(postAddresses[index])
+                                    .get(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  }
+                                  Map<String, dynamic> post =
+                                      snapshot.data.data();
+                                  if (post["status"] != this.status) {
+                                    return Container(height: 0, width: 0);
+                                  }
+                                  return InkWell(
+                                    onTap: () {
+                                      if (auth.currentUser == null) {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginScreen()));
+                                      } else {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProductInfoScreen(
+                                                        product: postAddresses[
+                                                            index])));
+                                      }
+                                    },
+                                    child: Card(
+                                      child: Column(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: getImage(post['images']),
+                                          ),
+                                          Text(
+                                            "${post['productName']}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
                                             ),
-                                            Text(
-                                              "${post['productName']}",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
+                                          ),
+                                          Text(
+                                            "${post['price']}",
+                                            style: TextStyle(
+                                              fontSize: 16,
                                             ),
-                                            Text(
-                                              "${post['price']}",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  }),
-                              ),
+                                    ),
+                                  );
+                                }),
+                          ),
                           // children: postAddresses.map((docId) {
                           //   return FutureBuilder<DocumentSnapshot>(
                           //       future: db.collection("posts").doc(docId).get(),
