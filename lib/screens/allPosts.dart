@@ -209,7 +209,7 @@ class _allPostsState extends State<allPosts> {
                       .where((doc) =>
                           filterState.locationSelected.contains(doc["location"]))
                       .where((doc) => doc["price"] < filterState.range[1] && doc["price"] >= filterState.range[0])
-                      .where((doc) => doc["sellerScore"] < filterState.range2[1] && doc["sellerScore"] >= filterState.range2[0])
+                      .where((doc) => doc["sellerScore"] <= filterState.range2[1] && doc["sellerScore"] >= filterState.range2[0])
                       .map<Widget>((doc) {
                     return InkWell(
                       onTap: () {

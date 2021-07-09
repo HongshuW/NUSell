@@ -249,10 +249,11 @@ class _FilterState extends State<Filter> {
                     unSelectedBorderColor: Colors.black45,
                     selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
                     radioButtonValue: (value) => {
+                      print(value),
                       sellerScore = SellerScore(
                           posts: posts, selected: selected, value: value),
                       selected.update(sellerScore),
-                      selected.range = value,
+                      selected.range2 = value,
                     },
                   ),
                 )

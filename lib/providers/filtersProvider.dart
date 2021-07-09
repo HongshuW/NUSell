@@ -37,14 +37,14 @@ class filtersProvider with ChangeNotifier {
     'Others',
   ];
   List<double> _range = [double.negativeInfinity, double.infinity];
-  List<double> _range2 = [0.0, 5.0];
+  List<num> _range2 = [0.0, 5.0];
 
   List<Filter> get selectedFilters => _selectedFilters;
   Timestamp get timeRequested => _timeRequested;
   List<dynamic> get categorySelected => _categorySelected;
   List<dynamic> get locationSelected => _locationSelected;
   List<double> get range => _range;
-  List<double> get range2 => _range2;
+  List<num> get range2 => _range2;
 
   set timeRequested(Timestamp newTime) {
     _timeRequested = newTime;
@@ -66,7 +66,7 @@ class filtersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set range2(List<double> newRange) {
+  set range2(List<num> newRange) {
     _range2 = newRange;
     notifyListeners();
   }
