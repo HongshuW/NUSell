@@ -185,12 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 FloatingActionButton(
                   heroTag: "home",
-                  onPressed: () {
-                    scrollController.animateTo(
-                        scrollController.position.minScrollExtent,
-                        duration: Duration(microseconds: 500),
-                        curve: Curves.fastOutSlowIn);
-                  },
                   child: Icon(Icons.house, color: Colors.white),
                   backgroundColor: Color.fromRGBO(247, 215, 140, 1),
                 ),

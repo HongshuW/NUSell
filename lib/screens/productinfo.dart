@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orbital2796_nusell/subProject/recommendation/backgroundTimer.dart';
 import 'package:orbital2796_nusell/models/chat.dart';
 import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/editProductForm.dart';
@@ -15,6 +16,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductInfoScreen extends StatefulWidget {
   final String product;
+  // start the timer as the user enters the product information screen.
+  final backgroundTimer timer = new backgroundTimer(DateTime.now());
+
   ProductInfoScreen({Key key, this.product}) : super(key: key);
 
   @override
@@ -176,6 +180,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   Widget build(BuildContext context) {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
+    print(widget.timer);
 
     // Returns a set of buttons with different functionalities based on the
     // status of the post.
@@ -262,8 +267,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               Map<String, dynamic> post = snapshot.data.data();
               return Column(
                 children: [
+                  // contact the seller
                   ElevatedButton(
                     onPressed: () {
+                      // generate chat id.
                       if (seller.compareTo(user) < 0) {
                         docID = seller + "_" + user;
                       } else {
@@ -271,6 +278,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       }
                       db.collection("chats").doc(docID).get()
                         .then((snapshot) => {
+                          // if chat doesn't exist, create a new chat.
                           if (!snapshot.exists) {
                             db.collection("chats").doc(docID).set(chat.toMap()),
                             db.collection("myChats").doc(seller).get()
@@ -291,6 +299,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                             }),
                           }
                       });
+                      // direct to the chat screen.
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
                               ContactSellerScreen(chatID: docID,
@@ -301,6 +310,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     ),
                     child: Text("Contact the seller"),
                   ),
+
+                  // View seller's profile.
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -323,8 +334,13 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                       userId: AuthService().getCurrentUID(),
                                     )));
                           }),
+
+                      // add to shopping cart
                       ElevatedButton(
                         onPressed: () {
+                          // Add to shopping cart -> interest level = 5.
+                          widget.timer.updatePreference(
+                              post["category"], post["location"], post["user"], 0);
                           shoppingCart.doc(AuthService().getCurrentUID()).set({
                             'shopping cart':
                                 FieldValue.arrayUnion([widget.product]),
@@ -359,6 +375,19 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               backgroundColor: Colors.white,
               leading: BackButton(
                 color: Colors.black,
+                onPressed: () {
+                  if (post["user"] == this.userId) {
+                    // Stop the timer, one's own post -> interest level = 0.1.
+                    widget.timer.updatePreference(
+                        post["category"], post["location"], null, 0.1);
+                  } else {
+                    // Stop the timer, exit the page -> interest level = 0.2.
+                    widget.timer.updatePreference(
+                        post["category"], post["location"], post["user"], 0.2);
+                  }
+                  // go back to the previous screen
+                  Navigator.pop(context);
+                },
               ),
             ),
             body: ListView(

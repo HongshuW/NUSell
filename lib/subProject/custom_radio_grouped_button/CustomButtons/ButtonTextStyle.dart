@@ -1,3 +1,6 @@
+/* Code retrieved from
+ https://github.com/ketanchoyal/custom_radio_grouped_button */
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 

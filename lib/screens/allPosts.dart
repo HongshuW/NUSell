@@ -6,6 +6,7 @@ import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
+import 'package:orbital2796_nusell/subProject/recommendation/postsSorter.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -19,6 +20,7 @@ class allPosts extends StatefulWidget {
 
 class _allPostsState extends State<allPosts> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  postsSorter sorter = new postsSorter(FirebaseAuth.instance.currentUser.uid);
 
   // a list of document snapshots, each represents a product.
   List<DocumentSnapshot> products = [];
@@ -78,7 +80,8 @@ class _allPostsState extends State<allPosts> {
       hasMore = false;
     }
     lastDoc = querySnapshot.docs[len - 1];
-    products.addAll(querySnapshot.docs);
+    List<DocumentSnapshot> sorted = await sorter.sorted(querySnapshot.docs);
+    products.addAll(sorted);
     setState(() {
       isLoading = false;
     });
