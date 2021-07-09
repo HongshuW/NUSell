@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 
 class AllPostsScreen extends StatefulWidget {
   final String userId;
@@ -25,19 +27,15 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
   String postProductName;
   int postPrice;
 
+  String status = "Selling";
+
   // Display the first image of a post.
   getImage(imgArr) {
     if (imgArr.isEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(5),
-          topRight: Radius.circular(5),
-        ),
-        child: Image.asset(
-          'assets/images/defaultPreview.png',
-          fit: BoxFit.fitWidth,
-          width: 200,
-        ),
+      return Image.asset(
+        'assets/images/defaultPreview.png',
+        fit: BoxFit.fitHeight,
+        width: 200,
       );
     } else {
       return ClipRRect(
@@ -96,76 +94,166 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
           //   return Text("Loading");
           // }
 
-          return Container(
-              padding:
-                  EdgeInsets.only(left: 10, right: 10, top: 60, bottom: 90),
-              child: FutureBuilder<Object>(
-                  future: _getMyPosts(),
-                  builder: (context, snapshot) {
-                    if (postAddresses.length == 0) {
-                      return interactions(
-                          widget.userId, FirebaseAuth.instance.currentUser.uid);
-                    }
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      shrinkWrap: true,
-                      children: postAddresses.map((docId) {
-                        return FutureBuilder<DocumentSnapshot>(
-                            future: db.collection("posts").doc(docId).get(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
-                              Map<String, dynamic> post = snapshot.data.data();
-                              return InkWell(
-                                onTap: () {
-                                  if (auth.currentUser == null) {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                LoginScreen()));
-                                  } else {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProductInfoScreen(
-                                                    product: docId)));
-                                  }
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: getImage(post['images']),
-                                      ),
-                                      Text(
-                                        "${post['productName']}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+          return ListView(
+            children: [
+              // filter
+              Container(
+                margin: EdgeInsets.only(left: 10, top: 10),
+                child: CustomRadioButton(
+                  defaultSelected: this.status,
+                  buttonLables: [
+                    "Selling",
+                    "Deleted",
+                    "Sold"
+                  ],
+                  buttonValues: [
+                    "Selling",
+                    "Deleted",
+                    "Sold"
+                  ],
+                  radioButtonValue: (value) {
+                    setState(() {
+                      this.status = value;
+                    });
+                  },
+                  absoluteZeroSpacing: true,
+                  elevation: 0,
+                  unSelectedColor: Colors.white,
+                  selectedColor: Theme.of(context).accentColor,
+                  unSelectedBorderColor: Theme.of(context).accentColor,
+                  selectedBorderColor: Theme.of(context).accentColor,
+                ),
+              ),
+
+              // posts
+              Container(
+                  padding: EdgeInsets.all(10),
+                  child: FutureBuilder<Object>(
+                      future: _getMyPosts(),
+                      builder: (context, snapshot) {
+                        if (postAddresses.length == 0) {
+                          return interactions(
+                              widget.userId, FirebaseAuth.instance.currentUser.uid);
+                        }
+                        return StaggeredGridView.countBuilder(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 0,
+                          mainAxisSpacing: 0,
+                          shrinkWrap: true,
+                          itemCount: postAddresses.length,
+                          staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+                          itemBuilder: (context, index) =>
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.23,
+                                    minHeight: 0),
+                                child: FutureBuilder<DocumentSnapshot>(
+                                  future: db.collection("posts").doc(postAddresses[index]).get(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                    Map<String, dynamic> post = snapshot.data.data();
+                                    if (post["status"] != this.status) {
+                                      return Container(height: 0, width: 0);
+                                    }
+                                    return InkWell(
+                                      onTap: () {
+                                        if (auth.currentUser == null) {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoginScreen()));
+                                        } else {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProductInfoScreen(
+                                                          product: postAddresses[index])));
+                                        }
+                                      },
+                                      child: Card(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: getImage(post['images']),
+                                            ),
+                                            Text(
+                                              "${post['productName']}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${post['price']}",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      Text(
-                                        "${post['price']}",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      }).toList(),
-                    );
-                  }));
+                                    );
+                                  }),
+                              ),
+                          // children: postAddresses.map((docId) {
+                          //   return FutureBuilder<DocumentSnapshot>(
+                          //       future: db.collection("posts").doc(docId).get(),
+                          //       builder: (context, snapshot) {
+                          //         if (!snapshot.hasData) {
+                          //           return Center(
+                          //               child: CircularProgressIndicator());
+                          //         }
+                          //         Map<String, dynamic> post = snapshot.data.data();
+                          //         if (post["status"] != this.status) {
+                          //           return Container(height: 0, width: 0);
+                          //         }
+                          //         return InkWell(
+                          //           onTap: () {
+                          //             if (auth.currentUser == null) {
+                          //               Navigator.of(context).push(
+                          //                   MaterialPageRoute(
+                          //                       builder: (context) =>
+                          //                           LoginScreen()));
+                          //             } else {
+                          //               Navigator.of(context).push(
+                          //                   MaterialPageRoute(
+                          //                       builder: (context) =>
+                          //                           ProductInfoScreen(
+                          //                               product: docId)));
+                          //             }
+                          //           },
+                          //           child: Card(
+                          //             child: Column(
+                          //               children: <Widget>[
+                          //                 Expanded(
+                          //                   child: getImage(post['images']),
+                          //                 ),
+                          //                 Text(
+                          //                   "${post['productName']}",
+                          //                   style: TextStyle(
+                          //                     fontWeight: FontWeight.bold,
+                          //                     fontSize: 16,
+                          //                   ),
+                          //                 ),
+                          //                 Text(
+                          //                   "${post['price']}",
+                          //                   style: TextStyle(
+                          //                     fontSize: 16,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ),
+                          //         );
+                          //       });
+                          // }).toList(),
+                        );
+                      })),
+            ],
+          );
         });
   }
 }

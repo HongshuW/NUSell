@@ -1,10 +1,11 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/user.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
+import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 
@@ -40,10 +41,7 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
       img = imgArr[0];
     }
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(10),
-        topRight: Radius.circular(10),
-      ),
+      borderRadius: BorderRadius.all(Radius.circular(10)),
       child: Image.network(
         img,
         fit: BoxFit.fitHeight,
@@ -123,11 +121,43 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                   builder: (context) =>
                                                       LoginScreen()));
                                         } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfoScreen(
-                                                          product: docId)));
+                                          if (post["status"] == "Selling") {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductInfoScreen(
+                                                            product: docId)));
+                                          } else if (post["status"] == "Deleted") {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return popUp(
+                                                    title: "This post was deleted by the seller.",
+                                                    subtitle: "Contact the seller for more information.",
+                                                    confirmText: "Contact seller",
+                                                    confirmAction: () async {
+                                                      var docID;
+                                                      String seller = post["user"];
+                                                      if (seller.compareTo(widget.userId) < 0) {
+                                                        docID = seller + "_" + widget.userId;
+                                                      } else {
+                                                        docID = widget.userId + "_" + seller;
+                                                      }
+                                                      String sellerName;
+                                                      db.collection("users").doc(seller).get()
+                                                        .then((doc) => sellerName = doc["username"])
+                                                        .then((doc) => Navigator.of(context).pop())
+                                                        .then((doc) => Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ContactSellerScreen(
+                                                                    chatID: docID,
+                                                                    theOtherUserName: sellerName,
+                                                                  ))));
+                                                    },
+                                                  );
+                                                });
+                                          }
                                         }
                                       },
                                       child: Padding(
@@ -135,7 +165,7 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                         child: Container(
                                           height: 100,
                                           decoration: BoxDecoration(
-                                            color: Colors.orange,
+                                            color: post["status"] == "Selling" ? Colors.orange : Colors.grey,
                                             shape: BoxShape.rectangle,
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -160,7 +190,7 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(
-                                                      30.0),
+                                                      20.0),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -176,6 +206,14 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                       ),
                                                       Text(
                                                         "${post['price']}",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        post["status"] == "Selling"
+                                                            ? ""
+                                                            : "Unavailable",
                                                         style: TextStyle(
                                                           fontSize: 16,
                                                         ),

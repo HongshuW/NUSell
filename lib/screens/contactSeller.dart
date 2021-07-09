@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -80,10 +81,53 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                 maxHeight: 200,
                                 maxWidth: 150,
                               ),
-                              child: CachedNetworkImage(
-                                imageUrl: message["imgURL"],
-                                fadeInDuration:
-                                    const Duration(milliseconds: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    barrierColor: Colors.black,
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        insetPadding: EdgeInsets.all(0),
+                                        child: Container(
+                                          color: Colors.black,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.only(bottom: 50),
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Icon(
+                                                    Icons.arrow_back,
+                                                    color: Colors.white,
+                                                    size: 30,
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    primary: Colors.transparent,
+                                                  ),
+                                                ),
+                                              ),
+                                              CachedNetworkImage(
+                                                imageUrl: message["imgURL"],
+                                                fadeInDuration:
+                                                const Duration(milliseconds: 10),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  );
+                                },
+                                child: CachedNetworkImage(
+                                  imageUrl: message["imgURL"],
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 10),
+                                ),
                               ),
                             )),
                 ),
@@ -110,11 +154,13 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     ImagePicker picker = ImagePicker();
     PickedFile pickedFile;
     if (gallery) {
+      await Permission.mediaLibrary.request();
       pickedFile = await picker.getImage(
         source: ImageSource.gallery,
         imageQuality: 30,
       );
     } else {
+      await Permission.camera.request();
       pickedFile = await picker.getImage(
         source: ImageSource.camera,
         imageQuality: 30,

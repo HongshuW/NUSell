@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'dart:io';
 
@@ -40,11 +41,13 @@ class _PostScreenState extends State<PostScreen> {
     ImagePicker picker = ImagePicker();
     PickedFile pickedFile;
     if (gallery) {
+      await Permission.mediaLibrary.request();
       pickedFile = await picker.getImage(
         source: ImageSource.gallery,
         imageQuality: 30,
       );
     } else {
+      await Permission.camera.request();
       pickedFile = await picker.getImage(
         source: ImageSource.camera,
         imageQuality: 30,
@@ -130,7 +133,8 @@ class _PostScreenState extends State<PostScreen> {
               'searchKey': productName.substring(0, 1).toLowerCase(),
               'nameForSearch': productName.toLowerCase().trim() +
                   description.toLowerCase().trim(),
-              'sellerScore': sellerScore
+              'sellerScore': sellerScore,
+              'status': "Selling"
             })
             .then((docRef) {
               this.docId = docRef.id;

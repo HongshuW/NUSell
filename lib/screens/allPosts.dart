@@ -61,12 +61,14 @@ class _allPostsState extends State<allPosts> {
       querySnapshot = await FirebaseFirestore.instance
           .collection("posts")
           .orderBy("time", descending: true)
+          .where("status", isEqualTo: "Selling")
           .limit(numPerPage)
           .get();
     } else {
       querySnapshot = await FirebaseFirestore.instance
           .collection("posts")
           .orderBy("time", descending: true)
+          .where("status", isEqualTo: "Selling")
           .startAfterDocument(lastDoc)
           .limit(numPerPage)
           .get();
@@ -92,7 +94,7 @@ class _allPostsState extends State<allPosts> {
         ),
         child: Image.asset(
           'assets/images/defaultPreview.png',
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fitHeight,
           width: 200,
         ),
       );
@@ -178,7 +180,9 @@ class _allPostsState extends State<allPosts> {
       );
     } else {
       return StreamBuilder(
-          stream: postsState.snapshot.snapshots(),
+          stream: postsState.snapshot
+              .where("status", isEqualTo: "Selling")
+              .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
