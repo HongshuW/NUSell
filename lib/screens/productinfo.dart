@@ -288,7 +288,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               //print("it is ${post['likes']}");
               return BottomAppBar(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // IconButton(
                     //     icon: Icon(Icons.shopping_cart),
@@ -298,68 +298,73 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     //                 userId: AuthService().getCurrentUID(),
                     //               )));
                     //     }),
-                    StreamBuilder(
-                        stream: db
-                            .collection('shopping cart')
-                            .doc(AuthService().getCurrentUID())
-                            .snapshots(),
-                        builder: (context, snapshot2) {
-                          bool liked = false;
-                          Map<String, dynamic> posts = snapshot2.data.data();
-                          var addresses = posts['shopping cart'];
-                          for (var post in addresses) {
-                            if (post == widget.product) liked = true;
-                          }
-                          return Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  if (liked == false) {
-                                    numOfLikes = post['likes'] + 1;
-                                    print("+1");
-                                    db
-                                        .collection("posts")
-                                        .doc(widget.product)
-                                        .set({'likes': numOfLikes},
-                                            SetOptions(merge: true));
-                                    widget.timer.updatePreference(
-                                        post["category"],
-                                        post["location"],
-                                        post["user"],
-                                        0);
-                                    shoppingCart
-                                        .doc(AuthService().getCurrentUID())
-                                        .set({
-                                      'shopping cart': FieldValue.arrayUnion(
-                                          [widget.product]),
-                                    }, SetOptions(merge: true));
-                                  } else {
-                                    numOfLikes = post['likes'] - 1;
-                                    db
-                                        .collection("posts")
-                                        .doc(widget.product)
-                                        .set({'likes': numOfLikes},
-                                            SetOptions(merge: true));
-                                    shoppingCart
-                                        .doc(AuthService().getCurrentUID())
-                                        .update({
-                                      "shopping cart": FieldValue.arrayRemove(
-                                          [widget.product])
-                                    });
-                                  }
-                                  print(liked);
-                                },
-                                icon: liked
-                                    ? Icon(
-                                        Icons.favorite,
-                                        color: Colors.red,
-                                      )
-                                    : Icon(Icons.favorite_outline_rounded),
-                              ),
-                              Text("${post['likes']}"),
-                            ],
-                          );
-                        }),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      child: StreamBuilder(
+                          stream: db
+                              .collection('shopping cart')
+                              .doc(AuthService().getCurrentUID())
+                              .snapshots(),
+                          builder: (context, snapshot2) {
+                            bool liked = false;
+                            if (!snapshot2.hasData || snapshot2.data == null)
+                              return Center(child: CircularProgressIndicator());
+                            Map<String, dynamic> posts = snapshot2.data.data();
+                            var addresses = posts['shopping cart'];
+                            for (var post in addresses) {
+                              if (post == widget.product) liked = true;
+                            }
+                            return IconButton(
+                              onPressed: () {
+                                if (liked == false) {
+                                  numOfLikes = post['likes'] + 1;
+                                  print("+1");
+                                  db
+                                      .collection("posts")
+                                      .doc(widget.product)
+                                      .set({'likes': numOfLikes},
+                                          SetOptions(merge: true));
+                                  widget.timer.updatePreference(
+                                      post["category"],
+                                      post["location"],
+                                      post["user"],
+                                      0);
+                                  shoppingCart
+                                      .doc(AuthService().getCurrentUID())
+                                      .set({
+                                    'shopping cart':
+                                        FieldValue.arrayUnion([widget.product]),
+                                  }, SetOptions(merge: true));
+                                } else {
+                                  numOfLikes = post['likes'] - 1;
+                                  db
+                                      .collection("posts")
+                                      .doc(widget.product)
+                                      .set({'likes': numOfLikes},
+                                          SetOptions(merge: true));
+                                  shoppingCart
+                                      .doc(AuthService().getCurrentUID())
+                                      .update({
+                                    "shopping cart":
+                                        FieldValue.arrayRemove([widget.product])
+                                  });
+                                }
+                                print(liked);
+                              },
+                              icon: liked
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    )
+                                  : Icon(Icons.favorite_outline_rounded),
+                            );
+                          }),
+                    ),
+                    Text('${post['likes']}'),
+                    SizedBox(
+                      width: 20,
+                    ),
 
                     ElevatedButton(
                       onPressed: () {
