@@ -215,10 +215,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     .collection('shopping cart')
                                                     .doc(uid)
                                                     .delete();
-                                                db
-                                                    .collection('users')
-                                                    .doc(uid)
-                                                    .delete();
                                                 print('Deleted successfully!');
                                                 Navigator.of(context)
                                                     .pushReplacement(

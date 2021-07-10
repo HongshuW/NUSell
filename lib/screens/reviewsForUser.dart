@@ -26,7 +26,6 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
           if (!snapshot.hasData || snapshot == null || snapshot.data == null)
             return Center(child: CircularProgressIndicator());
           Map<String, dynamic> doc = snapshot.data.data();
-          print(doc.toString());
           if (doc == null) {
             return Center(
               child: Padding(
@@ -83,6 +82,9 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                           if (snapshot2.connectionState ==
                               ConnectionState.waiting) {
                             return Center(child: CircularProgressIndicator());
+                          }
+                          if (userDoc == null) {
+                            return Container();
                           }
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
