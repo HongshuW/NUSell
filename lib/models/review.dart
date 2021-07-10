@@ -1,7 +1,7 @@
 class Review {
   String reviewForUser;
   String reviewFromUser;
-  double rating;
+  num rating;
   String description;
   String productId;
 

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -39,6 +41,8 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
           }
 
           List reviews = List.from(doc['reviews']);
+          double score;
+          score = doc['averageRating'].toDouble();
           return Column(
             children: [
               Padding(
@@ -48,12 +52,12 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                   //crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${doc['averageRating']}',
+                      '${score}',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                     ),
                     RatingBarIndicator(
-                      rating: doc['averageRating'],
+                      rating: score,
                       itemBuilder: (context, index) => Icon(
                         Icons.star,
                         color: Colors.amber,
