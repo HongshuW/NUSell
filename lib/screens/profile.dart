@@ -178,27 +178,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
                               }),
                         ),
-                        Column(
+                        Row(
+                          //scrollDirection: Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            ElevatedButton(
-                              child: Text('My posts'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            myPosts(context)));
-                              },
+                            InkWell(
+                              child: Text('posts'),
                             ),
-                            ElevatedButton(
-                              child: Text('My Chats'),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => MyChatsScreen()));
-                              },
-                            ),
+                            InkWell(
+                              child: Text('reviews'),
+                            )
                           ],
-                        ),
+                        )
+                        // Column(
+                        //   children: [
+                        // ElevatedButton(
+                        //   child: Text('My posts'),
+                        //   onPressed: () {
+                        //     Navigator.of(context).pushReplacement(
+                        //         MaterialPageRoute(
+                        //             builder: (context) =>
+                        //                 myPosts(context)));
+                        //   },
+                        // ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
