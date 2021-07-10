@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
+import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/sellerPosts.dart';
 
 class SellerProfileScreen extends StatefulWidget {
@@ -19,9 +20,22 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
   Map<String, dynamic> user = new Map();
 
   File newProfilePic;
+  bool showingPosts = true;
 
   @override
   Widget build(BuildContext context) {
+    interactions(bool showingPosts) {
+      if (showingPosts == true) {
+        return SellerPostsScreen(
+          userId: widget.sellerId,
+        );
+      } else {
+        return ReviewsForUser(
+          userId: widget.sellerId,
+        );
+      }
+    }
+
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -58,7 +72,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                     //crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        height: 240,
+                        height: 120,
                         decoration: BoxDecoration(
                           color: Colors.green.shade100,
                           borderRadius: BorderRadius.only(
@@ -81,7 +95,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Username: ${doc['username']}',
+                                      '${doc['username']}',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ),
@@ -103,9 +117,35 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                               );
                             }),
                       ),
-                      SellerPostsScreen(
-                        userId: widget.sellerId,
-                      )
+                      GestureDetector(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    showingPosts = true;
+                                  });
+                                },
+                                child: Text(
+                                  'posts',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                            Container(height: 30, width: 1, color: Colors.grey),
+                            InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    showingPosts = false;
+                                  });
+                                },
+                                child: Text(
+                                  'reviews',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                          ],
+                        ),
+                      ),
+                      interactions(showingPosts)
                     ],
                   ),
 

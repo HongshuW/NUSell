@@ -72,210 +72,222 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
                     ),
-                    body: Center(
-                      child: Form(
-                        key: _formkey,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Please choose your gender',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                  DropdownButtonFormField(
-                                    value:
-                                        _gender == "" ? _gender : doc['gender'],
-                                    decoration: InputDecoration(
-                                        border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(25.0),
-                                      borderSide: new BorderSide(),
-                                    )),
-                                    onSaved: (value) {
-                                      setState(() {
-                                        _gender = value;
-                                      });
-                                    },
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _gender = value;
-                                      });
-                                    },
-                                    items: ['Female', 'Male']
-                                        .map((label) => DropdownMenuItem(
-                                              child: Text(label.toString()),
-                                              value: label,
-                                            ))
-                                        .toList(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // inputFormField(
-                            //     'Username',
-                            //     _username,
-                            //     'Please enter your username',
-                            //     TextInputType.name,
-                            //     false),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Username',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                  TextFormField(
-                                    //controller: controller,
-                                    initialValue: _username == ""
-                                        ? _username
-                                        : doc['username'],
-                                    keyboardType: TextInputType.name,
-                                    decoration: InputDecoration(
-                                        border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(25.0),
-                                      borderSide: new BorderSide(),
-                                    )),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _username = value.trim();
-                                      });
-                                    },
-                                    onSaved: (value) {
-                                      setState(() {
-                                        _username = value.trim();
-                                      });
-                                    },
-                                    validator: (String value) {
-                                      if (value.isEmpty) {
-                                        return 'Please enter your username';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Phone number',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                  TextFormField(
-                                    //controller: controller,
-                                    initialValue: _phoneNumber == ""
-                                        ? _phoneNumber
-                                        : doc['phoneNumber'],
-                                    keyboardType: TextInputType.visiblePassword,
-                                    decoration: InputDecoration(
-                                        border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(25.0),
-                                      borderSide: new BorderSide(),
-                                    )),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _phoneNumber = value.trim();
-                                      });
-                                    },
-                                    onSaved: (value) {
-                                      setState(() {
-                                        _phoneNumber = value.trim();
-                                      });
-                                    },
-                                    validator: (String value) {
-                                      if (value.isEmpty) {
-                                        return 'Please enter your phone number';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    body: ListView(
+                      children: [
+                        Center(
+                          child: Form(
+                            key: _formkey,
+                            child: Column(
                               children: [
-                                Column(
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Please choose your gender',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                      DropdownButtonFormField(
+                                        value: _gender == ""
+                                            ? _gender
+                                            : doc['gender'],
+                                        decoration: InputDecoration(
+                                            border: new OutlineInputBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(25.0),
+                                          borderSide: new BorderSide(),
+                                        )),
+                                        onSaved: (value) {
+                                          setState(() {
+                                            _gender = value;
+                                          });
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _gender = value;
+                                          });
+                                        },
+                                        items: ['Female', 'Male']
+                                            .map((label) => DropdownMenuItem(
+                                                  child: Text(label.toString()),
+                                                  value: label,
+                                                ))
+                                            .toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // inputFormField(
+                                //     'Username',
+                                //     _username,
+                                //     'Please enter your username',
+                                //     TextInputType.name,
+                                //     false),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Username',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                      TextFormField(
+                                        //controller: controller,
+                                        initialValue: _username == ""
+                                            ? _username
+                                            : doc['username'],
+                                        keyboardType: TextInputType.name,
+                                        decoration: InputDecoration(
+                                            border: new OutlineInputBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(25.0),
+                                          borderSide: new BorderSide(),
+                                        )),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _username = value.trim();
+                                          });
+                                        },
+                                        onSaved: (value) {
+                                          setState(() {
+                                            _username = value.trim();
+                                          });
+                                        },
+                                        validator: (String value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter your username';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Phone number',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                      TextFormField(
+                                        //controller: controller,
+                                        initialValue: _phoneNumber == ""
+                                            ? _phoneNumber
+                                            : doc['phoneNumber'],
+                                        keyboardType:
+                                            TextInputType.visiblePassword,
+                                        decoration: InputDecoration(
+                                            border: new OutlineInputBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(25.0),
+                                          borderSide: new BorderSide(),
+                                        )),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _phoneNumber = value.trim();
+                                          });
+                                        },
+                                        onSaved: (value) {
+                                          setState(() {
+                                            _phoneNumber = value.trim();
+                                          });
+                                        },
+                                        validator: (String value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter your phone number';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        if (_formkey.currentState.validate()) {
-                                          _formkey.currentState.save();
+                                    Column(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (_formkey.currentState
+                                                .validate()) {
+                                              _formkey.currentState.save();
 
-                                          //TODO
-                                          user.username = _username;
-                                          user.phoneNumber = _phoneNumber;
-                                          user.gender = _gender;
-                                          user.password = _password;
-                                          _setUserEmail();
-                                          print(user.username);
-                                          FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(
-                                                  AuthService().getCurrentUID())
-                                              .set({
-                                            'username': _username,
-                                            'phoneNumber': _phoneNumber,
-                                            'gender': _gender,
-                                            'password': _password
-                                          }, SetOptions(merge: true));
-                                          print('saved');
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProfileScreen()));
-                                        } else {
-                                          print('unsuccessful!');
-                                        }
-                                      },
-                                      child: Text(
-                                        'Save your profile',
-                                        //style: TextStyle(fontSize: 18),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Color.fromRGBO(
-                                            242, 195, 71, 1), // background
-                                        onPrimary: Colors.black, // foreground
-                                      ),
+                                              //TODO
+                                              user.username = _username;
+                                              user.phoneNumber = _phoneNumber;
+                                              user.gender = _gender;
+                                              user.password = _password;
+                                              _setUserEmail();
+                                              print(user.username);
+                                              FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(AuthService()
+                                                      .getCurrentUID())
+                                                  .set({
+                                                'username': _username,
+                                                'phoneNumber': _phoneNumber,
+                                                'gender': _gender,
+                                                'password': _password
+                                              }, SetOptions(merge: true));
+                                              print('saved');
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ProfileScreen()));
+                                            } else {
+                                              print('unsuccessful!');
+                                            }
+                                          },
+                                          child: Text(
+                                            'Save your profile',
+                                            //style: TextStyle(fontSize: 18),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Color.fromRGBO(
+                                                242, 195, 71, 1), // background
+                                            onPrimary:
+                                                Colors.black, // foreground
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ],
+                                ),
+                                Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    Positioned(
+                                        child: Image.asset(
+                                            'assets/images/wavingLion.png'))
                                   ],
                                 ),
                               ],
                             ),
-                            Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: [
-                                Positioned(
-                                    child: Image.asset(
-                                        'assets/images/wavingLion.png'))
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ));
               });
         });

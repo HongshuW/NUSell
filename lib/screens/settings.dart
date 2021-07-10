@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
@@ -13,6 +14,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,25 +167,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         child: Text("Cancel"),
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          User user =
-                                              FirebaseAuth.instance.currentUser;
-                                          user.delete();
-                                          print('Deleted successfully!');
-                                          Navigator.of(context).pushReplacement(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoginScreen()));
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary:
-                                              Color.fromRGBO(100, 170, 255, 1),
-                                        ),
-                                        child: Text("Delete",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
+                                      StreamBuilder<DocumentSnapshot>(
+                                          stream: db
+                                              .collection('myPosts')
+                                              .doc(
+                                                  AuthService().getCurrentUID())
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            return ElevatedButton(
+                                              onPressed: () async {
+                                                User user = FirebaseAuth
+                                                    .instance.currentUser;
+                                                user.delete();
+                                                String uid = AuthService()
+                                                    .getCurrentUID();
+                                                Map<String, dynamic> doc =
+                                                    snapshot.data.data();
+                                                for (var post
+                                                    in doc['myPosts']) {
+                                                  db
+                                                      .collection('posts')
+                                                      .doc(post)
+                                                      .delete();
+                                                }
+                                                db
+                                                    .collection('myChat')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection('myPosts')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection(
+                                                        'personalPreference')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection('reviews')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection('searchHistory')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection('shopping cart')
+                                                    .doc(uid)
+                                                    .delete();
+                                                db
+                                                    .collection('users')
+                                                    .doc(uid)
+                                                    .delete();
+                                                print('Deleted successfully!');
+                                                Navigator.of(context)
+                                                    .pushReplacement(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                LoginScreen()));
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Color.fromRGBO(
+                                                    100, 170, 255, 1),
+                                              ),
+                                              child: Text("Delete",
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
+                                            );
+                                          }),
                                     ],
                                   )
                                 ],

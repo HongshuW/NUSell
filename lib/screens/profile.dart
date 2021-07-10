@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
@@ -34,6 +35,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // bool showingPosts = true;
+    // interactions(bool showingPosts) {
+    //   if (showingPosts == true) {
+    //     return
+    //   }
+    // }
     return StreamBuilder<DocumentSnapshot>(
         stream: _userStream,
         builder:
@@ -152,6 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                                         print('uploaded image');
                                       },
+                                      size: 50,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -178,17 +186,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
                               }),
                         ),
-                        Row(
-                          //scrollDirection: Axis.horizontal,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            InkWell(
-                              child: Text('posts'),
-                            ),
-                            InkWell(
-                              child: Text('reviews'),
-                            )
-                          ],
+
+                        GestureDetector(
+                          child: Column(
+                            //scrollDirection: Axis.horizontal,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'posts',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      height: 30,
+                                    ),
+                                    IconButton(
+                                      icon:
+                                          Icon(Icons.arrow_forward_ios_rounded),
+                                      onPressed: () {
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    myPosts(context)));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                  height: 1,
+                                  width: MediaQuery.of(context).size.width,
+                                  color: Colors.grey),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'reviews',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      height: 30,
+                                    ),
+                                    IconButton(
+                                      icon:
+                                          Icon(Icons.arrow_forward_ios_rounded),
+                                      onPressed: () {
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    myReviews(context)));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                  height: 1,
+                                  width: MediaQuery.of(context).size.width,
+                                  color: Colors.grey),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'items bought',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      height: 30,
+                                    ),
+                                    IconButton(
+                                      icon:
+                                          Icon(Icons.arrow_forward_ios_rounded),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                  height: 1,
+                                  width: MediaQuery.of(context).size.width,
+                                  color: Colors.grey),
+                            ],
+                          ),
                         )
                         // Column(
                         //   children: [
@@ -280,6 +371,24 @@ Widget myPosts(context) {
       ),
     ),
     body: AllPostsScreen(
+      userId: AuthService().getCurrentUID(),
+    ),
+  );
+}
+
+Widget myReviews(context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Reviews'),
+      leading: BackButton(
+        color: Colors.black,
+        onPressed: () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => ProfileScreen()));
+        },
+      ),
+    ),
+    body: ReviewsForUser(
       userId: AuthService().getCurrentUID(),
     ),
   );
