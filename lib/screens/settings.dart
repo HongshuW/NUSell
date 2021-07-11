@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
@@ -51,69 +52,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     showDialog(
                         context: context,
                         builder: (context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            elevation: 10,
-                            backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-                            child: Container(
-                              margin: EdgeInsets.all(30),
-                              height: MediaQuery.of(context).size.height * 0.2,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 10, bottom: 10),
-                                    child: Text(
-                                      "Are you sure you want to log out?",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  // Container(
-                                  //   margin: EdgeInsets.only(
-                                  //       bottom: 10),
-                                  //   child: Text(
-                                  //       "You will need to sign in again to view your account!"),
-                                  // ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Colors.white,
-                                          side: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  100, 170, 255, 1)),
-                                        ),
-                                        child: Text("Cancel"),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          AuthService().signout();
-                                          Navigator.of(context).pushReplacement(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoginScreen()));
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary:
-                                              Color.fromRGBO(100, 170, 255, 1),
-                                        ),
-                                        child: Text("Log out",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
+                          return popUp(
+                            title: "Are you sure you want to log out?",
+                            // subtitle: "You will need to sign in again to view your account!",
+                            confirmText: "Log out",
+                            confirmColor: Color.fromRGBO(100, 170, 255, 1),
+                            confirmAction: () {
+                              AuthService().signout();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen()));
+                            },
                           );
                         });
                   },
