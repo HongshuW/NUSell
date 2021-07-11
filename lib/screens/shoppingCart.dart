@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -33,21 +34,25 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
   int postPrice;
 
   getImage(imgArr) {
-    var img;
     if (imgArr.isEmpty) {
-      img =
-          'https://firebasestorage.googleapis.com/v0/b/orbital-test-4e374.appspot.com/o/productpics%2Fdefault.png?alt=media&token=c1100242-206c-44d9-a51b-181937932156';
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Image.asset(
+          'assets/images/defaultPreview.png',
+          fit: BoxFit.fitHeight,
+          width: 60,
+        ),
+      );
     } else {
-      img = imgArr[0];
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: CachedNetworkImage(
+          imageUrl: imgArr[0],
+          fit: BoxFit.fitWidth,
+          width: 60,
+        ),
+      );
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      child: Image.network(
-        img,
-        fit: BoxFit.fitHeight,
-        width: 60,
-      ),
-    );
   }
 
   _getMyPosts() async {
@@ -121,7 +126,19 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                   builder: (context) =>
                                                       LoginScreen()));
                                         } else {
-                                          if (post["status"] == "Selling") {
+                                          if (post == null) {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return popUp(
+                                                    title: "The seller's account has been disabled.",
+                                                    confirmAction: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                    cancelButton: false,
+                                                  );
+                                                });
+                                          } else if (post["status"] == "Selling") {
                                             Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                     builder: (context) =>
@@ -165,7 +182,8 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                         child: Container(
                                           height: 100,
                                           decoration: BoxDecoration(
-                                            color: post["status"] == "Selling" ? Colors.orange : Colors.grey,
+                                            color: (post == null || post["status"] != "Selling")
+                                                ? Colors.grey : Colors.orange,
                                             shape: BoxShape.rectangle,
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -180,13 +198,13 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                               children: [
                                                 Container(
                                                   decoration: BoxDecoration(
-                                                    color: Colors.blue,
+                                                    color: Colors.orange,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             20),
                                                   ),
                                                   child:
-                                                      getImage(post['images']),
+                                                      post == null ? null : getImage(post['images']),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(
@@ -197,7 +215,9 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                             .center,
                                                     children: [
                                                       Text(
-                                                        "${post['productName']}",
+                                                        post == null
+                                                            ? "Item is not available"
+                                                            : "${post['productName']}",
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -205,15 +225,17 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        "${post['price']}",
+                                                        post == null
+                                                            ? ""
+                                                            : "${post['price']}",
                                                         style: TextStyle(
                                                           fontSize: 16,
                                                         ),
                                                       ),
                                                       Text(
-                                                        post["status"] == "Selling"
-                                                            ? ""
-                                                            : "Unavailable",
+                                                        post == null || post["status"] != "Selling"
+                                                            ? "Unavailable"
+                                                            : "",
                                                         style: TextStyle(
                                                           fontSize: 16,
                                                         ),

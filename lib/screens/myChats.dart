@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
@@ -71,6 +72,78 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                     return Center(child: CircularProgressIndicator());
                   }
                   Map<String, dynamic> userInfo = snapshot.data.data();
+                  // if the other user's account has been deleted, provides
+                  // delete this chat function
+                  if (userInfo == null) {
+                    return InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return popUp(
+                                title: "This account has been deleted.",
+                                confirmText: "Delete this chat",
+                                confirmColor: Colors.red,
+                                confirmAction: () {
+                                  db.collection("myChats").doc(user).update({
+                                    "myChats": FieldValue.arrayRemove([chatID]),
+                                  });
+                                  db.collection("chats").doc(chatID).delete();
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            });
+                      },
+                      child: Card(
+                        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                        color: Colors.grey,
+                        child: Row(
+                          children: [
+                            // profile photo of the other user
+                            Container(
+                              margin: EdgeInsets.only(left: 5, right: 20),
+                              color: Color.fromRGBO(0, 0, 0, 0.1),
+                              child: CachedNetworkImage(
+                                imageUrl: null,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+
+                            // the other user's name and the last message for this chat
+                            Flexible(
+                              child: Container(
+                                height: 60,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      "This account has been disabled",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    Text(
+                                      chatInfo["history"].isEmpty
+                                          ? ""
+                                          : chatInfo["history"].last["message"] ==
+                                          null
+                                          ? "[photo]"
+                                          : chatInfo["history"]
+                                          .last["message"],
+                                      style: TextStyle(color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
                   return InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(

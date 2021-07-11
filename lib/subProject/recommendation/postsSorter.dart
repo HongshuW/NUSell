@@ -53,7 +53,6 @@ class postsSorter {
     for (var i = 0; i < len; i++) {
       resultantList.add(sorted[i][0]);
     }
-    print(sorted);
     return resultantList;
   }
 
