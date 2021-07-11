@@ -54,8 +54,6 @@ class _AppState extends State<App> {
             ));
       }
     });
-
-    getToken();
   }
 
   @override
@@ -92,14 +90,5 @@ class _AppState extends State<App> {
         home: LoginScreen(),
       ),
     );
-  }
-
-  getToken() async {
-    String token = await FirebaseMessaging.instance.getToken();
-    print(token);
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(AuthService().getCurrentUID())
-        .set({'androidNotificationToken': token}, SetOptions(merge: true));
   }
 }

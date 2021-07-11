@@ -1,7 +1,39 @@
+// // Create and Deploy Your First Cloud Functions
+// // https://firebase.google.com/docs/functions/write-firebase-functions
+//
+// exports.helloWorld = functions.https.onRequest((request, response) => {
+//   functions.logger.info("Hello logs!", {structuredData: true});
+//   response.send("Hello from Firebase!");
+// });
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 
-admin.initializeApp();
+//var serviceAccount = require("/Users/liuzhilan/Documents/Development/orbital/learning/orbital2796_nusell/serviceAccountKey.json");
+
+admin.initializeApp(
+  //{credential: admin.credential.cert(serviceAccount)}
+);
+// var registrationToken = 'dgLTCnRhQoqIIVH_Tu6LD4:APA91bFjqsuTB8sZWmaDPn2QpjUUUoes9DtR5qtayDdcopMU5fPnURFHZgUq0cA2ZBnrKBDtVOB9doSq4CrVP10O9RRokeUFllLLj8GSQduVN8NPrVSv100xU3HIMec2Lz8a_Y4O0KO_';
+
+// var message = {
+//     notification: {
+//       title: '850',
+//       body: '2:45'
+//     },
+//     //token: registrationToken
+//   };
+  
+//   // Send a message to the device corresponding to the provided
+//   // registration token.
+//   admin.messaging().sendToDevice(registrationToken, message)
+//     .then((response) => {
+//       // Response is a message ID string.
+//       console.log('Successfully sent message:', response);
+//     })
+//     .catch((error) => {
+//       console.log('Error sending message:', error);
+//     });
+
 exports.onMessageSendNotification = functions.firestore
     .document("/chats/{docId}")
     .onUpdate((change, context) => {
@@ -13,7 +45,7 @@ exports.onMessageSendNotification = functions.firestore
         const idFrom = docAfter['users'][idFromIndex];
         const idTo = docAfter['users'][1-idFromIndex];
         const contentMessage = docAfter['history'][docAfter.history.length - 1]['message'];
-        console.log(contentMessage);
+        functions.logger.log(contentMessage);
         // Get push token user to (receive)
         admin
         .firestore()
@@ -32,18 +64,12 @@ exports.onMessageSendNotification = functions.firestore
                 
                     console.log(`Found user from: ${querySnapshotUserFrom.data()['username']}`)
                     const payload = {
-                        notification: {
-                            title: `You have a message from "${querySnapshotUserFrom.data()['username']}"`,
-                            body: contentMessage,
-                            badge: '1',
-                            sound: 'default'
-                        },
-                        data: {
-                            title  : `You have a message from "${querySnapshotUserFrom.data()['username']}"`,
-                            body : contentMessage,
-                            badge: '1',
-                            sound: 'default'
-                          }
+                    notification: {
+                        title: `You have a message from "${querySnapshotUserFrom.data()['username']}"`,
+                        body: contentMessage,
+                        badge: '1',
+                        sound: 'default'
+                    }
                     }
                     // Let push to the target device
                     admin
