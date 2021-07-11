@@ -39,8 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ScrollController scrollController = ScrollController();
   getToken() async {
     String token = await FirebaseMessaging.instance.getToken();
-    print(AuthService().getCurrentUID());
-    print(token);
     FirebaseFirestore.instance
         .collection('users')
         .doc(AuthService().getCurrentUID())

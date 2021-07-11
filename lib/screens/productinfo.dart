@@ -311,10 +311,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                             if (!snapshot2.hasData || snapshot2.data == null)
                               return Center(child: CircularProgressIndicator());
                             Map<String, dynamic> posts = snapshot2.data.data();
-                            var addresses = posts['shopping cart'];
-                            for (var post in addresses) {
-                              if (post == widget.product) liked = true;
+                            if (posts != null) {
+                              var addresses = posts['shopping cart'];
+
+                              for (var post in addresses) {
+                                if (post == widget.product) liked = true;
+                              }
                             }
+
                             return IconButton(
                               onPressed: () {
                                 if (liked == false) {
