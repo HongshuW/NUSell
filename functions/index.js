@@ -6,8 +6,12 @@ exports.onMessageSendNotification = functions.firestore
     .document("/chats/{docId}")
     .onUpdate((change, context) => {
         console.log('came in');
+        const docBefore = change.before.data();
         const docAfter = change.after.data();
         console.log(docAfter.toString());
+        if (docBefore['history'].length == docAfter['history'].length) {
+            return console.log('Nothing to change');
+        }
         
         const idFromIndex = docAfter['history'][docAfter.history.length - 1]['user'];
         const idFrom = docAfter['users'][idFromIndex];
