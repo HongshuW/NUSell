@@ -185,7 +185,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   Widget build(BuildContext context) {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
-    print(widget.timer);
 
     // Returns a set of buttons with different functionalities based on the
     // status of the post.
@@ -262,7 +261,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     child: Text("Delete"))
                 : ElevatedButton(
                     child: Text("Delete"),
-                    onPressed: () {},
+                    onPressed: null,
                   ),
           ],
         );
@@ -633,25 +632,11 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     Icon(
                       Icons.article,
                     ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5),
-                      padding: EdgeInsets.only(left: 5, right: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color.fromRGBO(0, 0, 0, 0.1),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.category, size: 15),
-                          Text(
-                            "${post['category']}",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          )
-                        ],
+                    Text(
+                      " ${post['productName']}",
+                      style: TextStyle(
+                          fontSize: 16,
+                          letterSpacing: 0.5
                       ),
                     ),
                   ],
@@ -668,7 +653,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       " ${post['price']}",
                       style: TextStyle(
                         fontSize: 16,
-                        letterSpacing: 1,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
@@ -683,7 +668,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      letterSpacing: 1),
+                      letterSpacing: 0.5),
                 ),
               ),
               Container(
