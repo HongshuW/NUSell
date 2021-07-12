@@ -444,6 +444,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ContactSellerScreen(
                                   chatID: docID,
+                                  theOtherUserId: seller,
                                   theOtherUserName: sellerName,
                                 )));
                       },

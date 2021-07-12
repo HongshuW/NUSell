@@ -19,8 +19,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class ContactSellerScreen extends StatefulWidget {
   final String chatID;
+  final String theOtherUserId;
   final String theOtherUserName;
-  ContactSellerScreen({Key key, this.chatID, this.theOtherUserName})
+  ContactSellerScreen({Key key, this.chatID, this.theOtherUserId, this.theOtherUserName})
       : super(key: key);
 
   @override
@@ -217,6 +218,14 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                             history = List.from(chat["history"].reversed);
                             this.userIndex =
                                 getUserIndex(this.userId, chat["users"]);
+                            if (chat["unread"][this.userId] != 0) {
+                              Map updatedVals = {};
+                              updatedVals[this.userId] = 0;
+                              updatedVals[widget.theOtherUserId] = 0;
+                              db.collection("chats").doc(widget.chatID).update({
+                                "unread": updatedVals
+                              });
+                            }
                           }
                           return Container(
                             margin: EdgeInsets.only(left: 30, right: 30),
@@ -271,9 +280,14 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                           if (this.content != "") {
                             this.message = AppMessage(
                                 this.userIndex, Timestamp.now(), this.content);
+                            Map updatedVals = {};
+                            updatedVals[widget.theOtherUserId]
+                              = chat["unread"][widget.theOtherUserId] + 1;
+                            updatedVals[this.userId] = 0;
                             db.collection("chats").doc(widget.chatID).update({
                               "history":
-                                  FieldValue.arrayUnion([this.message.toMap()])
+                                  FieldValue.arrayUnion([this.message.toMap()]),
+                              "unread": updatedVals
                             });
                             //_showNotification(value);
                             _controller.text = "";
