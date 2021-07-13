@@ -8,6 +8,7 @@ import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
+import 'package:orbital2796_nusell/services/transactionHistory.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
@@ -253,6 +254,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 OffersMadeScreen()));
                                   },
                                 ),
+                              ),
+                              rowWidget(
+                                context,
+                                'transaction history',
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                TransactionHistoryScreen()));
+                                  },
+                                ),
                               )
                             ],
                           ),
@@ -361,7 +375,7 @@ Widget rowWidget(context, String text, IconButton button) {
   return Column(
     children: [
       Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(4.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -370,7 +384,7 @@ Widget rowWidget(context, String text, IconButton button) {
                 text,
                 style: TextStyle(fontSize: 20),
               ),
-              height: 30,
+              height: 25,
             ),
             button
           ],

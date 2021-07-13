@@ -497,9 +497,11 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                           'offerFromUser':
                                               AuthService().getCurrentUID(),
                                           'priceOffered': controller.text,
-                                          'status': 'pending'
+                                          'status': 'Pending'
                                         }
                                       ]),
+                                      'status': 'Pending',
+                                      'sellerReceivedPayment': false
                                     }, SetOptions(merge: true));
                                     users
                                         .doc(AuthService().getCurrentUID())
@@ -508,7 +510,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                         .set({
                                       'price': FieldValue.arrayUnion(
                                           [controller.text]),
-                                      'status': 'Pending'
+                                      'status': 'Pending',
+                                      'time': DateTime.now(),
+                                      'buyerReceivedProduct': false
                                     }, SetOptions(merge: true));
                                     Navigator.of(context).pop();
                                     Fluttertoast.showToast(

@@ -67,8 +67,14 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                 doc['status'] == 'Accepted'
                                     ? Padding(
                                         padding: const EdgeInsets.all(5.0),
-                                        child: Text(
-                                            'Please contact the seller to meet up or mail to receive the item'),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                                'Please contact the seller to meet up or mail to receive the item'),
+                                            Text(
+                                                'Price accepted: ${doc['priceAccepted']}')
+                                          ],
+                                        ),
                                       )
                                     : Container(),
                                 Row(
@@ -97,6 +103,23 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                           Text('Price offered: ${price}'))
                                       .toList(),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('I have received the product'),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            offersMade.doc(doc.id).set(
+                                                {'buyerReceivedProduct': true},
+                                                SetOptions(merge: true));
+                                          },
+                                          child: Text('Confirm'))
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           );

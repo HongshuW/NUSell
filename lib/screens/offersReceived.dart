@@ -71,9 +71,9 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             }
                             Map<String, dynamic> post = snapshot2.data.data();
                             Map<String, dynamic> offers = doc.data();
-                            List offerList = offers['offers'];
+                            var offerList = offers['offers'];
 
-                            if (offers['status'] == 'accepted') {
+                            if (offerList == 'sold') {
                               return Container(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -153,11 +153,16 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                 .set(
                                                                     {
                                                                   'status':
-                                                                      'accepted',
+                                                                      'Accepted',
                                                                   'userAccepted':
                                                                       offerList
                                                                           .elementAt(
                                                                               index),
+                                                                  'time':
+                                                                      DateTime
+                                                                          .now(),
+                                                                  'offers':
+                                                                      'sold'
                                                                 },
                                                                     SetOptions(
                                                                         merge:
@@ -172,7 +177,10 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                 .set(
                                                                     {
                                                                   'status':
-                                                                      'Accepted'
+                                                                      'Accepted',
+                                                                  'priceAccepted':
+                                                                      offer[
+                                                                          'priceOffered'],
                                                                 },
                                                                     SetOptions(
                                                                         merge:
@@ -274,7 +282,24 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                               style: TextStyle(fontSize: 18),
                                             ),
                                           );
-                                        })
+                                        }),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('I have received payment'),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                offersReceived.doc(doc.id).set({
+                                                  'sellerReceivedPayment': true
+                                                }, SetOptions(merge: true));
+                                              },
+                                              child: Text('Confirm'))
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
