@@ -149,6 +149,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ContactSellerScreen(
                               chatID: chatID,
+                              theOtherUserId: this.theOtherUser,
                               theOtherUserName: userInfo["username"])));
                     },
                     child: Card(
@@ -171,6 +172,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                           Flexible(
                             child: Container(
                               height: 60,
+                              width: MediaQuery.of(context).size.width * 0.6,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
@@ -178,9 +180,10 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                 children: [
                                   Text(
                                     userInfo["username"] == null
-                                        ? theOtherUser
+                                        ? chatID
                                         : userInfo["username"],
                                     style: TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     chatInfo["history"].isEmpty
@@ -194,6 +197,26 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
+                              ),
+                            ),
+                          ),
+
+                          // number of unread messages
+                          chatInfo["unread"][this.user] == 0 ? Container()
+                          : Container(
+                            height: 15,
+                            width: 15,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.red,
+                            ),
+                            child: Text(
+                              chatInfo["unread"][this.user].toString(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 12
                               ),
                             ),
                           ),
