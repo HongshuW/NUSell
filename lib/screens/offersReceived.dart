@@ -73,6 +73,16 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             Map<String, dynamic> offers = doc.data();
                             List offerList = offers['offers'];
 
+                            if (offers['status'] == 'accepted') {
+                              return Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Text(
+                                      'Offer for ${post['productName']} has been accepted'),
+                                ),
+                              );
+                            }
+
                             return Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Container(
@@ -84,27 +94,20 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Product: ${post['productName']}',
-                                            style: TextStyle(fontSize: 22),
-                                          ),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ProductInfoScreen(
-                                                                product:
-                                                                    doc.id)));
-                                              },
-                                              child: Text('View'))
-                                        ],
+                                      child: Text(
+                                        'Product: ${post['productName']}',
+                                        style: TextStyle(fontSize: 22),
                                       ),
                                     ),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProductInfoScreen(
+                                                          product: doc.id)));
+                                        },
+                                        child: Text('View')),
                                     ListView(
                                       shrinkWrap: true,
                                       children: offerList.map((offer) {
@@ -154,11 +157,12 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                   'userAccepted':
                                                                       offerList
                                                                           .elementAt(
-                                                                              index)
+                                                                              index),
                                                                 },
                                                                     SetOptions(
                                                                         merge:
                                                                             true));
+
                                                             users
                                                                 .doc(offer[
                                                                     'offerFromUser'])
@@ -193,11 +197,16 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                 }),
           ]),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 15, 0, 0),
+            padding: const EdgeInsets.fromLTRB(24, 15, 0, 0),
             child: Text(
               'Accepted',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 6, 6, 0),
+            child: Text(
+                'Please contact the buyer to meet up or mail to send the item'),
           ),
           ListView(shrinkWrap: true, children: [
             StreamBuilder<QuerySnapshot>(
@@ -232,27 +241,20 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Product: ${post['productName']}',
-                                            style: TextStyle(fontSize: 22),
-                                          ),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ProductInfoScreen(
-                                                                product:
-                                                                    doc.id)));
-                                              },
-                                              child: Text('View'))
-                                        ],
+                                      child: Text(
+                                        'Product: ${post['productName']}',
+                                        style: TextStyle(fontSize: 22),
                                       ),
                                     ),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProductInfoScreen(
+                                                          product: doc.id)));
+                                        },
+                                        child: Text('View')),
                                     StreamBuilder<DocumentSnapshot>(
                                         stream: users
                                             .doc(userAccepted['offerFromUser'])

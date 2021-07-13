@@ -64,6 +64,13 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
+                                doc['status'] == 'Accepted'
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                            'Please contact the seller to meet up or mail to receive the item'),
+                                      )
+                                    : Container(),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
