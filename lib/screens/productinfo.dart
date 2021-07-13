@@ -501,7 +501,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                         }
                                       ]),
                                       'status': 'Pending',
-                                      'sellerReceivedPayment': false
+                                      'sellerReceivedPayment': false,
+                                      'reviewDone': false
                                     }, SetOptions(merge: true));
                                     users
                                         .doc(AuthService().getCurrentUID())

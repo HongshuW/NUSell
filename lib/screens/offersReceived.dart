@@ -283,23 +283,36 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                             ),
                                           );
                                         }),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('I have received payment'),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                offersReceived.doc(doc.id).set({
-                                                  'sellerReceivedPayment': true
-                                                }, SetOptions(merge: true));
-                                              },
-                                              child: Text('Confirm'))
-                                        ],
-                                      ),
-                                    )
+                                    doc['sellerReceivedPayment'] == false
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('I have received payment'),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      offersReceived
+                                                          .doc(doc.id)
+                                                          .set(
+                                                              {
+                                                            'sellerReceivedPayment':
+                                                                true
+                                                          },
+                                                              SetOptions(
+                                                                  merge: true));
+                                                    },
+                                                    child: Text('Confirm'))
+                                              ],
+                                            ),
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child:
+                                                Text('Transaction completed!'),
+                                          )
                                   ],
                                 ),
                               ),

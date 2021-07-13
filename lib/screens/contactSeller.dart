@@ -84,44 +84,50 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                               child: GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor: Colors.black,
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return Dialog(
-                                        insetPadding: EdgeInsets.all(0),
-                                        child: Container(
-                                          color: Colors.black,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                margin: EdgeInsets.only(bottom: 50),
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Icon(
-                                                    Icons.arrow_back,
-                                                    color: Colors.white,
-                                                    size: 30,
-                                                  ),
-                                                  style: ElevatedButton.styleFrom(
-                                                    primary: Colors.transparent,
+                                      barrierColor: Colors.black,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          insetPadding: EdgeInsets.all(0),
+                                          child: Container(
+                                            color: Colors.black,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 50),
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Icon(
+                                                      Icons.arrow_back,
+                                                      color: Colors.white,
+                                                      size: 30,
+                                                    ),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary:
+                                                          Colors.transparent,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              CachedNetworkImage(
-                                                imageUrl: message["imgURL"],
-                                                fadeInDuration:
-                                                const Duration(milliseconds: 10),
-                                              ),
-                                            ],
+                                                CachedNetworkImage(
+                                                  imageUrl: message["imgURL"],
+                                                  fadeInDuration:
+                                                      const Duration(
+                                                          milliseconds: 10),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    }
-                                  );
+                                        );
+                                      });
                                 },
                                 child: CachedNetworkImage(
                                   imageUrl: message["imgURL"],

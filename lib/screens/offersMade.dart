@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/review.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class OffersMadeScreen extends StatefulWidget {
@@ -103,23 +104,68 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                           Text('Price offered: ${price}'))
                                       .toList(),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('I have received the product'),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            offersMade.doc(doc.id).set(
-                                                {'buyerReceivedProduct': true},
-                                                SetOptions(merge: true));
-                                          },
-                                          child: Text('Confirm'))
-                                    ],
-                                  ),
-                                )
+                                doc['buyerReceivedProduct'] == false
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('I have received the product'),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  offersMade.doc(doc.id).set({
+                                                    'buyerReceivedProduct': true
+                                                  }, SetOptions(merge: true));
+                                                },
+                                                child: Text('Confirm'))
+                                          ],
+                                        ),
+                                      )
+                                    : doc['reviewDone'] == false
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                        'Transaction completed!'),
+                                                    Text(
+                                                        'Write a review for the seller')
+                                                  ],
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pushReplacement(
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ReviewScreen(
+                                                                            product:
+                                                                                doc.id,
+                                                                            seller:
+                                                                                post['user'],
+                                                                          )));
+                                                    },
+                                                    child: Text('Go!'))
+                                              ],
+                                            ),
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              children: [
+                                                Text('Transaction completed!'),
+                                                Text(
+                                                    'Thanks for writing the review!')
+                                              ],
+                                            ),
+                                          )
                               ],
                             ),
                           );

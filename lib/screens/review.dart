@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:orbital2796_nusell/models/review.dart';
-import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class ReviewScreen extends StatefulWidget {
@@ -22,6 +22,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
   Review review;
 
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  CollectionReference offersMade = FirebaseFirestore.instance
+      .collection('users')
+      .doc(AuthService().getCurrentUID())
+      .collection('offersMade');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,8 +154,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                       .doc(widget.product)
                                       .set({'sellerScore': averageRating},
                                           SetOptions(merge: true));
+                                  offersMade.doc(widget.product).set(
+                                      {'reviewDone': true},
+                                      SetOptions(merge: true));
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => HomeScreen()));
+                                      builder: (context) =>
+                                          OffersMadeScreen()));
                                 } else {
                                   print('unsuccessful!');
                                 }

@@ -223,14 +223,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               rowWidget(
                                 context,
-                                'items bought',
-                                IconButton(
-                                  icon: Icon(Icons.arrow_forward_ios_rounded),
-                                  onPressed: () {},
-                                ),
-                              ),
-                              rowWidget(
-                                context,
                                 'offers received',
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
