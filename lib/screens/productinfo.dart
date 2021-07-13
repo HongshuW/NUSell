@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/subProject/recommendation/backgroundTimer.dart';
 import 'package:orbital2796_nusell/models/chat.dart';
 import 'package:orbital2796_nusell/models/popUp.dart';
@@ -454,11 +456,66 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ReviewScreen(
-                                    product: widget.product,
-                                    seller: post['user'],
-                                  )));
+                          // Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => ReviewScreen(
+                          //           product: widget.product,
+                          //           seller: post['user'],
+                          //         )));
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                TextEditingController controller =
+                                    TextEditingController();
+                                return popUp(
+                                  title: "Make an offer for this product",
+                                  subtitle: "What is your target price",
+                                  confirmText: "Submit",
+                                  confirmColor:
+                                      Color.fromRGBO(100, 170, 255, 1),
+                                  hasTextField: true,
+                                  textField: TextField(
+                                      controller: controller,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.all(5),
+                                        hintText: "e.g. 7.5",
+                                        fillColor:
+                                            Color.fromRGBO(255, 255, 255, 0.5),
+                                        filled: true,
+                                      )),
+                                  confirmAction: () {
+                                    //AuthService().signout();
+                                    users
+                                        .doc(seller)
+                                        .collection('offersReceived')
+                                        .doc(widget.product)
+                                        .set({
+                                      'offers': FieldValue.arrayUnion([
+                                        {
+                                          'offerFromUser':
+                                              AuthService().getCurrentUID(),
+                                          'priceOffered': controller.text,
+                                          'status': 'pending'
+                                        }
+                                      ]),
+                                    }, SetOptions(merge: true));
+                                    users
+                                        .doc(AuthService().getCurrentUID())
+                                        .collection('offersMade')
+                                        .doc(widget.product)
+                                        .set({
+                                      'price': controller.text,
+                                      'status': 'pending'
+                                    }, SetOptions(merge: true));
+                                    Navigator.of(context).pop();
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            'You have successfully made an offer');
+                                  },
+                                );
+                              });
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(100, 170, 255, 1),
@@ -634,10 +691,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     ),
                     Text(
                       " ${post['productName']}",
-                      style: TextStyle(
-                          fontSize: 16,
-                          letterSpacing: 0.5
-                      ),
+                      style: TextStyle(fontSize: 16, letterSpacing: 0.5),
                     ),
                   ],
                 ),

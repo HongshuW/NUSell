@@ -60,8 +60,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             confirmAction: () {
                               AuthService().signout();
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
                             },
                           );
                         });

@@ -154,6 +154,7 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
                                   if (post["status"] != this.status) {
                                     return Container(height: 0, width: 0);
                                   }
+
                                   return InkWell(
                                     onTap: () {
                                       if (auth.currentUser == null) {
