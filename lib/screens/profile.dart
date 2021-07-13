@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
@@ -240,6 +241,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                 ),
                               ),
+                              rowWidget(
+                                context,
+                                'offers made',
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                OffersMadeScreen()));
+                                  },
+                                ),
+                              )
                             ],
                           ),
                         )

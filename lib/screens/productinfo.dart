@@ -506,8 +506,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                         .collection('offersMade')
                                         .doc(widget.product)
                                         .set({
-                                      'price': controller.text,
-                                      'status': 'pending'
+                                      'price': FieldValue.arrayUnion(
+                                          [controller.text]),
+                                      'status': 'Pending'
                                     }, SetOptions(merge: true));
                                     Navigator.of(context).pop();
                                     Fluttertoast.showToast(

@@ -159,6 +159,20 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                     SetOptions(
                                                                         merge:
                                                                             true));
+                                                            users
+                                                                .doc(offer[
+                                                                    'offerFromUser'])
+                                                                .collection(
+                                                                    'offersMade')
+                                                                .doc(doc.id)
+                                                                .set(
+                                                                    {
+                                                                  'status':
+                                                                      'Accepted'
+                                                                },
+                                                                    SetOptions(
+                                                                        merge:
+                                                                            true));
                                                           },
                                                           child:
                                                               Text('Accept')),
