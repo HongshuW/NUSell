@@ -265,7 +265,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Container(
-          margin: EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(249, 241, 219, 1),
+            image: DecorationImage(
+                image: AssetImage("assets/images/waveTop.png"),
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.topLeft
+            ),
+          ),
+          padding: EdgeInsets.only(left: 30, right: 30),
           child: FutureBuilder<DocumentSnapshot>(
             future: this._future,
             builder: (BuildContext context,
@@ -284,9 +292,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
               return ListView(
                 children: [
                   // Images
-                  Text("Original Photos: \n"),
+                  Container(
+                    margin: EdgeInsets.only(top: 30, bottom: 10),
+                      child: Text("Original Photos:")
+                  ),
                   displayOriginalImages(),
-                  Text("\nAdded Photos: \n"),
+                  Container(
+                    margin: EdgeInsets.only(top: 30, bottom: 10),
+                      child: Text("Added Photos:")
+                  ),
                 GridView.count(
                   crossAxisCount: 3,
                   crossAxisSpacing: 1,
@@ -449,24 +463,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
 
                   // Actions
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("Cancel"),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(255, 88, 68, 1),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Cancel"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(255, 88, 68, 1),
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      updatePost();
-                      uploadImages();
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("Update"),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(100, 170, 255, 1),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 30),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        updatePost();
+                        uploadImages();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Update"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(100, 170, 255, 1),
+                      ),
                     ),
                   ),
                 ],

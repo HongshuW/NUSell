@@ -246,14 +246,11 @@ class _PostScreenState extends State<PostScreen> {
         },
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomCenter,
-              stops: [0.5, 0.5],
-              colors: [
-                Color.fromRGBO(175, 241, 218, 0.3),
-                Color.fromRGBO(249, 234, 143, 0.5),
-              ],
+            color: Color.fromRGBO(249, 241, 219, 1),
+            image: DecorationImage(
+                image: AssetImage("assets/images/waveTop.png"),
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.topLeft
             ),
           ),
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
