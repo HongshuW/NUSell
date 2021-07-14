@@ -22,6 +22,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   List<String> offerFromUsers;
+
+  ScrollController _scrollController = new ScrollController();
   // var offers;
   // setOffers() async {
   //   offers = await offersReceived.get();
@@ -43,7 +45,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
         ),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 15, 0, 0),
@@ -52,7 +54,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          ListView(shrinkWrap: true, children: [
+          Column(children: [
             StreamBuilder<QuerySnapshot>(
                 stream: offersReceived.snapshots(),
                 builder: (context, querySnapshot) {
@@ -71,9 +73,9 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             }
                             Map<String, dynamic> post = snapshot2.data.data();
                             Map<String, dynamic> offers = doc.data();
-                            var offerList = offers['offers'];
+                            var offer1 = offers['offers'];
 
-                            if (offerList == 'sold') {
+                            if (offer1 == 'sold') {
                               return Container(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -82,6 +84,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                 ),
                               );
                             }
+                            List offerList = offers['offers'];
 
                             return Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -112,6 +115,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                       shrinkWrap: true,
                                       children: offerList.map((offer) {
                                         int index = offerList.indexOf(offer);
+                                        print(offer.toString());
                                         return StreamBuilder<DocumentSnapshot>(
                                             stream: users
                                                 .doc(offer['offerFromUser'])
@@ -216,8 +220,9 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
             child: Text(
                 'Please contact the buyer to meet up or mail to send the item'),
           ),
-          ListView(shrinkWrap: true, children: [
-            StreamBuilder<QuerySnapshot>(
+          Container(
+            height: 300,
+            child: StreamBuilder<QuerySnapshot>(
                 stream: offersReceived.snapshots(),
                 builder: (context, querySnapshot) {
                   if (querySnapshot.connectionState ==
@@ -321,7 +326,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                     }).toList(),
                   );
                 }),
-          ]),
+          ),
         ],
       ),
     );
