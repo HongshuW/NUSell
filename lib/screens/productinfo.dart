@@ -469,7 +469,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                     TextEditingController();
                                 return popUp(
                                   title: "Make an offer for this product",
-                                  subtitle: "What is your target price",
+                                  subtitle: "Your target price:",
                                   confirmText: "Submit",
                                   confirmColor:
                                       Color.fromRGBO(100, 170, 255, 1),
