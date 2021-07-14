@@ -17,6 +17,14 @@ class UserDatabaseService {
     return await db.collection('users').doc(uid).set(user.toMap(), options);
   }
 
+  Future setUpFollow(NUSellUser user) async {
+    var options = SetOptions(merge: true);
+    return await db.collection('follow').doc(uid).set({
+      'following': FieldValue.arrayUnion([]),
+      'followers': FieldValue.arrayUnion([])
+    });
+  }
+
   Future updateProfilePic(picUrl) async {
     print('came in to update url');
     await FirebaseAuth.instance.currentUser

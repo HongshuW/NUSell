@@ -15,7 +15,7 @@ class Avatar extends StatelessWidget {
             ? CircleAvatar(
                 radius: size,
                 // backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                child: Icon(Icons.photo_camera),
+                child: Icon(Icons.person),
               )
             : CircleAvatar(
                 radius: size,

@@ -618,6 +618,80 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                 fontSize: 16,
                                 letterSpacing: 1),
                           ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          post['user'] != AuthService().getCurrentUID()
+                              ? StreamBuilder<DocumentSnapshot>(
+                                  stream: db
+                                      .collection('follow')
+                                      .doc(AuthService().getCurrentUID())
+                                      .snapshots(),
+                                  builder: (context, snapshotForFollow) {
+                                    if (!snapshotForFollow.hasData) {
+                                      return CircularProgressIndicator();
+                                    }
+                                    Map<String, dynamic> mydoc =
+                                        snapshotForFollow.data.data();
+
+                                    List usersFollowing = mydoc['following'];
+                                    bool following = false;
+                                    for (var user in usersFollowing) {
+                                      if (post['user'] == user)
+                                        following = true;
+                                    }
+
+                                    return GestureDetector(
+                                        child: InkWell(
+                                      onTap: () {
+                                        db
+                                            .collection('follow')
+                                            .doc(AuthService().getCurrentUID())
+                                            .set({
+                                          'following': FieldValue.arrayUnion(
+                                              [post['user']])
+                                        }, SetOptions(merge: true));
+                                        db
+                                            .collection('follow')
+                                            .doc(post['user'])
+                                            .set({
+                                          'followers': FieldValue.arrayUnion(
+                                              [AuthService().getCurrentUID()])
+                                        }, SetOptions(merge: true));
+                                      },
+                                      child: Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          padding: EdgeInsets.only(
+                                              left: 5, right: 5),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Color.fromRGBO(
+                                                      242, 195, 71, 1)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: Colors.transparent),
+                                          child: !following
+                                              ? Text(
+                                                  "follow",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      color: Color.fromRGBO(
+                                                          242, 195, 71, 1)),
+                                                )
+                                              : Text(
+                                                  "following",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      color: Color.fromRGBO(
+                                                          242, 195, 71, 1)),
+                                                )),
+                                    ));
+                                  })
+                              : Container()
                         ],
                       ),
                     ),
