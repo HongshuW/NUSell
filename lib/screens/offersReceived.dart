@@ -54,15 +54,15 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          Column(children: [
-            StreamBuilder<QuerySnapshot>(
-                stream: offersReceived.snapshots(),
-                builder: (context, querySnapshot) {
-                  if (querySnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Text('Not yet');
-                  }
-                  return ListView(
+          StreamBuilder<QuerySnapshot>(
+              stream: offersReceived.snapshots(),
+              builder: (context, querySnapshot) {
+                if (querySnapshot.connectionState == ConnectionState.waiting) {
+                  return Text('Not yet');
+                }
+                return Container(
+                  height: 150,
+                  child: ListView(
                     shrinkWrap: true,
                     children: querySnapshot.data.docs.map((doc) {
                       return StreamBuilder<DocumentSnapshot>(
@@ -78,7 +78,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             if (offer1 == 'sold') {
                               return Container(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 4, 4, 4),
                                   child: Text(
                                       'Offer for ${post['productName']} has been accepted'),
                                 ),
@@ -205,9 +206,9 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             );
                           });
                     }).toList(),
-                  );
-                }),
-          ]),
+                  ),
+                );
+              }),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 15, 0, 0),
             child: Text(
@@ -221,7 +222,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                 'Please contact the buyer to meet up or mail to send the item'),
           ),
           Container(
-            height: 300,
+            height: 280,
             child: StreamBuilder<QuerySnapshot>(
                 stream: offersReceived.snapshots(),
                 builder: (context, querySnapshot) {

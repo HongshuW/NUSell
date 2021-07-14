@@ -503,7 +503,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                       ]),
                                       'status': 'Pending',
                                       'sellerReceivedPayment': false,
-                                      'reviewDone': false
                                     }, SetOptions(merge: true));
                                     users
                                         .doc(AuthService().getCurrentUID())
@@ -514,7 +513,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                           [controller.text]),
                                       'status': 'Pending',
                                       'time': DateTime.now(),
-                                      'buyerReceivedProduct': false
+                                      'buyerReceivedProduct': false,
+                                      'reviewDone': false
                                     }, SetOptions(merge: true));
                                     Navigator.of(context).pop();
                                     Fluttertoast.showToast(
