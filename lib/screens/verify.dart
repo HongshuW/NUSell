@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/screens/interests.dart';
 
 class VerifyScreen extends StatefulWidget {
   @override
@@ -11,7 +10,6 @@ class VerifyScreen extends StatefulWidget {
 
 class _VerifyScreenState extends State<VerifyScreen> {
   final auth = FirebaseAuth.instance;
-  final db = FirebaseFirestore.instance;
   User user;
   Timer timer;
 
@@ -47,10 +45,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
     await user.reload();
     if (user.emailVerified) {
       timer.cancel();
-      db.collection("personalPreference").doc(user.uid).set({
-        "Categories": {}, "Locations": {}, "Sellers": {}});
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()));
+          MaterialPageRoute(builder: (context) => InterestsScreen()));
     }
   }
 }

@@ -30,13 +30,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(252, 228, 70, 1),
         title: Text(
           'NUSell',
           style: TextStyle(color: Colors.black),
         ),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/images/waveBottom.png",),
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.bottomRight
+          ),
+        ),
         child: Center(
           child: Form(
             key: _formkey,
@@ -227,8 +233,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.bottomCenter,
                   children: [
                     Positioned(
-                        child: Image.asset('assets/images/wavingLion.png',
-                            width: MediaQuery.of(context).size.width * 0.7))
+                        child: Container(
+                          margin: EdgeInsets.only(top: 30),
+                          child: Image.asset('assets/images/wavingLion.png',
+                              width: MediaQuery.of(context).size.width * 0.7),
+                        ))
                   ],
                 ),
               ],
