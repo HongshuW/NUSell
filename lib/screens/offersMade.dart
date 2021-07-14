@@ -104,25 +104,13 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                           Text('Price offered: ${price}'))
                                       .toList(),
                                 ),
-                                doc['buyerReceivedProduct'] == false
+                                doc['status'] == 'Declined'
                                     ? Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text('I have received the product'),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  offersMade.doc(doc.id).set({
-                                                    'buyerReceivedProduct': true
-                                                  }, SetOptions(merge: true));
-                                                },
-                                                child: Text('Confirm'))
-                                          ],
-                                        ),
+                                        child: Text(
+                                            'Sorry, the seller has accepted offer by another user'),
                                       )
-                                    : doc['reviewDone'] == false
+                                    : doc['buyerReceivedProduct'] == false
                                         ? Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Row(
@@ -130,42 +118,70 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                        'Transaction completed!'),
-                                                    Text(
-                                                        'Write a review for the seller')
-                                                  ],
-                                                ),
+                                                Text(
+                                                    'I have received the product'),
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pushReplacement(
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
+                                                      offersMade
+                                                          .doc(doc.id)
+                                                          .set(
+                                                              {
+                                                            'buyerReceivedProduct':
+                                                                true
+                                                          },
+                                                              SetOptions(
+                                                                  merge: true));
+                                                    },
+                                                    child: Text('Confirm'))
+                                              ],
+                                            ),
+                                          )
+                                        : doc['reviewDone'] == false
+                                            ? Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      children: [
+                                                        Text(
+                                                            'Transaction completed!'),
+                                                        Text(
+                                                            'Write a review for the seller')
+                                                      ],
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pushReplacement(
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
                                                                           ReviewScreen(
                                                                             product:
                                                                                 doc.id,
                                                                             seller:
                                                                                 post['user'],
                                                                           )));
-                                                    },
-                                                    child: Text('Go!'))
-                                              ],
-                                            ),
-                                          )
-                                        : Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              children: [
-                                                Text('Transaction completed!'),
-                                                Text(
-                                                    'Thanks for writing the review!')
-                                              ],
-                                            ),
-                                          )
+                                                        },
+                                                        child: Text('Go!'))
+                                                  ],
+                                                ),
+                                              )
+                                            : Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  children: [
+                                                    Text(
+                                                        'Transaction completed!'),
+                                                    Text(
+                                                        'Thanks for writing the review!')
+                                                  ],
+                                                ),
+                                              )
                               ],
                             ),
                           );

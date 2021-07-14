@@ -153,6 +153,19 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                 SetOptions(
                                                                     merge:
                                                                         true));
+                                                            for (var user
+                                                                in offerList) {
+                                                              offersReceived
+                                                                  .doc(doc.id)
+                                                                  .set(
+                                                                      {
+                                                                    'status':
+                                                                        'Declined'
+                                                                  },
+                                                                      SetOptions(
+                                                                          merge:
+                                                                              true));
+                                                            }
                                                             offersReceived
                                                                 .doc(doc.id)
                                                                 .set(
