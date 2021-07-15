@@ -78,7 +78,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
               if (tab.text == 'As a buyer') {
                 return Container(
                   child: StreamBuilder<QuerySnapshot>(
-                      stream: offersMade.snapshots(),
+                      stream: offersMade
+                          .orderBy('time', descending: true)
+                          .snapshots(),
                       builder: (context, querySnapshot) {
                         if (querySnapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -138,7 +140,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                           Text(
                                               'Price accepted: ${doc['priceAccepted']}'),
                                           timeAsString != null
-                                              ? Text(timeAsString.toString())
+                                              ? Text(timeAsString
+                                                  .toString()
+                                                  .substring(0, 19))
                                               : Container()
                                         ],
                                       ),
@@ -153,7 +157,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                 return Container(
                   child: ListView(shrinkWrap: true, children: [
                     StreamBuilder<QuerySnapshot>(
-                        stream: offersReceived.snapshots(),
+                        stream: offersReceived
+                            .orderBy('time', descending: true)
+                            .snapshots(),
                         builder: (context, querySnapshot) {
                           if (querySnapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -168,6 +174,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                               }
                               Timestamp time = doc['time'];
                               DateTime timeAsString = time.toDate();
+                              print(timeAsString.toString().length);
+                              print(timeAsString.toString());
                               return StreamBuilder<DocumentSnapshot>(
                                   stream: posts.doc(doc.id).snapshots(),
                                   builder: (context2, snapshot2) {
@@ -236,7 +244,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                                 },
                                                 child: Text('View')),
                                             timeAsString != null
-                                                ? Text(timeAsString.toString())
+                                                ? Text(timeAsString
+                                                    .toString()
+                                                    .substring(0, 19))
                                                 : Container()
                                           ],
                                         ),

@@ -11,7 +11,7 @@ import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
-import 'package:orbital2796_nusell/services/transactionHistory.dart';
+import 'package:orbital2796_nusell/screens/transactionHistory.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/home.dart';

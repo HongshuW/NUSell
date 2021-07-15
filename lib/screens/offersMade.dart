@@ -33,7 +33,7 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
       ),
       body: Container(
         child: StreamBuilder<QuerySnapshot>(
-            stream: offersMade.snapshots(),
+            stream: offersMade.orderBy('time', descending: true).snapshots(),
             builder: (context, querySnapshot) {
               if (querySnapshot.connectionState == ConnectionState.waiting) {
                 return Text('Not yet');

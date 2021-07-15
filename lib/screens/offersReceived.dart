@@ -18,6 +18,10 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
       .collection('users')
       .doc(AuthService().getCurrentUID())
       .collection('offersReceived');
+  CollectionReference offersMade = FirebaseFirestore.instance
+      .collection('users')
+      .doc(AuthService().getCurrentUID())
+      .collection('offersMade');
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -62,7 +66,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                   return Text('Not yet');
                 }
                 return Container(
-                  height: 150,
+                  height: 200,
                   child: ListView(
                     shrinkWrap: true,
                     children: querySnapshot.data.docs.map((doc) {
@@ -156,7 +160,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                         true));
                                                             for (var user
                                                                 in offerList) {
-                                                              offersReceived
+                                                              offersMade
                                                                   .doc(doc.id)
                                                                   .set(
                                                                       {
@@ -236,9 +240,11 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                 'Please contact the buyer to meet up or mail to send the item'),
           ),
           Container(
-            height: 280,
+            height: 230,
             child: StreamBuilder<QuerySnapshot>(
-                stream: offersReceived.snapshots(),
+                stream: offersReceived
+                    .orderBy('time', descending: true)
+                    .snapshots(),
                 builder: (context, querySnapshot) {
                   if (querySnapshot.connectionState ==
                       ConnectionState.waiting) {
