@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:orbital2796_nusell/models/productPost.dart';
 import 'package:path/path.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
-import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -78,7 +78,6 @@ class _PostScreenState extends State<PostScreen> {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
 
-    List<String> addedPost = [];
     DocumentReference sellerReview =
         FirebaseFirestore.instance.collection('reviews').doc(this.userId);
     getSellerScore() async {
@@ -120,35 +119,16 @@ class _PostScreenState extends State<PostScreen> {
         return null;
       } else {
         await getSellerScore();
-        return posts
-            .add({
-              'user': userId,
-              'productName': productName,
-              'description': description,
-              'category': category,
-              'price': price,
-              'location': location,
-              'images': [],
-              'time': DateTime.parse(DateTime.now().toString()),
-              'searchKey': productName.substring(0, 1).toLowerCase(),
-              'nameForSearch': productName.toLowerCase().trim() +
-                  description.toLowerCase().trim(),
-              'sellerScore': sellerScore,
-              'status': "Selling"
-            })
-            .then((docRef) {
-              this.docId = docRef.id;
-              posts.doc(this.docId).update({"productId": this.docId});
-            })
-            .then((value) => addedPost.add(this.docId))
-            .then((value) => myPosts.doc(userId).set({
-                  'myPosts': FieldValue.arrayUnion([this.docId])
-                }, SetOptions(merge: true)))
-            .then((value) => Fluttertoast.showToast(
-                msg: 'You have added a post successfully!',
-                gravity: ToastGravity.CENTER))
-            .then((value) => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ProfileScreen())));
+        productPost post = productPost(
+          userId: userId,
+          productName: productName,
+          description: description,
+          price: price,
+          category: category,
+          location: location,
+          sellerScore: sellerScore
+        );
+        post.addAPost(context);
       }
     }
 
