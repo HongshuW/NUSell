@@ -180,7 +180,7 @@ class _SearchBarState extends State<SearchBar> {
     });
   }
 
-  List<String> searchHistory = [];
+  List searchHistory = [];
   List<String> toStore = [];
   String userId = FirebaseAuth.instance.currentUser.uid;
 
@@ -207,6 +207,10 @@ class _SearchBarState extends State<SearchBar> {
       }
       toStore = searchHistory;
     }
+  }
+
+  clearSearchHistory() {
+    searchHist.doc(userId).set({'searchHistory': FieldValue.arrayUnion([])});
   }
 
   TextEditingController searchField = TextEditingController();
@@ -254,21 +258,61 @@ class _SearchBarState extends State<SearchBar> {
       ),
       body: ListView(
         children: [
-          FutureBuilder(
-              future: readSearchHistory(),
-              builder: (context, snapshot) {
-                return ListView(
-                  primary: false,
-                  shrinkWrap: true,
-                  children: searchHistory.map((element) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        searchField.text = element;
-                      },
-                      child: Text(element),
-                    );
-                  }).toList(),
-                );
+          StreamBuilder<DocumentSnapshot>(
+              stream: searchHist.doc(userId).snapshots(),
+              builder: (context, snapshotForHist) {
+                if (!snapshotForHist.hasData ||
+                    snapshotForHist.connectionState ==
+                        ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                Map<String, dynamic> docForHist = snapshotForHist.data.data();
+                List searchHistHere = docForHist['searchHistory'];
+                return docForHist['searchHistory'].length == 0
+                    ? Container()
+                    : queryResultSet.isEmpty == false
+                        ? Container()
+                        : Column(
+                            children: [
+                              ListView(
+                                primary: false,
+                                shrinkWrap: true,
+                                children: searchHistHere.map((element) {
+                                  return ElevatedButton(
+                                    onPressed: () {
+                                      searchField.text = element;
+                                    },
+                                    child: Text(element),
+                                  );
+                                }).toList(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    clearSearchHistory();
+                                  },
+                                  child: Container(
+                                      width: 60,
+                                      margin:
+                                          EdgeInsets.only(left: 20, right: 20),
+                                      padding:
+                                          EdgeInsets.only(left: 12, right: 5),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color.fromRGBO(
+                                                  242, 195, 71, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: Colors.transparent),
+                                      child: Text(
+                                        'clear',
+                                        style: TextStyle(fontSize: 16),
+                                      )),
+                                ),
+                              ),
+                            ],
+                          );
               }),
           SizedBox(
             height: 10.0,

@@ -217,7 +217,8 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                             color: (post == null ||
                                                     post["status"] != "Selling")
                                                 ? Colors.grey
-                                                : Colors.orange,
+                                                : Color.fromRGBO(
+                                                    242, 195, 71, 1),
                                             shape: BoxShape.rectangle,
                                             borderRadius:
                                                 BorderRadius.circular(20),
