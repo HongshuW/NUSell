@@ -125,7 +125,7 @@ class _allPostsState extends State<allPosts> {
     if (widget.hasPagination) {
       return Container(
         height: MediaQuery.of(context).size.height * 0.6,
-        margin: EdgeInsets.all(20),
+        margin: EdgeInsets.only(left: 20, right: 20),
         child: Column(children: [
           Expanded(
             child: products.length == 0
