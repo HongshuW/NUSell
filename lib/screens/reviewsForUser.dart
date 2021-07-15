@@ -11,7 +11,6 @@ import 'package:orbital2796_nusell/services/auth.dart';
 class ReviewsForUser extends StatefulWidget {
   final String userId;
   const ReviewsForUser({Key key, this.userId}) : super(key: key);
-
   @override
   _ReviewsForUserState createState() => _ReviewsForUserState();
 }
