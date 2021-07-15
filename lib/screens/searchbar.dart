@@ -23,6 +23,7 @@ class _SearchBarState extends State<SearchBar> {
 
   List<Map<String, dynamic>> queryResultSet = [];
   var tempSearchStore = [];
+  bool gottenResult = false;
 
   @override
   void initState() {
@@ -166,6 +167,7 @@ class _SearchBarState extends State<SearchBar> {
       });
     }
     compareName(value);
+    gottenResult = true;
   }
 
   compareName(value) {
@@ -234,6 +236,9 @@ class _SearchBarState extends State<SearchBar> {
             controller: searchField,
             onChanged: (val) {
               fullTextSearch(val);
+              if (searchField.text.isEmpty) {
+                gottenResult = false;
+              }
             },
             onSubmitted: (val) {
               searchByWord(val);
@@ -270,7 +275,7 @@ class _SearchBarState extends State<SearchBar> {
                 List searchHistHere = docForHist['searchHistory'];
                 return docForHist['searchHistory'].length == 0
                     ? Container()
-                    : queryResultSet.isEmpty == false
+                    : gottenResult == true
                         ? Container()
                         : Column(
                             children: [
@@ -281,6 +286,16 @@ class _SearchBarState extends State<SearchBar> {
                                   return ElevatedButton(
                                     onPressed: () {
                                       searchField.text = element;
+                                      searchByWord(element);
+                                      // searchField.selection = TextSelection(
+                                      //     baseOffset: 0,
+                                      //     extentOffset:
+                                      //         searchField.text.length);
+                                      searchField.selection =
+                                          TextSelection.fromPosition(
+                                              TextPosition(
+                                                  offset:
+                                                      searchField.text.length));
                                     },
                                     child: Text(element),
                                   );
