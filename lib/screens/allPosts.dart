@@ -129,9 +129,7 @@ class _allPostsState extends State<allPosts> {
         child: Column(children: [
           Expanded(
             child: products.length == 0
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? Center(child: CircularProgressIndicator())
                 : GridView.count(
                     controller: _scrollController,
                     crossAxisCount: 2,
