@@ -24,6 +24,7 @@ class AuthService with ChangeNotifier {
       NUSellUser user =
           NUSellUser(uid: firebaseUser.uid, email: email, password: password);
       print(user.uid);
+      await UserDatabaseService(uid: user.uid).setUpFollow(user);
       await UserDatabaseService(uid: user.uid).updateUserData(user);
       print(user.uid);
       //Success

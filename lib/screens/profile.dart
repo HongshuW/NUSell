@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/myFollowers.dart';
+import 'package:orbital2796_nusell/screens/myFollowing.dart';
 import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
@@ -136,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       //crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
-                          height: 240,
+                          height: 260,
                           decoration: BoxDecoration(
                             color: Colors.green.shade100,
                             borderRadius: BorderRadius.only(
@@ -185,6 +187,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ),
+                                    StreamBuilder<DocumentSnapshot>(
+                                        stream: db
+                                            .collection('follow')
+                                            .doc(AuthService().getCurrentUID())
+                                            .snapshots(),
+                                        builder: (context, snapshotForFollow) {
+                                          if (!snapshot.hasData ||
+                                              snapshotForFollow
+                                                      .connectionState ==
+                                                  ConnectionState.waiting) {
+                                            return CircularProgressIndicator();
+                                          }
+                                          Map<String, dynamic> followDoc =
+                                              snapshotForFollow.data.data();
+                                          List usersFollowing =
+                                              followDoc['following'];
+                                          List followers =
+                                              followDoc['followers'];
+                                          return GestureDetector(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        MyFollowingScreen()));
+                                                  },
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                          '${usersFollowing.length}'),
+                                                      Text('Following')
+                                                    ],
+                                                  ),
+                                                ),
+                                                InkWell(
+                                                  onTap: () {
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        MyFollowersScreen()));
+                                                  },
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                          '${followers.length}'),
+                                                      Text('Followers')
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        })
                                   ],
                                 );
                               }),
