@@ -5,6 +5,7 @@ import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/resetPassword.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -22,8 +23,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text('Settings'),
         leading: BackButton(
-          color: Colors.white,
+          color: Colors.black,
           onPressed: () {
+            // Navigator.of(context).pop();
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
@@ -41,6 +43,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => EditProfileScreen()));
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Reset password'),
+                trailing: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => ResetPasswordScreen()));
                   },
                 ),
               ),

@@ -8,18 +8,17 @@ import 'package:orbital2796_nusell/screens/myFollowers.dart';
 import 'package:orbital2796_nusell/screens/myFollowing.dart';
 import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
+import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:orbital2796_nusell/services/transactionHistory.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
-import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
 import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
-import 'package:orbital2796_nusell/screens/resetPassword.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -34,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       .snapshots();
   NUSellUser user = NUSellUser();
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   File newProfilePic;
@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   appBar: AppBar(
                     title: Text('Your Profile'),
                     leading: BackButton(
-                      color: Colors.white,
+                      color: Colors.black,
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => HomeScreen()));
@@ -329,6 +329,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
+                  // a collection of three floating action buttons, on pressed will
+                  // turn to another page
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.centerDocked,
+                  floatingActionButton: Container(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    height: 80,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FloatingActionButton(
+                          heroTag: "home",
+                          child: Icon(Icons.house, color: Colors.white),
+                          backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreen()));
+                          },
+                        ),
+                        FloatingActionButton(
+                          heroTag: "chat",
+                          onPressed: () {
+                            if (auth.currentUser == null) {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            } else {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => MyChatsScreen()));
+                            }
+                          },
+                          child: Icon(Icons.chat_bubble_rounded,
+                              color: Colors.white),
+                          backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                        ),
+                        FloatingActionButton(
+                          heroTag: "post",
+                          onPressed: () {
+                            if (auth.currentUser == null) {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            } else {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => PostScreen()));
+                            }
+                          },
+                          child: Icon(Icons.add, color: Colors.white),
+                          backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                        ),
+                        FloatingActionButton(
+                          heroTag: "profile",
+                          child: Icon(Icons.person, color: Colors.white),
+                          backgroundColor: Color.fromRGBO(247, 215, 140, 1),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                  ),
                 );
               });
         });
@@ -395,8 +457,9 @@ Widget myPosts(context) {
     appBar: AppBar(
       title: Text("My posts"),
       leading: BackButton(
-        color: Colors.white,
+        color: Colors.black,
         onPressed: () {
+          //Navigator.of(context).pop();
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => ProfileScreen()));
         },

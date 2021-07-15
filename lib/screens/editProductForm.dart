@@ -129,10 +129,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
               mainAxisSpacing: 1,
               shrinkWrap: true,
               children: [
-                Image.asset(
-                  'assets/images/defaultPostImage.png',
-                  fit: BoxFit.fitWidth
-                )
+                Image.asset('assets/images/defaultPostImage.png',
+                    fit: BoxFit.fitWidth)
               ],
             );
           }
@@ -144,7 +142,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
             children: snapshot.data['images'].map<Widget>((img) {
               return InkWell(
                 onTap: () {
-                  showDialog(context: context,
+                  showDialog(
+                      context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           backgroundColor: Colors.transparent,
@@ -164,7 +163,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           actions: <Widget>[
                             ElevatedButton(
                               onPressed: () {
-                                db.collection('posts').doc(widget.product).update({'images': FieldValue.arrayRemove([img])});
+                                db
+                                    .collection('posts')
+                                    .doc(widget.product)
+                                    .update({
+                                  'images': FieldValue.arrayRemove([img])
+                                });
                                 storage.refFromURL(img).delete();
                                 Navigator.of(context).pop();
                               },
@@ -178,7 +182,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       });
                 },
                 child: Image.network(
-                    img,
+                  img,
                   fit: BoxFit.fitWidth,
                 ),
               );
@@ -196,10 +200,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           onTap: () {
             getImage(true);
           },
-          child: Image.asset(
-              'assets/images/defaultPostImage.png',
-              fit: BoxFit.fitWidth
-          ),
+          child: Image.asset('assets/images/defaultPostImage.png',
+              fit: BoxFit.fitWidth),
         ));
       } else {
         for (File img in _images) {
@@ -254,6 +256,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         backgroundColor: Colors.white,
         leading: BackButton(
           color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
         title: Text(
           "Update your product",
@@ -287,13 +292,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Text("Original Photos: \n"),
                   displayOriginalImages(),
                   Text("\nAdded Photos: \n"),
-                GridView.count(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 1,
-                  mainAxisSpacing: 1,
-                  shrinkWrap: true,
-                  children: displayImages(),
-                ),
+                  GridView.count(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1,
+                    shrinkWrap: true,
+                    children: displayImages(),
+                  ),
 
                   // upload photos
                   Container(

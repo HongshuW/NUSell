@@ -216,6 +216,12 @@ class _SearchBarState extends State<SearchBar> {
     return Scaffold(
       appBar: AppBar(
         // automaticallyImplyLeading: false,
+        leading: BackButton(
+          color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         backgroundColor: Color.fromRGBO(242, 195, 71, 1),
         elevation: 0,
         title: Container(

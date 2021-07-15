@@ -21,7 +21,8 @@ class ContactSellerScreen extends StatefulWidget {
   final String chatID;
   final String theOtherUserId;
   final String theOtherUserName;
-  ContactSellerScreen({Key key, this.chatID, this.theOtherUserId, this.theOtherUserName})
+  ContactSellerScreen(
+      {Key key, this.chatID, this.theOtherUserId, this.theOtherUserName})
       : super(key: key);
 
   @override
@@ -190,7 +191,11 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
+        leading: BackButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text(widget.theOtherUserName == null
             ? widget.chatID
             : widget.theOtherUserName),
@@ -228,9 +233,10 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                               Map updatedVals = {};
                               updatedVals[this.userId] = 0;
                               updatedVals[widget.theOtherUserId] = 0;
-                              db.collection("chats").doc(widget.chatID).update({
-                                "unread": updatedVals
-                              });
+                              db
+                                  .collection("chats")
+                                  .doc(widget.chatID)
+                                  .update({"unread": updatedVals});
                             }
                           }
                           return Container(
@@ -287,8 +293,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                             this.message = AppMessage(
                                 this.userIndex, Timestamp.now(), this.content);
                             Map updatedVals = {};
-                            updatedVals[widget.theOtherUserId]
-                              = chat["unread"][widget.theOtherUserId] + 1;
+                            updatedVals[widget.theOtherUserId] =
+                                chat["unread"][widget.theOtherUserId] + 1;
                             updatedVals[this.userId] = 0;
                             db.collection("chats").doc(widget.chatID).update({
                               "history":

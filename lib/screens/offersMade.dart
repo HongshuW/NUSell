@@ -25,6 +25,7 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
         title: Text('Offers made'),
         leading: BackButton(
           onPressed: () {
+            //Navigator.of(context).pop();
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => ProfileScreen()));
           },

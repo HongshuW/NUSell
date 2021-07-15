@@ -24,8 +24,9 @@ class _MyFollowingScreenState extends State<MyFollowingScreen> {
         title: Text('Your Following'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).pop();
+            // Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),

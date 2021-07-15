@@ -68,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               IconButton(
                   color: Colors.black,
-                  icon: Icon(Icons.shopping_cart),
+                  icon: Icon(
+                    Icons.favorite_border_outlined,
+                  ),
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => MyShoppingCartsScreen(

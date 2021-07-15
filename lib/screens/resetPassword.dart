@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -31,8 +33,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         title: Text('Reset your password'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).pop();
+            // Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),
@@ -177,7 +180,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ProfileScreen()));
+                                                SettingsScreen()));
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            'You have successfully updated your password!');
                                   } else {
                                     print('unsuccessful!');
                                   }

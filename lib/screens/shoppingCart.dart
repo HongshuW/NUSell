@@ -81,7 +81,13 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text('My Shopping Cart'),
+              title: Text('Liked products'),
+              leading: BackButton(
+                color: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
             body: ListView(
               scrollDirection: Axis.vertical,
@@ -131,46 +137,72 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                 context: context,
                                                 builder: (context) {
                                                   return popUp(
-                                                    title: "The seller's account has been disabled.",
+                                                    title:
+                                                        "The seller's account has been disabled.",
                                                     confirmAction: () {
-                                                      Navigator.of(context).pop();
+                                                      Navigator.of(context)
+                                                          .pop();
                                                     },
                                                     cancelButton: false,
                                                   );
                                                 });
-                                          } else if (post["status"] == "Selling") {
+                                          } else if (post["status"] ==
+                                              "Selling") {
                                             Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         ProductInfoScreen(
                                                             product: docId)));
-                                          } else if (post["status"] == "Deleted") {
+                                          } else if (post["status"] ==
+                                              "Deleted") {
                                             showDialog(
                                                 context: context,
                                                 builder: (context) {
                                                   return popUp(
-                                                    title: "This post was deleted by the seller.",
-                                                    subtitle: "Contact the seller for more information.",
-                                                    confirmText: "Contact seller",
+                                                    title:
+                                                        "This post was deleted by the seller.",
+                                                    subtitle:
+                                                        "Contact the seller for more information.",
+                                                    confirmText:
+                                                        "Contact seller",
                                                     confirmAction: () async {
                                                       var docID;
-                                                      String seller = post["user"];
-                                                      if (seller.compareTo(widget.userId) < 0) {
-                                                        docID = seller + "_" + widget.userId;
+                                                      String seller =
+                                                          post["user"];
+                                                      if (seller.compareTo(
+                                                              widget.userId) <
+                                                          0) {
+                                                        docID = seller +
+                                                            "_" +
+                                                            widget.userId;
                                                       } else {
-                                                        docID = widget.userId + "_" + seller;
+                                                        docID = widget.userId +
+                                                            "_" +
+                                                            seller;
                                                       }
                                                       String sellerName;
-                                                      db.collection("users").doc(seller).get()
-                                                        .then((doc) => sellerName = doc["username"])
-                                                        .then((doc) => Navigator.of(context).pop())
-                                                        .then((doc) => Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ContactSellerScreen(
-                                                                    chatID: docID,
-                                                                    theOtherUserName: sellerName,
-                                                                  ))));
+                                                      db
+                                                          .collection("users")
+                                                          .doc(seller)
+                                                          .get()
+                                                          .then((doc) =>
+                                                              sellerName = doc[
+                                                                  "username"])
+                                                          .then((doc) =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop())
+                                                          .then((doc) => Navigator
+                                                                  .of(context)
+                                                              .push(
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ContactSellerScreen(
+                                                                            chatID:
+                                                                                docID,
+                                                                            theOtherUserName:
+                                                                                sellerName,
+                                                                          ))));
                                                     },
                                                   );
                                                 });
@@ -182,8 +214,10 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                         child: Container(
                                           height: 100,
                                           decoration: BoxDecoration(
-                                            color: (post == null || post["status"] != "Selling")
-                                                ? Colors.grey : Colors.orange,
+                                            color: (post == null ||
+                                                    post["status"] != "Selling")
+                                                ? Colors.grey
+                                                : Colors.orange,
                                             shape: BoxShape.rectangle,
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -203,8 +237,10 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                         BorderRadius.circular(
                                                             20),
                                                   ),
-                                                  child:
-                                                      post == null ? null : getImage(post['images']),
+                                                  child: post == null
+                                                      ? null
+                                                      : getImage(
+                                                          post['images']),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(
@@ -233,7 +269,9 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        post == null || post["status"] != "Selling"
+                                                        post == null ||
+                                                                post["status"] !=
+                                                                    "Selling"
                                                             ? "Unavailable"
                                                             : "",
                                                         style: TextStyle(

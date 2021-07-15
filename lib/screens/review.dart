@@ -32,6 +32,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
       appBar: AppBar(
         leading: BackButton(
           color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
         title: Text('Write your review'),
       ),

@@ -65,7 +65,10 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                   appBar: AppBar(
                     title: Text("${doc['username']} 's Profile"),
                     leading: BackButton(
-                      color: Colors.white,
+                      color: Colors.black,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ),
                   body: ListView(

@@ -39,6 +39,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
         title: Text('Offers Received'),
         leading: BackButton(
           onPressed: () {
+            //Navigator.of(context).pop();
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => ProfileScreen()));
           },

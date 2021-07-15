@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:orbital2796_nusell/services/db.dart';
 
@@ -12,8 +13,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  String _username, _phoneNumber, _password, _gender, _email;
-  TextEditingController password = TextEditingController();
+  String _username, _phoneNumber, _gender, _email;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final Stream<DocumentSnapshot> _userStream = FirebaseFirestore.instance
       .collection('users')
@@ -23,7 +23,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     gender: "",
     username: "",
     phoneNumber: "",
-    password: "",
   );
   _readUserInfo() async {
     final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
@@ -65,10 +64,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         style: TextStyle(color: Colors.black),
                       ),
                       leading: BackButton(
-                        color: Colors.white,
+                        color: Colors.black,
                         onPressed: () {
+                          // Navigator.of(context).pop();
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ProfileScreen()));
+                              builder: (context) => SettingsScreen()));
                         },
                       ),
                     ),
@@ -238,7 +238,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               user.username = _username;
                                               user.phoneNumber = _phoneNumber;
                                               user.gender = _gender;
-                                              user.password = _password;
                                               _setUserEmail();
                                               print(user.username);
                                               FirebaseFirestore.instance
@@ -249,7 +248,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 'username': _username,
                                                 'phoneNumber': _phoneNumber,
                                                 'gender': _gender,
-                                                'password': _password
                                               }, SetOptions(merge: true));
                                               print('saved');
                                               Navigator.of(context).push(

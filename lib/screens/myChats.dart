@@ -6,6 +6,8 @@ import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/screens/login.dart';
+import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 
 class MyChatsScreen extends StatefulWidget {
@@ -118,7 +120,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
                                       "This account has been disabled",
@@ -127,11 +129,12 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                     Text(
                                       chatInfo["history"].isEmpty
                                           ? ""
-                                          : chatInfo["history"].last["message"] ==
-                                          null
-                                          ? "[photo]"
                                           : chatInfo["history"]
-                                          .last["message"],
+                                                      .last["message"] ==
+                                                  null
+                                              ? "[photo]"
+                                              : chatInfo["history"]
+                                                  .last["message"],
                                       style: TextStyle(color: Colors.grey),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -202,24 +205,24 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                           ),
 
                           // number of unread messages
-                          chatInfo["unread"][this.user] == 0 ? Container()
-                          : Container(
-                            height: 15,
-                            width: 15,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.red,
-                            ),
-                            child: Text(
-                              chatInfo["unread"][this.user].toString(),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                fontWeight: FontWeight.w300,
-                                fontSize: 12
-                              ),
-                            ),
-                          ),
+                          chatInfo["unread"][this.user] == 0
+                              ? Container()
+                              : Container(
+                                  height: 15,
+                                  width: 15,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.red,
+                                  ),
+                                  child: Text(
+                                    chatInfo["unread"][this.user].toString(),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 12),
+                                  ),
+                                ),
                         ],
                       ),
                     ),
@@ -247,8 +250,13 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
           return Scaffold(
             appBar: AppBar(
               leading: BackButton(
-                  onPressed: () => Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => HomeScreen()))),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              // onPressed: ()
+              // => Navigator.of(context).pushReplacement(
+              //     MaterialPageRoute(builder: (context) => HomeScreen()))),
               title: Text("My Chats"),
             ),
             body: Center(child: Text("You don't have any conversation.")),
@@ -265,6 +273,65 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
           ),
           body: ListView(
             children: displayChats(),
+          ),
+          // a collection of three floating action buttons, on pressed will
+          // turn to another page
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Container(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            height: 80,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FloatingActionButton(
+                  heroTag: "home",
+                  child: Icon(Icons.house, color: Colors.white),
+                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                FloatingActionButton(
+                  heroTag: "chat",
+                  onPressed: () {},
+                  child: Icon(Icons.chat_bubble_rounded, color: Colors.white),
+                  backgroundColor: Color.fromRGBO(247, 215, 140, 1),
+                ),
+                FloatingActionButton(
+                  heroTag: "post",
+                  onPressed: () {
+                    if (auth.currentUser == null) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
+                    } else {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => PostScreen()));
+                    }
+                  },
+                  child: Icon(Icons.add, color: Colors.white),
+                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                ),
+                FloatingActionButton(
+                  heroTag: "profile",
+                  onPressed: () {
+                    if (auth.currentUser == null) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
+                    } else {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => ProfileScreen()));
+                    }
+                  },
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
+                )
+              ],
+            ),
           ),
         );
       },
