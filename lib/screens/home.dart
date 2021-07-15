@@ -184,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
+          // Navigation bar
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: 0,
             selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
@@ -232,78 +233,6 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-          // // a collection of three floating action buttons, on pressed will
-          // // turn to another page
-          // floatingActionButtonLocation:
-          //     FloatingActionButtonLocation.centerDocked,
-          // floatingActionButton: Container(
-          //   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-          //   height: 80,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: <Widget>[
-          //       FloatingActionButton(
-          //         heroTag: "home",
-          //         child: Icon(Icons.house, color: Colors.white),
-          //         backgroundColor: Color.fromRGBO(249, 236, 195, 1),
-          //         onPressed: null,
-          //       ),
-          //       FloatingActionButton(
-          //         heroTag: "forum",
-          //         child: Icon(Icons.art_track, color: Colors.white),
-          //         onPressed: () {
-          //           Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //               builder: (context) => ForumScreen()));
-          //         },
-          //       ),
-          //       FloatingActionButton(
-          //         heroTag: "chat",
-          //         onPressed: () {
-          //           if (auth.currentUser == null) {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => LoginScreen()));
-          //           } else {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => MyChatsScreen()));
-          //           }
-          //         },
-          //         child: Icon(Icons.chat_bubble_rounded, color: Colors.white),
-          //         backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-          //       ),
-          //       FloatingActionButton(
-          //         heroTag: "post",
-          //         onPressed: () {
-          //           if (auth.currentUser == null) {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => LoginScreen()));
-          //           } else {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => PostScreen()));
-          //           }
-          //         },
-          //         child: Icon(Icons.add, color: Colors.white),
-          //         backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-          //       ),
-          //       FloatingActionButton(
-          //         heroTag: "profile",
-          //         onPressed: () {
-          //           if (auth.currentUser == null) {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => LoginScreen()));
-          //           } else {
-          //             Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //                 builder: (context) => ProfileScreen()));
-          //           }
-          //         },
-          //         child: Icon(
-          //           Icons.person,
-          //           color: Colors.white,
-          //         ),
-          //         backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-          //       )
-          //     ],
-          //   ),
-          // ),
         ),
       ),
     );

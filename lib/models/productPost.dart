@@ -13,6 +13,7 @@ class productPost {
   String location;
   String category;
   double sellerScore;
+  List<String> images;
 
   productPost({
     this.userId,
@@ -21,7 +22,8 @@ class productPost {
     this.price,
     this.category,
     this.location,
-    this.sellerScore
+    this.sellerScore,
+    this.images
   });
 
   addAPost(BuildContext context) {
@@ -35,7 +37,7 @@ class productPost {
       'category': this.category,
       'price': this.price,
       'location': this.location,
-      'images': [],
+      'images': this.images,
       'time': DateTime.parse(DateTime.now().toString()),
       'searchKey': this.productName.substring(0, 1).toLowerCase(),
       'nameForSearch': this.productName.toLowerCase().trim() +
@@ -55,5 +57,9 @@ class productPost {
             gravity: ToastGravity.CENTER))
         .then((value) => Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => ProfileScreen())));
+  }
+
+  getDocID() {
+    return this.docId;
   }
 }

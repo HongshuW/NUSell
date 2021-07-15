@@ -70,7 +70,6 @@ class _PostScreenState extends State<PostScreen> {
       String url = await ref.getDownloadURL();
       _imgRef.add(url);
     }
-    posts.doc(this.docId).update({"images": FieldValue.arrayUnion(_imgRef)});
   }
 
   @override
@@ -126,9 +125,11 @@ class _PostScreenState extends State<PostScreen> {
           price: price,
           category: category,
           location: location,
-          sellerScore: sellerScore
+          sellerScore: sellerScore,
+          images: _imgRef
         );
         post.addAPost(context);
+        this.docId = post.getDocID();
       }
     }
 
@@ -526,8 +527,20 @@ class _PostScreenState extends State<PostScreen> {
                 margin: EdgeInsets.only(bottom: 30, left: 90, right: 90),
                 child: ElevatedButton(
                   onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            backgroundColor: Colors.transparent,
+                            child: Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.white
+                                )
+                            ),
+                          );
+                        });
+                    await uploadImages();
                     addPost();
-                    uploadImages();
                   },
                   child: Text("Post"),
                   style: ElevatedButton.styleFrom(
