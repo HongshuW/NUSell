@@ -105,7 +105,7 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                                       height: 10,
                                     ),
                                     Text(
-                                      userDoc['username'],
+                                      '${userDoc['username']}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
