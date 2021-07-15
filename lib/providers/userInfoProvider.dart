@@ -6,12 +6,12 @@ class userInfoProvider with ChangeNotifier {
   final userDatabaseService = UserDatabaseService();
 
   String _username = '';
-  String _email = '';
+  //String _email = '';
   String _uid;
 
   //getters
   String get username => _username;
-  String get email => _email;
+  //String get email => _email;
   Future get user => userDatabaseService.getUser();
 
   //setter
@@ -20,15 +20,14 @@ class userInfoProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set changeEmail(String email) {
-    _email = email;
-    notifyListeners();
-  }
+  // set changeEmail(String email) {
+  //   _email = email;
+  //   notifyListeners();
+  // }
 
   //function
   loadUser(NUSellUser user) {
     _username = user.username;
-    _email = user.email;
     _uid = user.uid;
   }
 }

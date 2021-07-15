@@ -3,7 +3,6 @@ class NUSellUser {
   String username;
   String phoneNumber;
   String avatarUrl;
-  String email;
   String gender;
 
   NUSellUser({
@@ -11,7 +10,6 @@ class NUSellUser {
     this.username,
     this.avatarUrl,
     this.phoneNumber,
-    this.email,
     this.gender,
   });
 
@@ -20,7 +18,6 @@ class NUSellUser {
       username: json['username'],
       avatarUrl: json['avatarUrl'],
       phoneNumber: json['phoneNumber'],
-      email: json['email'],
       gender: json['gender'],
     );
   }
@@ -30,7 +27,6 @@ class NUSellUser {
       'username': username,
       'phoneNumber': phoneNumber,
       'avatarUrl': avatarUrl,
-      'email': email,
       'gender': gender,
     };
   }

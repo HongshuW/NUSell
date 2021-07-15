@@ -86,7 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               dividerColor: Colors.white,
                               iconTheme: IconThemeData(color: Colors.white)),
                           child: IconButton(
-                            icon: Icon(Icons.settings),
+                            icon: Icon(
+                              Icons.settings,
+                              color: Colors.black87,
+                            ),
                             onPressed: () {
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
@@ -176,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        'Email: ${doc['email']}',
+                                        'Email: ${auth.currentUser.email}',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ),

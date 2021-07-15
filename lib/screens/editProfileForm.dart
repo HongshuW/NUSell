@@ -13,7 +13,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  String _username, _phoneNumber, _gender, _email;
+  String _username, _phoneNumber, _gender;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final Stream<DocumentSnapshot> _userStream = FirebaseFirestore.instance
       .collection('users')
@@ -33,18 +33,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     user = NUSellUser.fromJson(doc.data());
   }
 
-  _setUserEmail() async {
-    user.email = FirebaseAuth.instance.currentUser.email;
-  }
-
   @override
   Widget build(BuildContext context) {
-    _setUserEmail();
     return StreamBuilder<DocumentSnapshot>(
         stream: _userStream,
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          _setUserEmail();
           return FutureBuilder<DocumentSnapshot>(
               future: FirebaseFirestore.instance
                   .collection('users')
@@ -238,7 +232,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               user.username = _username;
                                               user.phoneNumber = _phoneNumber;
                                               user.gender = _gender;
-                                              _setUserEmail();
                                               print(user.username);
                                               FirebaseFirestore.instance
                                                   .collection('users')
