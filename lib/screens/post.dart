@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/models/productPost.dart';
 import 'package:path/path.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
@@ -214,7 +215,8 @@ class _PostScreenState extends State<PostScreen> {
                 primary: Color.fromRGBO(255, 88, 68, 1),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => HomeScreen()));
               },
             ),
           ),
@@ -530,13 +532,11 @@ class _PostScreenState extends State<PostScreen> {
                     showDialog(
                         context: context,
                         builder: (context) {
-                          return Dialog(
-                            backgroundColor: Colors.transparent,
-                            child: Center(
-                                child: CircularProgressIndicator(
-                                    color: Colors.white
-                                )
-                            ),
+                          return loading(
+                              hasImage: true,
+                              imagePath: 'assets/images/wavingLion.png',
+                              hasMessage: true,
+                              message: "Uploading..."
                           );
                         });
                     await uploadImages();

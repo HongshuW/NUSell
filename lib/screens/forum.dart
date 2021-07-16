@@ -152,6 +152,7 @@ class _ForumScreenState extends State<ForumScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Forum"),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           // publish a forum post.

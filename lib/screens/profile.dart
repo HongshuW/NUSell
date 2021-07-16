@@ -4,10 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/forum.dart';
 import 'package:orbital2796_nusell/screens/myFollowers.dart';
 import 'package:orbital2796_nusell/screens/myFollowing.dart';
 import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
+import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:orbital2796_nusell/services/transactionHistory.dart';
@@ -70,14 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Map<String, dynamic> doc = snapshot.data.data();
                 return Scaffold(
                   appBar: AppBar(
+                    centerTitle: true,
+                    automaticallyImplyLeading: false,
                     title: Text('Your Profile'),
-                    leading: BackButton(
-                      color: Colors.white,
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => HomeScreen()));
-                      },
-                    ),
                     actions: [
                       Theme(
                           data: Theme.of(context).copyWith(
@@ -260,7 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               rowWidget(
                                 context,
-                                'posts',
+                                'product posts',
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
@@ -322,12 +319,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 TransactionHistoryScreen()));
                                   },
                                 ),
-                              )
+                              ),
+                              rowWidget(
+                                context,
+                                'my forum',
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                                  onPressed: () {},
+                                ),
+                              ),
                             ],
                           ),
                         )
                       ],
                     ),
+                  ),
+
+                  // Navigation bar
+                  bottomNavigationBar: BottomNavigationBar(
+                    currentIndex: 4,
+                    selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+                    unselectedItemColor: Colors.grey,
+                    showUnselectedLabels: true,
+                    items: const <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.house),
+                          label: "Home"
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.art_track),
+                          label: "Forum"
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.chat_bubble_rounded),
+                          label: "Messages"
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.add),
+                          label: "Sell"
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.person),
+                          label: "Profile"
+                      ),
+                    ],
+                    onTap: (index) {
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => LoginScreen()));
+                      } else {
+                        if (index == 0) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => HomeScreen()));
+                        } else if (index == 1) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => ForumScreen()));
+                        } else if (index == 2) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => MyChatsScreen()));
+                        } else if (index == 3) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => PostScreen()));
+                        }
+                      }
+                    },
                   ),
                 );
               });

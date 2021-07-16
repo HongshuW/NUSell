@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/models/forumPost.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/screens/forum.dart';
 import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -250,13 +251,11 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
                         showDialog(
                             context: context,
                             builder: (context) {
-                              return Dialog(
-                                backgroundColor: Colors.transparent,
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white
-                                    )
-                                ),
+                              return loading(
+                                hasImage: true,
+                                imagePath: 'assets/images/wavingLion.png',
+                                hasMessage: true,
+                                message: "Uploading..."
                               );
                             });
                         await uploadImages();
