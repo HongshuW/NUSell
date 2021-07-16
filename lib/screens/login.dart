@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
 import 'package:orbital2796_nusell/screens/signup.dart';
@@ -191,6 +192,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         if (_formkey.currentState.validate()) {
                           print('successful!');
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return loading(
+                                hasImage: true,
+                                imagePath: 'assets/images/wavingLion.png',
+                                hasMessage: true,
+                                message: "Loading...",
+                              );
+                            }
+                          );
                           AuthService().signin(_email, _password, context);
                           //getToken();
                         } else {

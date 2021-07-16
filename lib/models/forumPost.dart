@@ -21,7 +21,9 @@ class forumPost {
       'user': this.userID,
       'content': this.content,
       'time': DateTime.parse(DateTime.now().toString()),
-      'images': this.images
+      'images': this.images,
+      'likes': 0,
+      'commentNum': 0
     })
         .then((docRef) {
           this.docId = docRef.id;

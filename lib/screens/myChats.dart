@@ -251,7 +251,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
             appBar: AppBar(
               centerTitle: true,
               automaticallyImplyLeading: false,
-              title: Text("My Chats"),
+              title: Text("Message Center"),
             ),
             body: Center(child: Text("You don't have any conversation.")),
           );
@@ -261,7 +261,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
           appBar: AppBar(
             centerTitle: true,
             automaticallyImplyLeading: false,
-            title: Text("My Chats"),
+            title: Text("Message Center"),
           ),
           body: ListView(
             children: displayChats(),

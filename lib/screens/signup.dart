@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/reset.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -201,6 +202,17 @@ class _SignupScreenState extends State<SignupScreen> {
                             onPressed: () {
                               if (_formkey.currentState.validate()) {
                                 print('successful!');
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return loading(
+                                        hasImage: true,
+                                        imagePath: 'assets/images/wavingLion.png',
+                                        hasMessage: true,
+                                        message: "Loading...",
+                                      );
+                                    }
+                                );
                                 AuthService()
                                     .signup(_email, _password, context);
                               } else {

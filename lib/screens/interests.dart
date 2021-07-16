@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/subProject/recommendation/initialPreference.dart';
@@ -169,6 +170,17 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 margin: EdgeInsets.only(top: 30, bottom: 50, left: 50, right: 50),
                   child: ElevatedButton(
                     onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return loading(
+                              hasImage: true,
+                              imagePath: 'assets/images/wavingLion.png',
+                              hasMessage: true,
+                              message: "Loading...",
+                            );
+                          }
+                      );
                       initialPreference setter
                         = initialPreference(this.categories, this.locations);
                       setter.setPreference();
