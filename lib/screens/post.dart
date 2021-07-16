@@ -531,6 +531,7 @@ class _PostScreenState extends State<PostScreen> {
                   onPressed: () async {
                     showDialog(
                         context: context,
+                        barrierDismissible: false,
                         builder: (context) {
                           return loading(
                               hasImage: true,

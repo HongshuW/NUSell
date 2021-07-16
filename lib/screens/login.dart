@@ -192,17 +192,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         if (_formkey.currentState.validate()) {
                           print('successful!');
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return loading(
-                                hasImage: true,
-                                imagePath: 'assets/images/wavingLion.png',
-                                hasMessage: true,
-                                message: "Loading...",
-                              );
-                            }
-                          );
                           AuthService().signin(_email, _password, context);
                           //getToken();
                         } else {

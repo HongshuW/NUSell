@@ -250,6 +250,7 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
                       } else {
                         showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (context) {
                               return loading(
                                 hasImage: true,

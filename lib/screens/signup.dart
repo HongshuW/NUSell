@@ -202,17 +202,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             onPressed: () {
                               if (_formkey.currentState.validate()) {
                                 print('successful!');
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return loading(
-                                        hasImage: true,
-                                        imagePath: 'assets/images/wavingLion.png',
-                                        hasMessage: true,
-                                        message: "Loading...",
-                                      );
-                                    }
-                                );
                                 AuthService()
                                     .signup(_email, _password, context);
                               } else {

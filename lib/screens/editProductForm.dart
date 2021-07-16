@@ -482,6 +482,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       onPressed: () async {
                         showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (context) {
                               return loading(
                                 hasImage: true,
