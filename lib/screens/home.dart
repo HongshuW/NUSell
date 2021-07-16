@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/screens/forum.dart';
 import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/shoppingCart.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -185,69 +186,54 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // a collection of three floating action buttons, on pressed will
-          // turn to another page
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: Container(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            height: 80,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FloatingActionButton(
-                  heroTag: "home",
-                  child: Icon(Icons.house, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(247, 215, 140, 1),
-                  onPressed: () {},
-                ),
-                FloatingActionButton(
-                  heroTag: "chat",
-                  onPressed: () {
-                    if (auth.currentUser == null) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => MyChatsScreen()));
-                    }
-                  },
-                  child: Icon(Icons.chat_bubble_rounded, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                ),
-                FloatingActionButton(
-                  heroTag: "post",
-                  onPressed: () {
-                    if (auth.currentUser == null) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => PostScreen()));
-                    }
-                  },
-                  child: Icon(Icons.add, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                ),
-                FloatingActionButton(
-                  heroTag: "profile",
-                  onPressed: () {
-                    if (auth.currentUser == null) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => ProfileScreen()));
-                    }
-                  },
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                )
-              ],
-            ),
+          // Navigation bar
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: 0,
+            selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.house),
+                label: "Home"
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.art_track),
+                label: "Forum"
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble_rounded),
+                label: "Messages"
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.add),
+                label: "Sell"
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                label: "Profile"
+              ),
+            ],
+            onTap: (index) {
+              if (auth.currentUser == null) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => LoginScreen()));
+              } else {
+                if (index == 1) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => ForumScreen()));
+                } else if (index == 2) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => MyChatsScreen()));
+                } else if (index == 3) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => PostScreen()));
+                } else if (index == 4) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => ProfileScreen()));
+                }
+              }
+            },
           ),
         ),
       ),

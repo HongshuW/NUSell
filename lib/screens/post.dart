@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:orbital2796_nusell/models/productPost.dart';
 import 'package:path/path.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
-import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,7 +70,6 @@ class _PostScreenState extends State<PostScreen> {
       String url = await ref.getDownloadURL();
       _imgRef.add(url);
     }
-    posts.doc(this.docId).update({"images": FieldValue.arrayUnion(_imgRef)});
   }
 
   @override
@@ -78,7 +77,6 @@ class _PostScreenState extends State<PostScreen> {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
 
-    List<String> addedPost = [];
     DocumentReference sellerReview =
         FirebaseFirestore.instance.collection('reviews').doc(this.userId);
     getSellerScore() async {
@@ -120,35 +118,17 @@ class _PostScreenState extends State<PostScreen> {
         return null;
       } else {
         await getSellerScore();
-        return posts
-            .add({
-              'user': userId,
-              'productName': productName,
-              'description': description,
-              'category': category,
-              'price': price,
-              'location': location,
-              'images': [],
-              'time': DateTime.parse(DateTime.now().toString()),
-              'searchKey': productName.substring(0, 1).toLowerCase(),
-              'nameForSearch': productName.toLowerCase().trim() +
-                  description.toLowerCase().trim(),
-              'sellerScore': sellerScore,
-              'status': "Selling"
-            })
-            .then((docRef) {
-              this.docId = docRef.id;
-              posts.doc(this.docId).update({"productId": this.docId});
-            })
-            .then((value) => addedPost.add(this.docId))
-            .then((value) => myPosts.doc(userId).set({
-                  'myPosts': FieldValue.arrayUnion([this.docId])
-                }, SetOptions(merge: true)))
-            .then((value) => Fluttertoast.showToast(
-                msg: 'You have added a post successfully!',
-                gravity: ToastGravity.CENTER))
-            .then((value) => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ProfileScreen())));
+        productPost post = productPost(
+            userId: userId,
+            productName: productName,
+            description: description,
+            price: price,
+            category: category,
+            location: location,
+            sellerScore: sellerScore,
+            images: _imgRef);
+        post.addAPost(context);
+        this.docId = post.getDocID();
       }
     }
 
@@ -246,15 +226,11 @@ class _PostScreenState extends State<PostScreen> {
         },
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomCenter,
-              stops: [0.5, 0.5],
-              colors: [
-                Color.fromRGBO(175, 241, 218, 0.3),
-                Color.fromRGBO(249, 234, 143, 0.5),
-              ],
-            ),
+            color: Color.fromRGBO(249, 241, 219, 1),
+            image: DecorationImage(
+                image: AssetImage("assets/images/waveTop.png"),
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.topLeft),
           ),
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: ListView(
@@ -549,8 +525,19 @@ class _PostScreenState extends State<PostScreen> {
                 margin: EdgeInsets.only(bottom: 30, left: 90, right: 90),
                 child: ElevatedButton(
                   onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            backgroundColor: Colors.transparent,
+                            child: Center(
+                                child: CircularProgressIndicator(
+                                    //color: Colors.white
+                                    )),
+                          );
+                        });
+                    await uploadImages();
                     addPost();
-                    uploadImages();
                   },
                   child: Text("Post"),
                   style: ElevatedButton.styleFrom(
