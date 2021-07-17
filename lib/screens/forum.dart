@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/comment.dart';
 import 'package:orbital2796_nusell/screens/addAForumPost.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
@@ -10,7 +11,6 @@ import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
-import 'package:orbital2796_nusell/services/auth.dart';
 
 class ForumScreen extends StatefulWidget {
   ForumScreen({Key key}) : super(key: key);
@@ -23,6 +23,10 @@ class _ForumScreenState extends State<ForumScreen> {
   final auth = FirebaseAuth.instance;
   final db = FirebaseFirestore.instance;
   String userId;
+  String content = "";
+  Comment comment;
+  int commentId;
+  TextEditingController _controller = TextEditingController();
 
   // a list of document snapshots, each represents a post.
   List<DocumentSnapshot> forumPosts = [];
@@ -145,13 +149,35 @@ class _ForumScreenState extends State<ForumScreen> {
       return Container();
     }
   }
+
+  String getTimePosted(DocumentSnapshot post) {
+    DateTime currentTime = DateTime.now();
+    DateTime timePosted = DateTime
+        .fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch);
+    Duration difference = currentTime.difference(timePosted);
+    int days = difference.inDays;
+    if (days == 0) {
+      return "Today";
+    } else  if (days == 1) {
+      return "Yesterday";
+    } else if (days <= 7) {
+      return "${difference.inDays} days ago";
+    } else {
+      return "${timePosted}".substring(0, 10);
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
     userId = auth.currentUser.uid;
+    // set cursor position to be end of the text.
+    _controller.text = this.content;
+    _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length));
     return Scaffold(
       appBar: AppBar(
         title: Text("Forum"),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           // publish a forum post.
@@ -164,169 +190,384 @@ class _ForumScreenState extends State<ForumScreen> {
         ],
       ),
 
-      body: Container(
-        color: Color.fromRGBO(195, 215, 223, 0.2),
-        child: Column(
-          children: [
-            Expanded(
-              child: forumPosts.length == 0
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView(
-                children: forumPosts.map<Widget>((post) {
-                  return Container(
-                    padding: EdgeInsets.all(20),
-                      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.1)),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Column(
-                        children: [
-                          // User
-                          FutureBuilder<DocumentSnapshot>(
-                            future: db.collection("users").doc("${post['user']}").get(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                              if (!userSnapshot.hasData) {
-                                return Center(child: CircularProgressIndicator());
-                              }
-                              Map<String, dynamic> user = userSnapshot.data.data();
-                              String userName = user["username"];
-                              String userPhoto = user["avatarUrl"];
-                              return InkWell(
-                                onTap: () {
-                                  if (post['user'] == this.userId) {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => ProfileScreen()));
-                                  } else {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            SellerProfileScreen(sellerId: post['user'])));
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  child: Row(
-                                    children: [
-                                      // profile photo
-                                      Container(
-                                        margin: EdgeInsets.only(right: 10),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(45),
-                                          child: CachedNetworkImage(
-                                            imageUrl: userPhoto,
-                                            height: 45,
-                                            width: 45,
-                                            fit: BoxFit.fill,
-                                            fadeInDuration: Duration.zero,
+      body: GestureDetector(
+        onTap: () {FocusScope.of(context).requestFocus(new FocusNode());},
+        child: Container(
+          color: Color.fromRGBO(195, 215, 223, 0.2),
+          child: Column(
+            children: [
+              Expanded(
+                child: forumPosts.length == 0
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView(
+                  children: forumPosts.map<Widget>((post) {
+                    return Container(
+                      padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(top: 10, left: 20, right: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.1)),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Column(
+                          children: [
+                            // User
+                            FutureBuilder<DocumentSnapshot>(
+                              future: db.collection("users").doc("${post['user']}").get(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                                if (!userSnapshot.hasData) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                Map<String, dynamic> user = userSnapshot.data.data();
+                                String userName = user["username"] == null
+                                    ? post["user"] : user["username"];
+                                String userPhoto = user["avatarUrl"];
+                                return InkWell(
+                                  onTap: () {
+                                    if (post['user'] == this.userId) {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) => ProfileScreen()));
+                                    } else {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              SellerProfileScreen(sellerId: post['user'])));
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 10),
+                                    child: Row(
+                                      children: [
+                                        // profile photo
+                                        Container(
+                                          margin: EdgeInsets.only(right: 10),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(45),
+                                            child: CachedNetworkImage(
+                                              imageUrl: userPhoto,
+                                              height: 45,
+                                              width: 45,
+                                              fit: BoxFit.fill,
+                                              fadeInDuration: Duration.zero,
+                                            ),
                                           ),
                                         ),
-                                      ),
 
-                                      // user name
-                                      Text(
-                                        userName == null ? "null" : userName,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      post['user'] != AuthService().getCurrentUID()
-                                          ? StreamBuilder<DocumentSnapshot>(
-                                          stream: db
-                                              .collection('follow')
-                                              .doc(AuthService().getCurrentUID())
-                                              .snapshots(),
-                                          builder: (context, snapshotForFollow) {
-                                            if (!snapshotForFollow.hasData) {
-                                              return CircularProgressIndicator();
-                                            }
-                                            Map<String, dynamic> mydoc =
-                                            snapshotForFollow.data.data();
+                                        // user name and time
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              userName,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
+                                            Text(
+                                              getTimePosted(post),
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w300,
+                                                  letterSpacing: 1),
+                                            ),
+                                          ],
+                                        ),
 
-                                            List usersFollowing = mydoc['following'];
-                                            bool following = false;
-                                            for (var user in usersFollowing) {
-                                              if (post['user'] == user)
-                                                following = true;
-                                            }
+                                        SizedBox(
+                                          width: 20,
+                                        ),
 
-                                            return GestureDetector(
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    db
-                                                        .collection('follow')
-                                                        .doc(AuthService().getCurrentUID())
-                                                        .set({
-                                                      'following': FieldValue.arrayUnion(
-                                                          [post['user']])
-                                                    }, SetOptions(merge: true));
-                                                    db
-                                                        .collection('follow')
-                                                        .doc(post['user'])
-                                                        .set({
-                                                      'followers': FieldValue.arrayUnion(
-                                                          [AuthService().getCurrentUID()])
-                                                    }, SetOptions(merge: true));
-                                                  },
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 5),
-                                                      padding: EdgeInsets.only(
-                                                          left: 5, right: 5),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
+                                        post['user'] != this.userId
+                                            ? StreamBuilder<DocumentSnapshot>(
+                                            stream: db
+                                                .collection('follow')
+                                                .doc(this.userId)
+                                                .snapshots(),
+                                            builder: (context, snapshotForFollow) {
+                                              if (!snapshotForFollow.hasData) {
+                                                return CircularProgressIndicator();
+                                              }
+                                              Map<String, dynamic> mydoc =
+                                              snapshotForFollow.data.data();
+
+                                              List usersFollowing = mydoc['following'];
+                                              bool following = false;
+                                              for (var user in usersFollowing) {
+                                                if (post['user'] == user)
+                                                  following = true;
+                                              }
+
+                                              return GestureDetector(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      db
+                                                          .collection('follow')
+                                                          .doc(this.userId)
+                                                          .set({
+                                                        'following': FieldValue.arrayUnion(
+                                                            [post['user']])
+                                                      }, SetOptions(merge: true));
+                                                      db
+                                                          .collection('follow')
+                                                          .doc(post['user'])
+                                                          .set({
+                                                        'followers': FieldValue.arrayUnion(
+                                                            [this.userId])
+                                                      }, SetOptions(merge: true));
+                                                    },
+                                                    child: Container(
+                                                        margin: EdgeInsets.only(left: 5),
+                                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Color.fromRGBO(
+                                                                    242, 195, 71, 1)),
+                                                            borderRadius:
+                                                            BorderRadius.circular(10),
+                                                            color: Colors.transparent),
+                                                        child: !following
+                                                            ? Text(
+                                                          "follow",
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                              FontWeight.w300,
                                                               color: Color.fromRGBO(
                                                                   242, 195, 71, 1)),
-                                                          borderRadius:
-                                                          BorderRadius.circular(10),
-                                                          color: Colors.transparent),
-                                                      child: !following
-                                                          ? Text(
-                                                        "follow",
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                            FontWeight.w300,
-                                                            color: Color.fromRGBO(
-                                                                242, 195, 71, 1)),
-                                                      )
-                                                          : Text(
-                                                        "following",
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                            FontWeight.w300,
-                                                            color: Color.fromRGBO(
-                                                                242, 195, 71, 1)),
-                                                      )),
-                                                ));
-                                          })
-                                          : Container()
+                                                        )
+                                                            : Text(
+                                                          "following",
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                              FontWeight.w300,
+                                                              color: Color.fromRGBO(
+                                                                  242, 195, 71, 1)),
+                                                        )),
+                                                  ));
+                                            })
+                                            : Container()
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // content
+                            Container(
+                              alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 10),
+                                child: Text(post["content"])
+                            ),
+
+                            // images
+                            displayImages(post),
+
+                            // comments
+                            ExpansionTile(
+                                trailing: Container(
+                                  width: 100,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(Icons.message_outlined, size: 18),
+                                      Text(
+                                        post["comments"].length.toString(),
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w300,
+                                            letterSpacing: 3),
+                                      ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+                              children: <Widget>[
+                                // write a comment
+                                Container(
+                                  child: TextField(
+                                    textInputAction: TextInputAction.send,
+                                    keyboardType: TextInputType.multiline,
+                                    minLines: 1,
+                                    maxLines: 3,
+                                    maxLength: 100,
+                                    decoration: InputDecoration(
+                                      hintText: "Write a comment",
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.all(10),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Color.fromRGBO(242, 195, 71, 1)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black45),
+                                      ),
+                                    ),
+                                    style: TextStyle(fontSize: 14, height: 1),
+                                    controller: _controller,
+                                    onChanged: (value) {
+                                      this.content = value;
+                                    },
+                                    onSubmitted: (value) async {
+                                      this.content = value;
+                                      if (this.content != "") {
+                                        this.comment = Comment(user: this.userId,
+                                            content: this.content, mention: "");
+                                        db.collection("forumPosts").doc(post.id).update({
+                                          "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                                        });
+                                        _controller.text = "";
+                                        this.content = "";
+                                        this.comment = null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ] + post["comments"].reversed.map<Widget>((comment) {
+                                return InkWell(
+                                  onTap: () {
+                                    showModalBottomSheet(context: context,
+                                        builder: (context) {
+                                          return Column(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: TextField(
+                                                  autofocus: true,
+                                                  textInputAction: TextInputAction.send,
+                                                  keyboardType: TextInputType.multiline,
+                                                  minLines: 1,
+                                                  maxLines: 1,
+                                                  maxLength: 100,
+                                                  decoration: InputDecoration(
+                                                    hintText: "Write a comment",
+                                                    isDense: true,
+                                                    contentPadding: EdgeInsets.all(10),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Color.fromRGBO(242, 195, 71, 1)),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black45),
+                                                    ),
+                                                  ),
+                                                  style: TextStyle(fontSize: 14, height: 1),
+                                                  controller: _controller,
+                                                  onChanged: (value) {
+                                                    this.content = value;
+                                                  },
+                                                  onSubmitted: (value) async {
+                                                    this.content = value;
+                                                    if (this.content != "") {
+                                                      this.comment = Comment(user: this.userId,
+                                                        content: this.content, mention: comment["user"]);
+                                                      db.collection("forumPosts").doc(post.id).update({
+                                                        "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                                                      });
+                                                      _controller.text = "";
+                                                      this.content = "";
+                                                      this.comment = null;
+                                                      Navigator.of(context).pop();
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(width: 0.5, color: Color.fromRGBO(242, 195, 71, 1))
+                                      )
+                                    ),
+                                    // single comment
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // User
+                                        FutureBuilder<DocumentSnapshot>(
+                                          future: db.collection("users").doc(comment['user']).get(),
+                                          builder: (context, userSnapshot) {
+                                            if (!userSnapshot.hasData) {
+                                              return Center(child: CircularProgressIndicator());
+                                            }
+                                            Map<String, dynamic> user = userSnapshot.data.data();
+                                            String userName = user["username"] == null
+                                                ? comment['user'] : user["username"];
+                                            return InkWell(
+                                              onTap: () {
+                                                if (comment['user'] == this.userId) {
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) => ProfileScreen()));
+                                                } else {
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SellerProfileScreen(sellerId: comment['user'])));
+                                                }
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text(
+                                                      userName,
+                                                      style: TextStyle(color: Colors.brown),
+                                                    ),
+                                                  ),
 
-                          // content
-                          Container(
-                            alignment: Alignment.topLeft,
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Text(post["content"])
-                          ),
+                                                  // get mentioned user
+                                                  comment["mention"] != ""
+                                                  ? FutureBuilder<DocumentSnapshot>(
+                                                      future: db.collection("users").doc(comment['mention']).get(),
+                                                      builder: (context, mentionSnapshot) {
+                                                        if (!mentionSnapshot.hasData) {
+                                                          return Center(child: CircularProgressIndicator());
+                                                        }
+                                                        Map<String, dynamic> mention = mentionSnapshot.data.data();
+                                                        String mentionedUser = mention["username"] == null
+                                                            ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            if (comment['mention'] == this.userId) {
+                                                              Navigator.of(context).push(
+                                                                  MaterialPageRoute(builder:
+                                                                      (context) => ProfileScreen()));
+                                                            } else {
+                                                              Navigator.of(context).push(
+                                                                  MaterialPageRoute(builder:
+                                                                      (context) => SellerProfileScreen(
+                                                                              sellerId: comment['mention'])));
+                                                            }
+                                                          },
+                                                          child: Text(
+                                                            mentionedUser,
+                                                            style: TextStyle(color: Colors.brown),
+                                                          ),
+                                                        );
+                                                      }) : Container(),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
 
-                          // images
-                          displayImages(post)
-                        ],
-                      ));
-                }).toList(),
+                                        Text(comment["message"])
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ));
+                  }).toList(),
+                )
               )
-            )
-          ],
+            ],
+          ),
         ),
       ),
 
@@ -358,7 +599,7 @@ class _ForumScreenState extends State<ForumScreen> {
           ),
         ],
         onTap: (index) {
-          if (auth.currentUser == null) {
+          if (this.userId == null) {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => LoginScreen()));
           } else {

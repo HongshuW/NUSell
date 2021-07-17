@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/verify.dart';
@@ -15,6 +16,17 @@ class AuthService with ChangeNotifier {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   signup(String email, String password, BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return loading(
+              hasImage: true,
+              imagePath: 'assets/images/wavingLion.png',
+              hasMessage: true,
+              message: "Processing..."
+          );
+        });
     try {
       UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -34,10 +46,22 @@ class AuthService with ChangeNotifier {
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
+      Navigator.of(context).pop();
     }
   }
 
   signin(String email, String password, BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return loading(
+              hasImage: true,
+              imagePath: 'assets/images/wavingLion.png',
+              hasMessage: true,
+              message: "Processing..."
+          );
+        });
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       //Success
@@ -46,6 +70,7 @@ class AuthService with ChangeNotifier {
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
+      Navigator.of(context).pop();
     }
   }
 

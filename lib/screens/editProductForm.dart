@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -480,9 +481,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Container(
                     margin: EdgeInsets.only(bottom: 30),
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return loading(
+                                hasImage: true,
+                                imagePath: 'assets/images/wavingLion.png',
+                                hasMessage: true,
+                                message: "Updating...",
+                              );
+                            }
+                        );
                         updatePost();
-                        uploadImages();
+                        await uploadImages();
                         Navigator.of(context).pop();
                       },
                       child: Text("Update"),

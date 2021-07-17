@@ -71,8 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Map<String, dynamic> doc = snapshot.data.data();
                 return Scaffold(
                   appBar: AppBar(
-                    title: Text('Your Profile'),
+                    centerTitle: true,
                     automaticallyImplyLeading: false,
+                    title: Text('Your Profile'),
+
                     // leading: BackButton(
                     //   color: Colors.black,
                     //   onPressed: () {
@@ -265,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               rowWidget(
                                 context,
-                                'posts',
+                                'product posts',
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
@@ -327,7 +329,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 TransactionHistoryScreen()));
                                   },
                                 ),
-                              )
+                              ),
+                              rowWidget(
+                                context,
+                                'my forum',
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                                  onPressed: () {},
+                                ),
+                              ),
                             ],
                           ),
                         )
@@ -354,11 +364,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: Icon(Icons.person), label: "Profile"),
                     ],
                     onTap: (index) {
-                      if (auth.currentUser == null) {
+                      if (FirebaseAuth.instance.currentUser == null) {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (context) => LoginScreen()));
                       } else {
-                        if (index == 1) {
+                        if (index == 0) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
+                        } else if (index == 1) {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => ForumScreen()));
@@ -370,10 +384,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => PostScreen()));
-                        } else if (index == 0) {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()));
                         }
                       }
                     },

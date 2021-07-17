@@ -250,15 +250,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         if (chatData == null) {
           return Scaffold(
             appBar: AppBar(
+              centerTitle: true,
               automaticallyImplyLeading: false,
-              // leading: BackButton(
-              //   onPressed: () {
-              //     Navigator.of(context).pop();
-              //   },
-              // ),r
-              // onPressed: ()
-              // => Navigator.of(context).pushReplacement(
-              //     MaterialPageRoute(builder: (context) => HomeScreen()))),
               title: Text("My Chats"),
             ),
             body: Center(child: Text("You don't have any conversation.")),
@@ -267,11 +260,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         this.myChats = chatData["myChats"];
         return Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             automaticallyImplyLeading: false,
-            // leading: BackButton(
-            //     color: Colors.black,
-            //     onPressed: () => Navigator.of(context).pushReplacement(
-            //         MaterialPageRoute(builder: (context) => HomeScreen()))),
             title: Text("My Chats"),
           ),
           body: ListView(
@@ -294,7 +284,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                   icon: Icon(Icons.person), label: "Profile"),
             ],
             onTap: (index) {
-              if (auth.currentUser == null) {
+              if (FirebaseAuth.instance.currentUser == null) {
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => LoginScreen()));
               } else {
