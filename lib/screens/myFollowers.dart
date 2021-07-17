@@ -23,9 +23,9 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
         title: Text('Your Followers'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacement(
-            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+            //Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),

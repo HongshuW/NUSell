@@ -146,7 +146,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                       Text(
                                                         'User ${userDoc['username']} has offered ${offer['priceOffered']}',
                                                         style: TextStyle(
-                                                            fontSize: 18),
+                                                            fontSize: 12),
                                                       ),
                                                       ElevatedButton(
                                                           onPressed: () {

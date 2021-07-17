@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/review.dart';
@@ -17,6 +18,10 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
       .collection('users')
       .doc(AuthService().getCurrentUID())
       .collection('offersMade');
+  CollectionReference offersReceived = FirebaseFirestore.instance
+      .collection('users')
+      .doc(AuthService().getCurrentUID())
+      .collection('offersReceived');
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   @override
   Widget build(BuildContext context) {
@@ -98,13 +103,137 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                         child: Text('View'))
                                   ],
                                 ),
-                                ListView(
-                                  shrinkWrap: true,
-                                  children: pricesOffered
-                                      .map((price) =>
-                                          Text('Price offered: ${price}'))
-                                      .toList(),
-                                ),
+                                StreamBuilder<DocumentSnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(post['user'])
+                                        .collection('offersReceived')
+                                        .doc(doc.id)
+                                        .snapshots(),
+                                    builder: (context, snapshotForReceived) {
+                                      if (!snapshotForReceived.hasData ||
+                                          snapshotForReceived.connectionState ==
+                                              ConnectionState.waiting)
+                                        return CircularProgressIndicator();
+
+                                      Map<String, dynamic> docForReceived =
+                                          snapshotForReceived.data.data();
+                                      if (docForReceived == null)
+                                        return CircularProgressIndicator();
+                                      return ListView(
+                                        shrinkWrap: true,
+                                        children: pricesOffered
+                                            .map((price) => Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        'Price offered: ${price}'),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          if (docForReceived[
+                                                                      'offers']
+                                                                  .length ==
+                                                              1) {
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) {
+                                                                  return popUp(
+                                                                    title:
+                                                                        "Are you sure you want to delete this offer?",
+                                                                    // subtitle: "You will need to sign in again to view your account!",
+                                                                    confirmText:
+                                                                        "Delete",
+                                                                    confirmColor:
+                                                                        Color.fromRGBO(
+                                                                            100,
+                                                                            170,
+                                                                            255,
+                                                                            1),
+                                                                    confirmAction:
+                                                                        () {
+                                                                      offersMade
+                                                                          .doc(doc
+                                                                              .id)
+                                                                          .delete();
+                                                                      for (var item
+                                                                          in docForReceived[
+                                                                              'offers']) {
+                                                                        if ((item['offerFromUser'] == AuthService().getCurrentUID()) &&
+                                                                            (item['priceOffered'] ==
+                                                                                price)) {
+                                                                          // item['priceOffered'] =
+                                                                          //     'Cancelled';
+                                                                          if (docForReceived['offers'].length ==
+                                                                              1) {
+                                                                            FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).delete();
+                                                                          } else {
+                                                                            FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).update(
+                                                                              {
+                                                                                'offers': FieldValue.arrayRemove([
+                                                                                  item
+                                                                                ])
+                                                                              },
+                                                                            );
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                  );
+                                                                });
+                                                          } else {
+                                                            pricesOffered
+                                                                .remove(price);
+                                                            offersMade
+                                                                .doc(doc.id)
+                                                                .update({
+                                                              'price':
+                                                                  pricesOffered
+                                                            });
+
+                                                            for (var item
+                                                                in docForReceived[
+                                                                    'offers']) {
+                                                              if ((item['offerFromUser'] ==
+                                                                      AuthService()
+                                                                          .getCurrentUID()) &&
+                                                                  (item['priceOffered'] ==
+                                                                      price)) {
+                                                                print(price);
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'users')
+                                                                    .doc(post[
+                                                                        'user'])
+                                                                    .collection(
+                                                                        'offersReceived')
+                                                                    .doc(doc.id)
+                                                                    .update(
+                                                                  {
+                                                                    'offers':
+                                                                        FieldValue
+                                                                            .arrayRemove([
+                                                                      item
+                                                                    ])
+                                                                  },
+                                                                );
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        child: Text('Cancel'))
+                                                  ],
+                                                ))
+                                            .toList(),
+                                      );
+                                    }),
                                 doc['status'] == 'Declined'
                                     ? Padding(
                                         padding: const EdgeInsets.all(8.0),

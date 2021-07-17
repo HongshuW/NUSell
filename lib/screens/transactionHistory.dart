@@ -155,108 +155,99 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                 );
               } else {
                 return Container(
-                  child: ListView(shrinkWrap: true, children: [
-                    StreamBuilder<QuerySnapshot>(
-                        stream: offersReceived
-                            .orderBy('time', descending: true)
-                            .snapshots(),
-                        builder: (context, querySnapshot) {
-                          if (querySnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text('Not yet');
-                          }
-                          return ListView(
-                            shrinkWrap: true,
-                            children: querySnapshot.data.docs.map((doc) {
-                              if (doc['status'] != 'Accepted' ||
-                                  doc['sellerReceivedPayment'] == false) {
-                                return Container();
-                              }
-                              Timestamp time = doc['time'];
-                              DateTime timeAsString = time.toDate();
-                              print(timeAsString.toString().length);
-                              print(timeAsString.toString());
-                              return StreamBuilder<DocumentSnapshot>(
-                                  stream: posts.doc(doc.id).snapshots(),
-                                  builder: (context2, snapshot2) {
-                                    if (!snapshot2.hasData) {
-                                      return Center(
-                                          child: CircularProgressIndicator());
-                                    }
-                                    Map<String, dynamic> post =
-                                        snapshot2.data.data();
-                                    Map<String, dynamic> offers = doc.data();
-                                    Map userAccepted = offers['userAccepted'];
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: offersReceived
+                          .orderBy('time', descending: true)
+                          .snapshots(),
+                      builder: (context, querySnapshot) {
+                        if (querySnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text('Not yet');
+                        }
+                        return ListView(
+                          shrinkWrap: true,
+                          children: querySnapshot.data.docs.map((doc) {
+                            if (doc['status'] != 'Accepted' ||
+                                doc['sellerReceivedPayment'] == false) {
+                              return Container();
+                            }
+                            Timestamp time = doc['time'];
+                            DateTime timeAsString = time.toDate();
+                            return StreamBuilder<DocumentSnapshot>(
+                                stream: posts.doc(doc.id).snapshots(),
+                                builder: (context2, snapshot2) {
+                                  if (!snapshot2.hasData) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  }
+                                  Map<String, dynamic> post =
+                                      snapshot2.data.data();
+                                  Map<String, dynamic> offers = doc.data();
+                                  Map userAccepted = offers['userAccepted'];
 
-                                    if (userAccepted == null)
-                                      return Container();
-                                    return Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.lightGreen,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Product: ${post['productName']}',
-                                                style: TextStyle(fontSize: 22),
-                                              ),
-                                            ),
-                                            StreamBuilder<DocumentSnapshot>(
-                                                stream: users
-                                                    .doc(userAccepted[
-                                                        'offerFromUser'])
-                                                    .snapshots(),
-                                                builder: (context, snapshot4) {
-                                                  if (!snapshot4.hasData) {
-                                                    return Center(
-                                                        child:
-                                                            CircularProgressIndicator());
-                                                  }
-                                                  Map<String, dynamic>
-                                                      userDoc2 =
-                                                      snapshot4.data.data();
-                                                  return Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      'User ${userDoc2['username']} with offer price of ${userAccepted['priceOffered']}',
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  );
-                                                }),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ProductInfoScreen(
-                                                                  product:
-                                                                      doc.id)));
-                                                },
-                                                child: Text('View')),
-                                            timeAsString != null
-                                                ? Text(timeAsString
-                                                    .toString()
-                                                    .substring(0, 19))
-                                                : Container()
-                                          ],
-                                        ),
+                                  if (userAccepted == null) return Container();
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.lightGreen,
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
-                                    );
-                                  });
-                            }).toList(),
-                          );
-                        }),
-                  ]),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Product: ${post['productName']}',
+                                              style: TextStyle(fontSize: 22),
+                                            ),
+                                          ),
+                                          StreamBuilder<DocumentSnapshot>(
+                                              stream: users
+                                                  .doc(userAccepted[
+                                                      'offerFromUser'])
+                                                  .snapshots(),
+                                              builder: (context, snapshot4) {
+                                                if (!snapshot4.hasData) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                }
+                                                Map<String, dynamic> userDoc2 =
+                                                    snapshot4.data.data();
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    'User ${userDoc2['username']} with offer price of ${userAccepted['priceOffered']}',
+                                                    style:
+                                                        TextStyle(fontSize: 18),
+                                                  ),
+                                                );
+                                              }),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ProductInfoScreen(
+                                                                product:
+                                                                    doc.id)));
+                                              },
+                                              child: Text('View')),
+                                          timeAsString != null
+                                              ? Text(timeAsString
+                                                  .toString()
+                                                  .substring(0, 19))
+                                              : Container()
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                          }).toList(),
+                        );
+                      }),
                 );
               }
             }).toList(),

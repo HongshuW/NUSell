@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:orbital2796_nusell/screens/forum.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
@@ -249,11 +250,12 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         if (chatData == null) {
           return Scaffold(
             appBar: AppBar(
-              leading: BackButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+              automaticallyImplyLeading: false,
+              // leading: BackButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pop();
+              //   },
+              // ),r
               // onPressed: ()
               // => Navigator.of(context).pushReplacement(
               //     MaterialPageRoute(builder: (context) => HomeScreen()))),
@@ -265,73 +267,52 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         this.myChats = chatData["myChats"];
         return Scaffold(
           appBar: AppBar(
-            leading: BackButton(
-                color: Colors.black,
-                onPressed: () => Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => HomeScreen()))),
+            automaticallyImplyLeading: false,
+            // leading: BackButton(
+            //     color: Colors.black,
+            //     onPressed: () => Navigator.of(context).pushReplacement(
+            //         MaterialPageRoute(builder: (context) => HomeScreen()))),
             title: Text("My Chats"),
           ),
           body: ListView(
             children: displayChats(),
           ),
-          // a collection of three floating action buttons, on pressed will
-          // turn to another page
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: Container(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            height: 80,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FloatingActionButton(
-                  heroTag: "home",
-                  child: Icon(Icons.house, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  },
-                ),
-                FloatingActionButton(
-                  heroTag: "chat",
-                  onPressed: () {},
-                  child: Icon(Icons.chat_bubble_rounded, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(247, 215, 140, 1),
-                ),
-                FloatingActionButton(
-                  heroTag: "post",
-                  onPressed: () {
-                    if (auth.currentUser == null) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => PostScreen()));
-                    }
-                  },
-                  child: Icon(Icons.add, color: Colors.white),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                ),
-                FloatingActionButton(
-                  heroTag: "profile",
-                  onPressed: () {
-                    if (auth.currentUser == null) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => ProfileScreen()));
-                    }
-                  },
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Color.fromRGBO(242, 195, 71, 1),
-                )
-              ],
-            ),
+          // Navigation bar
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: 2,
+            selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.art_track), label: "Forum"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
+              BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), label: "Profile"),
+            ],
+            onTap: (index) {
+              if (auth.currentUser == null) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              } else {
+                if (index == 0) {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => HomeScreen()));
+                } else if (index == 1) {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => ForumScreen()));
+                } else if (index == 3) {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => PostScreen()));
+                } else if (index == 4) {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => ProfileScreen()));
+                }
+              }
+            },
           ),
         );
       },
