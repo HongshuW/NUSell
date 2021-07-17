@@ -312,6 +312,7 @@ class _PostScreenState extends State<PostScreen> {
                 keyboardType: TextInputType.multiline,
                 minLines: 1,
                 maxLines: null,
+                maxLength: 1000,
                 decoration: InputDecoration(
                   labelText: "Description",
                   hintText:

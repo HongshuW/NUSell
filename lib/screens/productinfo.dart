@@ -183,6 +183,23 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
     }
   }
 
+  String getTimePosted(Map<String, dynamic> post) {
+    DateTime currentTime = DateTime.now();
+    DateTime timePosted = DateTime
+        .fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch);
+    Duration difference = currentTime.difference(timePosted);
+    int days = difference.inDays;
+    if (days == 0) {
+      return "Today";
+    } else  if (days == 1) {
+      return "Yesterday";
+    } else if (days <= 7) {
+      return "${difference.inDays} days ago";
+    } else {
+      return "${timePosted}".substring(0, 10);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -706,8 +723,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 child: Row(
                   children: [
                     Text(
-                      "${DateTime.fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch)}"
-                          .substring(0, 10),
+                      getTimePosted(post),
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w300,

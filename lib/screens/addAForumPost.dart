@@ -171,6 +171,7 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
                   keyboardType: TextInputType.multiline,
                   minLines: 1,
                   maxLines: null,
+                  maxLength: 250,
                   decoration: InputDecoration(
                     labelText: "Content",
                     hintText:

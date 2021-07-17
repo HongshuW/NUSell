@@ -145,6 +145,23 @@ class _ForumScreenState extends State<ForumScreen> {
       return Container();
     }
   }
+
+  String getTimePosted(DocumentSnapshot post) {
+    DateTime currentTime = DateTime.now();
+    DateTime timePosted = DateTime
+        .fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch);
+    Duration difference = currentTime.difference(timePosted);
+    int days = difference.inDays;
+    if (days == 0) {
+      return "Today";
+    } else  if (days == 1) {
+      return "Yesterday";
+    } else if (days <= 7) {
+      return "${difference.inDays} days ago";
+    } else {
+      return "${timePosted}".substring(0, 10);
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -193,7 +210,8 @@ class _ForumScreenState extends State<ForumScreen> {
                                 return Center(child: CircularProgressIndicator());
                               }
                               Map<String, dynamic> user = userSnapshot.data.data();
-                              String userName = user["username"];
+                              String userName = user["username"] == null
+                                  ? post["user"] : user["username"];
                               String userPhoto = user["avatarUrl"];
                               return InkWell(
                                 onTap: () {
@@ -225,16 +243,30 @@ class _ForumScreenState extends State<ForumScreen> {
                                         ),
                                       ),
 
-                                      // user name
-                                      Text(
-                                        userName == null ? "null" : userName,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14),
+                                      // user name and time
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            userName,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 14),
+                                          ),
+                                          Text(
+                                            getTimePosted(post),
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w300,
+                                                letterSpacing: 1),
+                                          ),
+                                        ],
                                       ),
+
                                       SizedBox(
                                         width: 20,
                                       ),
+
                                       post['user'] != AuthService().getCurrentUID()
                                           ? StreamBuilder<DocumentSnapshot>(
                                           stream: db
@@ -275,8 +307,7 @@ class _ForumScreenState extends State<ForumScreen> {
                                                   },
                                                   child: Container(
                                                       margin: EdgeInsets.only(left: 5),
-                                                      padding: EdgeInsets.only(
-                                                          left: 5, right: 5),
+                                                      padding: EdgeInsets.symmetric(horizontal: 5),
                                                       decoration: BoxDecoration(
                                                           border: Border.all(
                                                               color: Color.fromRGBO(
@@ -321,7 +352,96 @@ class _ForumScreenState extends State<ForumScreen> {
                           ),
 
                           // images
-                          displayImages(post)
+                          displayImages(post),
+
+                          // comments
+                          ExpansionTile(
+                              trailing: Container(
+                                width: 100,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.message_outlined, size: 18),
+                                    Text(
+                                      post["commentNum"].toString(),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w300,
+                                          letterSpacing: 3),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            children: <Widget>[
+                              // write a comment
+                              Container(
+                                child: TextField(
+                                  keyboardType: TextInputType.multiline,
+                                  minLines: 1,
+                                  maxLines: 3,
+                                  maxLength: 100,
+                                  decoration: InputDecoration(
+                                    hintText: "Write a comment",
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(10),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color.fromRGBO(242, 195, 71, 1)),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black45),
+                                    ),
+                                  ),
+                                  style: TextStyle(fontSize: 14, height: 1),
+                                  // controller: TextEditingController(text: this.description),
+                                  // onChanged: (value) {
+                                  //   this.description = value;
+                                  // },
+                                ),
+                              ),
+                            ] + post["comments"].reversed.map<Widget>((comment) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // User
+                                  FutureBuilder<DocumentSnapshot>(
+                                    future: db.collection("users").doc("${comment['user']}").get(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                                      if (!userSnapshot.hasData) {
+                                        return Center(child: CircularProgressIndicator());
+                                      }
+                                      Map<String, dynamic> user = userSnapshot.data.data();
+                                      String userName = user["username"] == null
+                                          ? comment['user'] : user["username"];
+                                      return InkWell(
+                                        onTap: () {
+                                          if (comment['user'] == this.userId) {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => ProfileScreen()));
+                                          } else {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SellerProfileScreen(sellerId: comment['user'])));
+                                          }
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Text(
+                                            userName,
+                                            style: TextStyle(color: Colors.brown),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+
+                                  Text(comment["message"])
+                                ],
+                              );
+                            }).toList(),
+                          ),
                         ],
                       ));
                 }).toList(),
