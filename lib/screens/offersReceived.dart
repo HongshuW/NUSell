@@ -318,7 +318,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: Text(
-                                                  'User ${userDoc2['username']} with offer price of ${userAccepted['priceOffered']}',
+                                                  '${userDoc2['username']} offered ${userAccepted['priceOffered']}',
                                                   style:
                                                       TextStyle(fontSize: 18),
                                                 ),

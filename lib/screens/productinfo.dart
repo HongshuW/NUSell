@@ -207,19 +207,42 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       primary: Color.fromRGBO(100, 170, 255, 1),
                     ),
                     child: Text("Update"))
-                : ElevatedButton(
-                    onPressed: () {
-                      DocumentReference docRef =
-                          db.collection("posts").doc(widget.product);
-                      docRef.update({
-                        "status": "Selling",
-                        "time": DateTime.parse(DateTime.now().toString())
-                      });
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProfileScreen()));
-                    },
-                    child:
-                        Text(this.status == "Deleted" ? "Resume" : "Activate")),
+                : StreamBuilder<DocumentSnapshot>(
+                    stream: users
+                        .doc(seller)
+                        .collection('offersReceived')
+                        .doc(widget.product)
+                        .snapshots(),
+                    builder: (context, snapshotForReceived) {
+                      if (!snapshotForReceived.hasData ||
+                          snapshotForReceived.connectionState ==
+                              ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+                      Map<String, dynamic> docForReceived =
+                          snapshotForReceived.data.data();
+                      //print(docForReceived['sellerReceivedPayment']);
+                      return docForReceived['sellerReceivedPayment'] == true
+                          ? ElevatedButton(
+                              child: Text('Activate'),
+                              onPressed: null,
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                DocumentReference docRef =
+                                    db.collection("posts").doc(widget.product);
+                                docRef.update({
+                                  "status": "Selling",
+                                  "time":
+                                      DateTime.parse(DateTime.now().toString())
+                                });
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ProfileScreen()));
+                              },
+                              child: Text(this.status == "Deleted"
+                                  ? "Resume"
+                                  : "Activate"));
+                    }),
 
             // selling: delete; other status: disabled delete.
             this.status == "Selling"
