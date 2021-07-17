@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/comment.dart';
 import 'package:orbital2796_nusell/screens/addAForumPost.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
@@ -10,7 +11,6 @@ import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
-import 'package:orbital2796_nusell/services/auth.dart';
 
 class ForumScreen extends StatefulWidget {
   ForumScreen({Key key}) : super(key: key);
@@ -23,6 +23,9 @@ class _ForumScreenState extends State<ForumScreen> {
   final auth = FirebaseAuth.instance;
   final db = FirebaseFirestore.instance;
   String userId;
+  String content = "";
+  Comment comment;
+  TextEditingController _controller = TextEditingController();
 
   // a list of document snapshots, each represents a post.
   List<DocumentSnapshot> forumPosts = [];
@@ -166,6 +169,10 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   Widget build(BuildContext context) {
     userId = auth.currentUser.uid;
+    // set cursor position to be end of the text.
+    _controller.text = this.content;
+    _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length));
     return Scaffold(
       appBar: AppBar(
         title: Text("Forum"),
@@ -267,11 +274,11 @@ class _ForumScreenState extends State<ForumScreen> {
                                         width: 20,
                                       ),
 
-                                      post['user'] != AuthService().getCurrentUID()
+                                      post['user'] != this.userId
                                           ? StreamBuilder<DocumentSnapshot>(
                                           stream: db
                                               .collection('follow')
-                                              .doc(AuthService().getCurrentUID())
+                                              .doc(this.userId)
                                               .snapshots(),
                                           builder: (context, snapshotForFollow) {
                                             if (!snapshotForFollow.hasData) {
@@ -292,7 +299,7 @@ class _ForumScreenState extends State<ForumScreen> {
                                                   onTap: () {
                                                     db
                                                         .collection('follow')
-                                                        .doc(AuthService().getCurrentUID())
+                                                        .doc(this.userId)
                                                         .set({
                                                       'following': FieldValue.arrayUnion(
                                                           [post['user']])
@@ -302,7 +309,7 @@ class _ForumScreenState extends State<ForumScreen> {
                                                         .doc(post['user'])
                                                         .set({
                                                       'followers': FieldValue.arrayUnion(
-                                                          [AuthService().getCurrentUID()])
+                                                          [this.userId])
                                                     }, SetOptions(merge: true));
                                                   },
                                                   child: Container(
@@ -363,7 +370,7 @@ class _ForumScreenState extends State<ForumScreen> {
                                   children: [
                                     Icon(Icons.message_outlined, size: 18),
                                     Text(
-                                      post["commentNum"].toString(),
+                                      post["comments"].length.toString(),
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w300,
@@ -376,6 +383,7 @@ class _ForumScreenState extends State<ForumScreen> {
                               // write a comment
                               Container(
                                 child: TextField(
+                                  textInputAction: TextInputAction.send,
                                   keyboardType: TextInputType.multiline,
                                   minLines: 1,
                                   maxLines: 3,
@@ -393,52 +401,67 @@ class _ForumScreenState extends State<ForumScreen> {
                                     ),
                                   ),
                                   style: TextStyle(fontSize: 14, height: 1),
-                                  // controller: TextEditingController(text: this.description),
-                                  // onChanged: (value) {
-                                  //   this.description = value;
-                                  // },
+                                  controller: _controller,
+                                  onChanged: (value) {
+                                    this.content = value;
+                                  },
+                                  onSubmitted: (value) async {
+                                    this.content = value;
+                                    if (this.content != "") {
+                                      this.comment = Comment(user: this.userId,
+                                          content: this.content);
+                                      db.collection("forumPosts").doc(post.id).update({
+                                        "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                                      });
+                                      _controller.text = "";
+                                      this.content = "";
+                                      this.comment = null;
+                                    }
+                                  },
                                 ),
                               ),
                             ] + post["comments"].reversed.map<Widget>((comment) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // User
-                                  FutureBuilder<DocumentSnapshot>(
-                                    future: db.collection("users").doc("${comment['user']}").get(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                                      if (!userSnapshot.hasData) {
-                                        return Center(child: CircularProgressIndicator());
-                                      }
-                                      Map<String, dynamic> user = userSnapshot.data.data();
-                                      String userName = user["username"] == null
-                                          ? comment['user'] : user["username"];
-                                      return InkWell(
-                                        onTap: () {
-                                          if (comment['user'] == this.userId) {
-                                            Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) => ProfileScreen()));
-                                          } else {
-                                            Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SellerProfileScreen(sellerId: comment['user'])));
-                                          }
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.centerLeft,
-                                          margin: EdgeInsets.only(top: 5),
-                                          child: Text(
-                                            userName,
-                                            style: TextStyle(color: Colors.brown),
+                              return Container(
+                                padding: EdgeInsets.symmetric(vertical: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // User
+                                    FutureBuilder<DocumentSnapshot>(
+                                      future: db.collection("users").doc("${comment['user']}").get(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                                        if (!userSnapshot.hasData) {
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        Map<String, dynamic> user = userSnapshot.data.data();
+                                        String userName = user["username"] == null
+                                            ? comment['user'] : user["username"];
+                                        return InkWell(
+                                          onTap: () {
+                                            if (comment['user'] == this.userId) {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) => ProfileScreen()));
+                                            } else {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SellerProfileScreen(sellerId: comment['user'])));
+                                            }
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              userName,
+                                              style: TextStyle(color: Colors.brown),
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                        );
+                                      },
+                                    ),
 
-                                  Text(comment["message"])
-                                ],
+                                    Text(comment["message"])
+                                  ],
+                                ),
                               );
                             }).toList(),
                           ),
@@ -479,7 +502,7 @@ class _ForumScreenState extends State<ForumScreen> {
           ),
         ],
         onTap: (index) {
-          if (auth.currentUser == null) {
+          if (this.userId == null) {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => LoginScreen()));
           } else {
