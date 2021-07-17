@@ -130,105 +130,102 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                   children: [
                                                     Text(
                                                         'Price offered: ${price}'),
-                                                    ElevatedButton(
-                                                        onPressed: () {
-                                                          if (docForReceived[
-                                                                      'offers']
-                                                                  .length ==
-                                                              1) {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) {
-                                                                  return popUp(
-                                                                    title:
-                                                                        "Are you sure you want to delete this offer?",
-                                                                    // subtitle: "You will need to sign in again to view your account!",
-                                                                    confirmText:
-                                                                        "Delete",
-                                                                    confirmColor:
-                                                                        Color.fromRGBO(
+                                                    doc['reviewDone'] == true
+                                                        ? Container()
+                                                        : ElevatedButton(
+                                                            onPressed: () {
+                                                              if (docForReceived[
+                                                                          'offers']
+                                                                      .length ==
+                                                                  1) {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return popUp(
+                                                                        title:
+                                                                            "Are you sure you want to delete this offer?",
+                                                                        // subtitle: "You will need to sign in again to view your account!",
+                                                                        confirmText:
+                                                                            "Delete",
+                                                                        confirmColor: Color.fromRGBO(
                                                                             100,
                                                                             170,
                                                                             255,
                                                                             1),
-                                                                    confirmAction:
-                                                                        () {
-                                                                      offersMade
-                                                                          .doc(doc
-                                                                              .id)
-                                                                          .delete();
-                                                                      for (var item
-                                                                          in docForReceived[
-                                                                              'offers']) {
-                                                                        if ((item['offerFromUser'] == AuthService().getCurrentUID()) &&
-                                                                            (item['priceOffered'] ==
-                                                                                price)) {
-                                                                          // item['priceOffered'] =
-                                                                          //     'Cancelled';
-                                                                          if (docForReceived['offers'].length ==
-                                                                              1) {
-                                                                            FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).delete();
-                                                                          } else {
-                                                                            FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).update(
-                                                                              {
-                                                                                'offers': FieldValue.arrayRemove([
-                                                                                  item
-                                                                                ])
-                                                                              },
-                                                                            );
+                                                                        confirmAction:
+                                                                            () {
+                                                                          offersMade
+                                                                              .doc(doc.id)
+                                                                              .delete();
+                                                                          for (var item
+                                                                              in docForReceived['offers']) {
+                                                                            if ((item['offerFromUser'] == AuthService().getCurrentUID()) &&
+                                                                                (item['priceOffered'] == price)) {
+                                                                              // item['priceOffered'] =
+                                                                              //     'Cancelled';
+                                                                              if (docForReceived['offers'].length == 1) {
+                                                                                FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).delete();
+                                                                              } else {
+                                                                                FirebaseFirestore.instance.collection('users').doc(post['user']).collection('offersReceived').doc(doc.id).update(
+                                                                                  {
+                                                                                    'offers': FieldValue.arrayRemove([item])
+                                                                                  },
+                                                                                );
+                                                                              }
+                                                                            }
                                                                           }
-                                                                        }
-                                                                      }
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                  );
-                                                                });
-                                                          } else {
-                                                            pricesOffered
-                                                                .remove(price);
-                                                            offersMade
-                                                                .doc(doc.id)
-                                                                .update({
-                                                              'price':
-                                                                  pricesOffered
-                                                            });
-
-                                                            for (var item
-                                                                in docForReceived[
-                                                                    'offers']) {
-                                                              if ((item['offerFromUser'] ==
-                                                                      AuthService()
-                                                                          .getCurrentUID()) &&
-                                                                  (item['priceOffered'] ==
-                                                                      price)) {
-                                                                print(price);
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'users')
-                                                                    .doc(post[
-                                                                        'user'])
-                                                                    .collection(
-                                                                        'offersReceived')
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                      );
+                                                                    });
+                                                              } else {
+                                                                pricesOffered
+                                                                    .remove(
+                                                                        price);
+                                                                offersMade
                                                                     .doc(doc.id)
-                                                                    .update(
-                                                                  {
-                                                                    'offers':
-                                                                        FieldValue
-                                                                            .arrayRemove([
-                                                                      item
-                                                                    ])
-                                                                  },
-                                                                );
+                                                                    .update({
+                                                                  'price':
+                                                                      pricesOffered
+                                                                });
+
+                                                                for (var item
+                                                                    in docForReceived[
+                                                                        'offers']) {
+                                                                  if ((item['offerFromUser'] ==
+                                                                          AuthService()
+                                                                              .getCurrentUID()) &&
+                                                                      (item['priceOffered'] ==
+                                                                          price)) {
+                                                                    print(
+                                                                        price);
+                                                                    FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            'users')
+                                                                        .doc(post[
+                                                                            'user'])
+                                                                        .collection(
+                                                                            'offersReceived')
+                                                                        .doc(doc
+                                                                            .id)
+                                                                        .update(
+                                                                      {
+                                                                        'offers':
+                                                                            FieldValue.arrayRemove([
+                                                                          item
+                                                                        ])
+                                                                      },
+                                                                    );
+                                                                  }
+                                                                }
                                                               }
-                                                            }
-                                                          }
-                                                        },
-                                                        child: Text('Cancel'))
+                                                            },
+                                                            child:
+                                                                Text('Cancel'))
                                                   ],
                                                 ))
                                             .toList(),
