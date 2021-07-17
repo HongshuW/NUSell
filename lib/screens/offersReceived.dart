@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/chat.dart';
+import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -14,6 +16,7 @@ class OffersReceivedScreen extends StatefulWidget {
 }
 
 class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   CollectionReference offersReceived = FirebaseFirestore.instance
       .collection('users')
       .doc(AuthService().getCurrentUID())
@@ -301,12 +304,120 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                           }
                                           Map<String, dynamic> userDoc2 =
                                               snapshot4.data.data();
-                                          return Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'User ${userDoc2['username']} with offer price of ${userAccepted['priceOffered']}',
-                                              style: TextStyle(fontSize: 18),
-                                            ),
+                                          String seller =
+                                              AuthService().getCurrentUID();
+                                          String user =
+                                              userAccepted['offerFromUser'];
+                                          Chat chat = new Chat([seller, user]);
+                                          String docID;
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  'User ${userDoc2['username']} with offer price of ${userAccepted['priceOffered']}',
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ),
+                                              //TODO
+                                              //Add chat option
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    if (seller.compareTo(user) <
+                                                        0) {
+                                                      docID =
+                                                          seller + "_" + user;
+                                                    } else {
+                                                      docID =
+                                                          user + "_" + seller;
+                                                    }
+                                                    db
+                                                        .collection("chats")
+                                                        .doc(docID)
+                                                        .get()
+                                                        .then((snapshot) => {
+                                                              if (!snapshot
+                                                                  .exists)
+                                                                {
+                                                                  db
+                                                                      .collection(
+                                                                          "chats")
+                                                                      .doc(
+                                                                          docID)
+                                                                      .set(chat
+                                                                          .toMap()),
+                                                                  db
+                                                                      .collection(
+                                                                          "myChats")
+                                                                      .doc(
+                                                                          seller)
+                                                                      .get()
+                                                                      .then(
+                                                                          (sellerSnapshot) =>
+                                                                              {
+                                                                                if (!sellerSnapshot.exists)
+                                                                                  {
+                                                                                    db.collection("myChats").doc(seller).set({
+                                                                                      "myChats": [docID]
+                                                                                    })
+                                                                                  }
+                                                                                else
+                                                                                  {
+                                                                                    db.collection("myChats").doc(seller).update({
+                                                                                      "myChats": FieldValue.arrayUnion([docID])
+                                                                                    })
+                                                                                  }
+                                                                              }),
+                                                                  db
+                                                                      .collection(
+                                                                          "myChats")
+                                                                      .doc(user)
+                                                                      .get()
+                                                                      .then(
+                                                                          (userSnapshot) =>
+                                                                              {
+                                                                                if (!userSnapshot.exists)
+                                                                                  {
+                                                                                    db.collection("myChats").doc(user).set({
+                                                                                      "myChats": [docID]
+                                                                                    })
+                                                                                  }
+                                                                                else
+                                                                                  {
+                                                                                    db.collection("myChats").doc(user).update({
+                                                                                      "myChats": FieldValue.arrayUnion([docID])
+                                                                                    })
+                                                                                  }
+                                                                              }),
+                                                                }
+                                                            });
+                                                    Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                ContactSellerScreen(
+                                                                  chatID: docID,
+                                                                  theOtherUserId:
+                                                                      user,
+                                                                  theOtherUserName:
+                                                                      userDoc2[
+                                                                          'username'],
+                                                                )));
+                                                  },
+                                                  // style: ElevatedButton.styleFrom(
+                                                  //   primary: Color.fromRGBO(
+                                                  //       100, 170, 255, 1),
+                                                  // ),
+                                                  child: Text("Chat"),
+                                                ),
+                                              ),
+                                            ],
                                           );
                                         }),
                                     doc['sellerReceivedPayment'] == false

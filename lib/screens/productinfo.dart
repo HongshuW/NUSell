@@ -270,6 +270,95 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       } else {
         Chat chat = new Chat([seller, user]);
         String docID;
+        print(widget.product);
+        if (this.status == 'Sold') {
+          return BottomAppBar(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (seller.compareTo(user) < 0) {
+                      docID = seller + "_" + user;
+                    } else {
+                      docID = user + "_" + seller;
+                    }
+                    db.collection("chats").doc(docID).get().then((snapshot) => {
+                          if (!snapshot.exists)
+                            {
+                              db
+                                  .collection("chats")
+                                  .doc(docID)
+                                  .set(chat.toMap()),
+                              db
+                                  .collection("myChats")
+                                  .doc(seller)
+                                  .get()
+                                  .then((sellerSnapshot) => {
+                                        if (!sellerSnapshot.exists)
+                                          {
+                                            db
+                                                .collection("myChats")
+                                                .doc(seller)
+                                                .set({
+                                              "myChats": [docID]
+                                            })
+                                          }
+                                        else
+                                          {
+                                            db
+                                                .collection("myChats")
+                                                .doc(seller)
+                                                .update({
+                                              "myChats":
+                                                  FieldValue.arrayUnion([docID])
+                                            })
+                                          }
+                                      }),
+                              db
+                                  .collection("myChats")
+                                  .doc(user)
+                                  .get()
+                                  .then((userSnapshot) => {
+                                        if (!userSnapshot.exists)
+                                          {
+                                            db
+                                                .collection("myChats")
+                                                .doc(user)
+                                                .set({
+                                              "myChats": [docID]
+                                            })
+                                          }
+                                        else
+                                          {
+                                            db
+                                                .collection("myChats")
+                                                .doc(user)
+                                                .update({
+                                              "myChats":
+                                                  FieldValue.arrayUnion([docID])
+                                            })
+                                          }
+                                      }),
+                            }
+                        });
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ContactSellerScreen(
+                              chatID: docID,
+                              theOtherUserId: seller,
+                              theOtherUserName: sellerName,
+                            )));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(100, 170, 255, 1),
+                  ),
+                  child: Text("Contact the seller"),
+                ),
+              ],
+            ),
+          );
+        }
+
         int numOfLikes;
         return StreamBuilder(
             stream: db.collection("posts").doc(widget.product).snapshots(),
