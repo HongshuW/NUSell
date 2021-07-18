@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
+import 'package:orbital2796_nusell/screens/editProfileImage.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/resetPassword.dart';
@@ -36,6 +37,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //          <-- ListTile.divideTiles
             context: context,
             tiles: [
+              ListTile(
+                title: Text('Change profile photo'),
+                trailing: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => EditProfileImageScreen()));
+                  },
+                ),
+              ),
               ListTile(
                 title: Text('Edit profile'),
                 trailing: IconButton(

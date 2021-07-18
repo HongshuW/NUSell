@@ -164,13 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   children: [
                                     Avatar(
                                       avatarUrl: doc['avatarUrl'],
-                                      onTap: () async {
-                                        print('waiting for image');
-                                        await getImage()
-                                            .whenComplete(() => uploadImage());
-
-                                        print('uploaded image');
-                                      },
+                                      onTap: () {},
                                       size: 50,
                                     ),
                                     Padding(
