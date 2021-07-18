@@ -144,8 +144,7 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
                 alignment: Alignment.topLeft,
                 child: IconButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ForumScreen()));
+                      Navigator.of(context).pop();
                     },
                     icon: Icon(Icons.arrow_back, color: Colors.brown)),
               ),

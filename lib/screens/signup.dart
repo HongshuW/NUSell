@@ -27,6 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
         backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
             'NUSell',
             style: TextStyle(color: Colors.black),

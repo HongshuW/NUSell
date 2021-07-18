@@ -4,9 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbital2796_nusell/screens/addAForumPost.dart';
 import 'package:orbital2796_nusell/screens/forum.dart';
 import 'package:orbital2796_nusell/screens/myFollowers.dart';
 import 'package:orbital2796_nusell/screens/myFollowing.dart';
+import 'package:orbital2796_nusell/screens/myForum.dart';
 import 'package:orbital2796_nusell/screens/offersMade.dart';
 import 'package:orbital2796_nusell/screens/offersReceived.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
@@ -334,7 +336,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 'my forum',
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              myForum(context)));
+                                  },
                                 ),
                               ),
                             ],
@@ -509,5 +516,29 @@ Widget rowWidget(context, String text, IconButton button) {
           width: MediaQuery.of(context).size.width,
           color: Colors.grey),
     ],
+  );
+}
+
+Widget myForum(context) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: BackButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ProfileScreen()));
+        },
+      ),
+      title: Text("My Forum"),
+      actions: [
+        // publish a forum post.
+        IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AddAForumPostScreen()));
+            },
+            icon: Icon(Icons.camera_alt))
+      ],
+    ),
+    body: MyForumScreen(),
   );
 }
