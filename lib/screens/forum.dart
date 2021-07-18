@@ -10,7 +10,6 @@ import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/myChats.dart';
 import 'package:orbital2796_nusell/screens/post.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
-import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:orbital2796_nusell/screens/singleForumPost.dart';
 
 class ForumScreen extends StatefulWidget {
@@ -115,7 +114,7 @@ class _ForumScreenState extends State<ForumScreen> {
                     ? Center(child: CircularProgressIndicator())
                     : ListView(
                   children: forumPosts.map<Widget>((post) {
-                    return SingleForumPost(post: post);
+                    return SingleForumPost(post: post, commented: false);
                   }).toList(),
                 )
               )

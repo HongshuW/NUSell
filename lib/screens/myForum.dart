@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:orbital2796_nusell/screens/addAForumPost.dart';
-import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/singleForumPost.dart';
 import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom_radio_grouped_button.dart';
 
@@ -16,6 +14,7 @@ class MyForumScreen extends StatefulWidget {
 class _MyForumScreenState extends State<MyForumScreen> {
   var auth = FirebaseAuth.instance;
   var db = FirebaseFirestore.instance;
+  String user;
   String arrayDisplayed = "myForumPosts";
   List<dynamic> displayedPosts;
 
@@ -33,7 +32,9 @@ class _MyForumScreenState extends State<MyForumScreen> {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
-            return SingleForumPost(post: snapshot.data);
+            return SingleForumPost(
+                post: snapshot.data,
+                commented: this.arrayDisplayed == "commented");
           })
       );
     }
@@ -42,6 +43,7 @@ class _MyForumScreenState extends State<MyForumScreen> {
 
   @override
   Widget build(BuildContext context) {
+    this.user = auth.currentUser.uid;
     return ListView(
       children: [
         Container(
@@ -64,12 +66,26 @@ class _MyForumScreenState extends State<MyForumScreen> {
         ),
 
         FutureBuilder(
-            future: db.collection("myForumPosts").doc(auth.currentUser.uid).get(),
+            future: db.collection("myForumPosts").doc(this.user).get(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
               }
               Map<String, dynamic> myForum = snapshot.data.data();
+              if (myForum == null) {
+                db.collection("myForumPosts").doc(this.user).set({
+                  "commented": [], "myForumPosts": []
+                });
+                return Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(top: 20),
+                  child: Text(
+                      this.arrayDisplayed == "myForumPosts"
+                          ? "You haven't posted anything yet."
+                          : "You haven't commented any post yet."
+                  ),
+                );
+              }
               this.displayedPosts = myForum[this.arrayDisplayed];
               if (this.displayedPosts.length == 0) {
                 return Container(

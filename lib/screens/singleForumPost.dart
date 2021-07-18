@@ -4,12 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/comment.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
+import 'package:orbital2796_nusell/screens/myForum.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 
 class SingleForumPost extends StatefulWidget {
   final DocumentSnapshot post;
-  SingleForumPost({Key key, this.post}) : super(key: key);
+  final bool commented;
+  SingleForumPost({Key key, this.post, this.commented}) : super(key: key);
   @override
   _SingleForumPostState createState() => _SingleForumPostState();
 }
@@ -21,7 +25,6 @@ class _SingleForumPostState extends State<SingleForumPost> {
   String userId;
   String content = "";
   Comment comment;
-  int commentId;
   TextEditingController _controller = TextEditingController();
 
   displayImages(DocumentSnapshot post) {
@@ -110,8 +113,10 @@ class _SingleForumPostState extends State<SingleForumPost> {
     _controller.text = this.content;
     _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length));
+
     return Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: widget.commented ? 10 : 20,
+            bottom: 20, left: 20, right: 20),
         margin: EdgeInsets.only(top: 10, left: 20, right: 20),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -120,7 +125,101 @@ class _SingleForumPostState extends State<SingleForumPost> {
         ),
         child: Column(
           children: [
-            // User
+            // more actions
+            widget.commented
+                ? Container(
+              height: 20,
+              alignment: Alignment.topRight,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                alignment: Alignment.topRight,
+                splashRadius: 12,
+                icon: Icon(Icons.keyboard_arrow_down),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 150,
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return popUp(
+                                          title: "Do you want to hide this post?",
+                                          subtitle: "This action is irreversible!",
+                                          confirmText: "Confirm",
+                                          confirmAction: () async {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return loading(
+                                                    hasMessage: false,
+                                                    message: "Processing...",
+                                                  );
+                                                });
+                                            await db.collection("myForumPosts")
+                                                .doc(this.userId).update({
+                                              "commented": FieldValue.arrayRemove([widget.post.id])
+                                            });
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder:
+                                                    (context) => myForum(context)));
+                                          },
+                                        );
+                                      });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 5),
+                                  padding: EdgeInsets.all(15),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            width: 0.5,
+                                          color: Colors.grey
+                                        )
+                                    ),
+                                  ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(right: 10),
+                                            child: Icon(Icons.clear)
+                                        ),
+                                        Text(
+                                            "Hide",
+                                          style: TextStyle(
+                                            fontSize: 16
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                  shadowColor: Colors.transparent,
+                                ),
+                                child: Text("Cancel"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                  );
+                },
+              ),
+            ) : Container(),
+
+            // User Information
             FutureBuilder<DocumentSnapshot>(
               future: db.collection("users").doc("${widget.post['user']}").get(),
               builder: (BuildContext context,
@@ -132,23 +231,23 @@ class _SingleForumPostState extends State<SingleForumPost> {
                 String userName = user["username"] == null
                     ? widget.post["user"] : user["username"];
                 String userPhoto = user["avatarUrl"];
-                return InkWell(
-                  onTap: () {
-                    if (widget.post['user'] == this.userId) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProfileScreen()));
-                    } else {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SellerProfileScreen(
-                              sellerId: widget.post['user'])));
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      children: [
-                        // profile photo
-                        Container(
+                return Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      // profile photo
+                      InkWell(
+                        onTap: () {
+                          if (widget.post['user'] == this.userId) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ProfileScreen()));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SellerProfileScreen(
+                                    sellerId: widget.post['user'])));
+                          }
+                        },
+                        child: Container(
                           margin: EdgeInsets.only(right: 10),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(45),
@@ -161,9 +260,21 @@ class _SingleForumPostState extends State<SingleForumPost> {
                             ),
                           ),
                         ),
+                      ),
 
-                        // user name and time
-                        Column(
+                      // user name and time
+                      InkWell(
+                        onTap: () {
+                          if (widget.post['user'] == this.userId) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ProfileScreen()));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SellerProfileScreen(
+                                    sellerId: widget.post['user'])));
+                          }
+                        },
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -181,83 +292,83 @@ class _SingleForumPostState extends State<SingleForumPost> {
                             ),
                           ],
                         ),
+                      ),
 
-                        SizedBox(
-                          width: 20,
-                        ),
+                      SizedBox(
+                        width: 20,
+                      ),
 
-                        widget.post['user'] != this.userId
-                            ? StreamBuilder<DocumentSnapshot>(
-                            stream: db
-                                .collection('follow')
-                                .doc(this.userId)
-                                .snapshots(),
-                            builder: (context, snapshotForFollow) {
-                              if (!snapshotForFollow.hasData) {
-                                return CircularProgressIndicator();
-                              }
-                              Map<String, dynamic> mydoc =
-                              snapshotForFollow.data.data();
+                      widget.post['user'] != this.userId
+                          ? StreamBuilder<DocumentSnapshot>(
+                          stream: db
+                              .collection('follow')
+                              .doc(this.userId)
+                              .snapshots(),
+                          builder: (context, snapshotForFollow) {
+                            if (!snapshotForFollow.hasData) {
+                              return CircularProgressIndicator();
+                            }
+                            Map<String, dynamic> mydoc =
+                            snapshotForFollow.data.data();
 
-                              List usersFollowing = mydoc['following'];
-                              bool following = false;
-                              for (var user in usersFollowing) {
-                                if (widget.post['user'] == user)
-                                  following = true;
-                              }
+                            List usersFollowing = mydoc['following'];
+                            bool following = false;
+                            for (var user in usersFollowing) {
+                              if (widget.post['user'] == user)
+                                following = true;
+                            }
 
-                              return GestureDetector(
-                                  child: InkWell(
-                                    onTap: () {
-                                      db
-                                          .collection('follow')
-                                          .doc(this.userId)
-                                          .set({
-                                        'following': FieldValue.arrayUnion(
-                                            [widget.post['user']])
-                                      }, SetOptions(merge: true));
-                                      db
-                                          .collection('follow')
-                                          .doc(widget.post['user'])
-                                          .set({
-                                        'followers': FieldValue.arrayUnion(
-                                            [this.userId])
-                                      }, SetOptions(merge: true));
-                                    },
-                                    child: Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        padding: EdgeInsets.symmetric(horizontal: 5),
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color.fromRGBO(
-                                                    242, 195, 71, 1)),
-                                            borderRadius:
-                                            BorderRadius.circular(10),
-                                            color: Colors.transparent),
-                                        child: !following
-                                            ? Text(
-                                          "follow",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight:
-                                              FontWeight.w300,
+                            return GestureDetector(
+                                child: InkWell(
+                                  onTap: () {
+                                    db
+                                        .collection('follow')
+                                        .doc(this.userId)
+                                        .set({
+                                      'following': FieldValue.arrayUnion(
+                                          [widget.post['user']])
+                                    }, SetOptions(merge: true));
+                                    db
+                                        .collection('follow')
+                                        .doc(widget.post['user'])
+                                        .set({
+                                      'followers': FieldValue.arrayUnion(
+                                          [this.userId])
+                                    }, SetOptions(merge: true));
+                                  },
+                                  child: Container(
+                                      margin: EdgeInsets.only(left: 5),
+                                      padding: EdgeInsets.symmetric(horizontal: 5),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
                                               color: Color.fromRGBO(
                                                   242, 195, 71, 1)),
-                                        )
-                                            : Text(
-                                          "following",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight:
-                                              FontWeight.w300,
-                                              color: Color.fromRGBO(
-                                                  242, 195, 71, 1)),
-                                        )),
-                                  ));
-                            })
-                            : Container()
-                      ],
-                    ),
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                          color: Colors.transparent),
+                                      child: !following
+                                          ? Text(
+                                        "follow",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                            FontWeight.w300,
+                                            color: Color.fromRGBO(
+                                                242, 195, 71, 1)),
+                                      )
+                                          : Text(
+                                        "following",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                            FontWeight.w300,
+                                            color: Color.fromRGBO(
+                                                242, 195, 71, 1)),
+                                      )),
+                                ));
+                          })
+                          : Container(),
+                    ],
                   ),
                 );
               },
@@ -325,6 +436,11 @@ class _SingleForumPostState extends State<SingleForumPost> {
                         db.collection("forumPosts").doc(widget.post.id).update({
                           "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                         });
+                        if (widget.post['user'] != this.userId) {
+                          db.collection("myForumPosts").doc(this.userId).update({
+                            "commented": FieldValue.arrayUnion([widget.post.id]),
+                          });
+                        }
                         _controller.text = "";
                         this.content = "";
                         this.comment = null;
@@ -373,6 +489,11 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                       db.collection("forumPosts").doc(widget.post.id).update({
                                         "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                       });
+                                      if (widget.post['user'] != this.userId) {
+                                        db.collection("myForumPosts").doc(this.userId).update({
+                                          "commented": FieldValue.arrayUnion([widget.post.id]),
+                                        });
+                                      }
                                       _controller.text = "";
                                       this.content = "";
                                       this.comment = null;
