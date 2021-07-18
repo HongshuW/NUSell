@@ -25,10 +25,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   // user id of the current user.
   String user;
-
   // user id of the other user in a chat.
   String theOtherUser;
-
   // A list of all of the user's chats.
   List<dynamic> myChats;
 
@@ -234,6 +232,45 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     return chats;
   }
 
+  BottomNavigationBar getNavigation(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: 2,
+      selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+      unselectedItemColor: Colors.grey,
+      showUnselectedLabels: true,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.art_track), label: "Forum"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
+        BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person), label: "Profile"),
+      ],
+      onTap: (index) {
+        if (FirebaseAuth.instance.currentUser == null) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginScreen()));
+        } else {
+          if (index == 0) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => HomeScreen()));
+          } else if (index == 1) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => ForumScreen()));
+          } else if (index == 3) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => PostScreen()));
+          } else if (index == 4) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => ProfileScreen()));
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     this.user = auth.currentUser.uid;
@@ -255,6 +292,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
               title: Text("My Chats"),
             ),
             body: Center(child: Text("You don't have any conversation.")),
+            // Navigation bar
+            bottomNavigationBar: getNavigation(context),
           );
         }
         this.myChats = chatData["myChats"];
@@ -268,42 +307,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
             children: displayChats(),
           ),
           // Navigation bar
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: 2,
-            selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
-            unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.art_track), label: "Forum"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
-              BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person), label: "Profile"),
-            ],
-            onTap: (index) {
-              if (FirebaseAuth.instance.currentUser == null) {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
-              } else {
-                if (index == 0) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
-                } else if (index == 1) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => ForumScreen()));
-                } else if (index == 3) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => PostScreen()));
-                } else if (index == 4) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => ProfileScreen()));
-                }
-              }
-            },
-          ),
+          bottomNavigationBar: getNavigation(context),
         );
       },
     );

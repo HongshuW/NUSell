@@ -220,7 +220,7 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
-                                                color: Colors.orange,
+                                                color: Color.fromRGBO(242, 195, 71, 1),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
