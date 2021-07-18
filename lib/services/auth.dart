@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
+import 'package:orbital2796_nusell/screens/interests.dart';
 import 'package:orbital2796_nusell/screens/verify.dart';
 import 'package:orbital2796_nusell/services/db.dart';
 
@@ -75,8 +76,16 @@ class AuthService with ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       //Success
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()));
+      db.collection("personalPreference").doc(_auth.currentUser.uid).get()
+        .then((doc) {
+          if (doc.exists) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => HomeScreen()));
+          } else {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => InterestsScreen()));
+          }
+      });
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
