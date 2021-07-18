@@ -23,8 +23,12 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
       .doc(AuthService().getCurrentUID())
       .collection('offersReceived');
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    var padding = MediaQuery.of(context).padding;
+    double newheight = height - padding.top - padding.bottom;
     return Scaffold(
       appBar: AppBar(
         title: Text('Offers made'),
@@ -50,7 +54,7 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.lightGreen,
+                      color: Colors.green.shade100,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: StreamBuilder<DocumentSnapshot>(
@@ -93,6 +97,8 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                       style: TextStyle(fontSize: 22),
                                     ),
                                     ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Colors.orange.shade200),
                                         onPressed: () {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
@@ -130,9 +136,15 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                   children: [
                                                     Text(
                                                         'Price offered: ${price}'),
-                                                    doc['reviewDone'] == true
+                                                    doc['buyerReceivedProduct'] ==
+                                                            true
                                                         ? Container()
                                                         : ElevatedButton(
+                                                            style: ElevatedButton
+                                                                .styleFrom(
+                                                                    primary: Colors
+                                                                        .orange
+                                                                        .shade200),
                                                             onPressed: () {
                                                               if (docForReceived[
                                                                           'offers']
@@ -248,6 +260,11 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                 Text(
                                                     'I have received the product'),
                                                 ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            primary: Colors
+                                                                .orange
+                                                                .shade200),
                                                     onPressed: () {
                                                       offersMade
                                                           .doc(doc.id)
@@ -281,6 +298,11 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                       ],
                                                     ),
                                                     ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                primary: Colors
+                                                                    .orange
+                                                                    .shade200),
                                                         onPressed: () {
                                                           Navigator.of(context)
                                                               .pushReplacement(

@@ -39,10 +39,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("assets/images/waveBottom.png",),
+              image: AssetImage(
+                "assets/images/waveBottom.png",
+              ),
               fit: BoxFit.fitWidth,
-              alignment: Alignment.bottomRight
-          ),
+              alignment: Alignment.bottomRight),
         ),
         child: Center(
           child: Form(
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         //controller: controller,
                         style: TextStyle(fontSize: 20),
-                        keyboardType: TextInputType.name,
+                        //keyboardType: TextInputType.name,
                         decoration: InputDecoration(
                             border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(25.0),
@@ -146,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         //controller: controller,
                         style: TextStyle(fontSize: 20),
                         obscureText: _obscureText,
-                        keyboardType: TextInputType.visiblePassword,
+                        //keyboardType: TextInputType.visiblePassword,
                         controller: password,
                         decoration: InputDecoration(
                             border: new OutlineInputBorder(
@@ -235,10 +236,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Positioned(
                         child: Container(
-                          margin: EdgeInsets.only(top: 30),
-                          child: Image.asset('assets/images/wavingLion.png',
-                              width: MediaQuery.of(context).size.width * 0.7),
-                        ))
+                      margin: EdgeInsets.only(top: 30),
+                      child: Image.asset('assets/images/wavingLion.png',
+                          width: MediaQuery.of(context).size.width * 0.7),
+                    ))
                   ],
                 ),
               ],

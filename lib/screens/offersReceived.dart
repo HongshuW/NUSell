@@ -41,6 +41,9 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
     // setOffers();
     // offers = offersReceived.get();
     // print(offers.toString());
+    double height = MediaQuery.of(context).size.height;
+    var padding = MediaQuery.of(context).padding;
+    double newheight = height - padding.top - padding.bottom;
     return Scaffold(
       appBar: AppBar(
         title: Text('Offers Received'),
@@ -69,7 +72,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                   return Text('Not yet');
                 }
                 return Container(
-                  height: 200,
+                  height: newheight / 3,
                   child: ListView(
                     shrinkWrap: true,
                     children: querySnapshot.data.docs.map((doc) {
@@ -99,7 +102,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.orange,
+                                  color: Colors.orange.shade200,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Column(
@@ -119,6 +122,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                       ProductInfoScreen(
                                                           product: doc.id)));
                                         },
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Colors.orange.shade200),
                                         child: Text('View')),
                                     ListView(
                                       shrinkWrap: true,
@@ -152,6 +157,11 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                             fontSize: 12),
                                                       ),
                                                       ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                                  primary: Colors
+                                                                      .orange
+                                                                      .shade200),
                                                           onPressed: () {
                                                             posts.doc(doc.id).set(
                                                                 {
@@ -243,7 +253,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                 'Please contact the buyer to meet up or mail to send the item'),
           ),
           Container(
-            height: 230,
+            height: newheight / 3,
             child: StreamBuilder<QuerySnapshot>(
                 stream: offersReceived
                     .orderBy('time', descending: true)
@@ -271,7 +281,7 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.lightGreen,
+                                  color: Colors.green.shade200,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Column(
@@ -284,6 +294,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                       ),
                                     ),
                                     ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Colors.orange.shade200),
                                         onPressed: () {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
@@ -329,6 +341,10 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary: Colors
+                                                              .orange.shade200),
                                                   onPressed: () {
                                                     if (seller.compareTo(user) <
                                                         0) {
@@ -430,6 +446,11 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                               children: [
                                                 Text('I have received payment'),
                                                 ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            primary: Colors
+                                                                .orange
+                                                                .shade200),
                                                     onPressed: () {
                                                       offersReceived
                                                           .doc(doc.id)

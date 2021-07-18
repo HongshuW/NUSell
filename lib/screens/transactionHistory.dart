@@ -95,7 +95,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.lightGreen,
+                                color: Colors.green.shade100,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: StreamBuilder<DocumentSnapshot>(
@@ -126,6 +126,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                                 style: TextStyle(fontSize: 22),
                                               ),
                                               ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary: Colors
+                                                              .orange.shade200),
                                                   onPressed: () {
                                                     Navigator.of(context).push(
                                                         MaterialPageRoute(
@@ -190,7 +194,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                     padding: const EdgeInsets.all(16.0),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.lightGreen,
+                                        color: Colors.green.shade100,
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Column(
@@ -226,6 +230,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                                 );
                                               }),
                                           ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  primary:
+                                                      Colors.orange.shade200),
                                               onPressed: () {
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(
