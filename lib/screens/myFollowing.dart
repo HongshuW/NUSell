@@ -37,6 +37,11 @@ class _MyFollowingScreenState extends State<MyFollowingScreen> {
             }
             Map<String, dynamic> followDoc = snapshot.data.data();
             List usersFollowing = followDoc['following'];
+            if (usersFollowing.length == 0)
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('You have not followed anyone yet!'),
+              );
             return ListView(
               children: usersFollowing.map((user) {
                 return FutureBuilder<DocumentSnapshot>(

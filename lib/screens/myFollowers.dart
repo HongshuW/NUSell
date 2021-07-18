@@ -35,8 +35,14 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
             if (!snapshot.hasData || snapshot.data == null) {
               return CircularProgressIndicator();
             }
+
             Map<String, dynamic> followDoc = snapshot.data.data();
             List usersFollowing = followDoc['followers'];
+            if (usersFollowing.length == 0)
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('You have no followers yet!'),
+              );
             return ListView(
               children: usersFollowing.map((user) {
                 return FutureBuilder<DocumentSnapshot>(
@@ -52,6 +58,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
                           ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
                       }
+
                       if (userDoc == null) {
                         return Container();
                       }
