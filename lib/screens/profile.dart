@@ -47,6 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     //     return
     //   }
     // }
+    double height = MediaQuery.of(context).size.height;
+    var padding = MediaQuery.of(context).padding;
+    double newheight = height - padding.top - padding.bottom;
     return StreamBuilder<DocumentSnapshot>(
         stream: _userStream,
         builder:
@@ -145,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       //crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
-                          height: 260,
+                          height: newheight / 2.5,
                           decoration: BoxDecoration(
                             color: Colors.green.shade100,
                             borderRadius: BorderRadius.only(
@@ -181,13 +184,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Phone number: ${doc['phoneNumber']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
+                                    doc['phoneNumber'] == null
+                                        ? Container()
+                                        : Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Phone number: ${doc['phoneNumber']}',
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                          ),
                                     StreamBuilder<DocumentSnapshot>(
                                         stream: db
                                             .collection('follow')

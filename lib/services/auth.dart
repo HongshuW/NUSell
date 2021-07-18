@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/models/loading.dart';
@@ -14,6 +17,11 @@ class AuthService with ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  final _chars =
+      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random();
 
   signup(String email, String password, BuildContext context) async {
     showDialog(
@@ -24,8 +32,7 @@ class AuthService with ChangeNotifier {
               hasImage: true,
               imagePath: 'assets/images/wavingLion.png',
               hasMessage: true,
-              message: "Processing..."
-          );
+              message: "Processing...");
         });
     try {
       UserCredential cred = await _auth.createUserWithEmailAndPassword(
@@ -34,8 +41,12 @@ class AuthService with ChangeNotifier {
       );
       User firebaseUser = cred.user;
       NUSellUser user = NUSellUser(
-        uid: firebaseUser.uid,
-      );
+          uid: firebaseUser.uid,
+          username: getRandomString(12),
+          avatarUrl: await FirebaseStorage.instance
+              .ref()
+              .child('profilepics/default-user-image.png')
+              .getDownloadURL());
       print(user.uid);
       await UserDatabaseService(uid: user.uid).setUpFollow(user);
       await UserDatabaseService(uid: user.uid).updateUserData(user);
@@ -59,8 +70,7 @@ class AuthService with ChangeNotifier {
               hasImage: true,
               imagePath: 'assets/images/wavingLion.png',
               hasMessage: true,
-              message: "Processing..."
-          );
+              message: "Processing...");
         });
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);

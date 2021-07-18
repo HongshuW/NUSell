@@ -19,6 +19,14 @@ class EditProfileImageScreen extends StatefulWidget {
 class _EditProfileImageScreenState extends State<EditProfileImageScreen> {
   NUSellUser user = NUSellUser();
   File newProfilePic;
+  // String defaultProfileImage;
+
+  // Future getDefaultImage() async {
+  //   defaultProfileImage = await FirebaseStorage.instance
+  //       .ref()
+  //       .child('profilepics/default-user-image.png')
+  //       .getDownloadURL();
+  // }
 
   Future getImage() async {
     await Permission.mediaLibrary.request();
