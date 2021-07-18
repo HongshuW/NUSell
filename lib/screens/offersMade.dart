@@ -45,8 +45,16 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
             stream: offersMade.orderBy('time', descending: true).snapshots(),
             builder: (context, querySnapshot) {
               if (querySnapshot.connectionState == ConnectionState.waiting) {
-                return Text('Not yet');
+                return CircularProgressIndicator();
               }
+              if (querySnapshot.data.docs.length == 0)
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('You have not made any offer yet!'),
+                );
+              print(querySnapshot.data.toString());
+              if (querySnapshot.data == null)
+                return Text('Your have not made any offer!');
               return ListView(
                   children: querySnapshot.data.docs.map((doc) {
                 List pricesOffered = doc['price'];

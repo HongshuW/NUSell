@@ -71,172 +71,177 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                 if (querySnapshot.connectionState == ConnectionState.waiting) {
                   return Text('Not yet');
                 }
-                return Container(
-                  height: newheight / 3,
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: querySnapshot.data.docs.map((doc) {
-                      return StreamBuilder<DocumentSnapshot>(
-                          stream: posts.doc(doc.id).snapshots(),
-                          builder: (context2, snapshot2) {
-                            if (!snapshot2.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            Map<String, dynamic> post = snapshot2.data.data();
-                            Map<String, dynamic> offers = doc.data();
-                            var offer1 = offers['offers'];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: newheight / 3,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: querySnapshot.data.docs.map((doc) {
+                        return StreamBuilder<DocumentSnapshot>(
+                            stream: posts.doc(doc.id).snapshots(),
+                            builder: (context2, snapshot2) {
+                              if (!snapshot2.hasData) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              Map<String, dynamic> post = snapshot2.data.data();
+                              Map<String, dynamic> offers = doc.data();
+                              var offer1 = offers['offers'];
 
-                            if (offer1 == 'sold') {
-                              return Container(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 4, 4, 4),
-                                  child: Text(
-                                      'Offer for ${post['productName']} has been accepted'),
-                                ),
-                              );
-                            }
-                            List offerList = offers['offers'];
+                              if (offer1 == 'sold') {
+                                return Container(
+                                    // child: Padding(
+                                    //   padding:
+                                    //       const EdgeInsets.fromLTRB(20, 4, 4, 4),
+                                    //   child: Text(
+                                    //       'Offer for ${post['productName']} has been accepted'),
+                                    // ),
+                                    );
+                              }
+                              List offerList = offers['offers'];
 
-                            return Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.shade200,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Product: ${post['productName']}',
-                                        style: TextStyle(fontSize: 22),
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.shade200,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Product: ${post['productName']}',
+                                          style: TextStyle(fontSize: 22),
+                                        ),
                                       ),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfoScreen(
-                                                          product: doc.id)));
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.orange.shade200),
-                                        child: Text('View')),
-                                    ListView(
-                                      shrinkWrap: true,
-                                      children: offerList.map((offer) {
-                                        int index = offerList.indexOf(offer);
-                                        print(offer.toString());
-                                        return StreamBuilder<DocumentSnapshot>(
-                                            stream: users
-                                                .doc(offer['offerFromUser'])
-                                                .snapshots(),
-                                            builder: (context3, snapshot3) {
-                                              if (!snapshot3.hasData) {
-                                                return Center(
-                                                    child:
-                                                        CircularProgressIndicator());
-                                              }
-                                              Map<String, dynamic> userDoc =
-                                                  snapshot3.data.data();
-                                              return Container(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        'User ${userDoc['username']} has offered ${offer['priceOffered']}',
-                                                        style: TextStyle(
-                                                            fontSize: 12),
-                                                      ),
-                                                      ElevatedButton(
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                                  primary: Colors
-                                                                      .orange
-                                                                      .shade200),
-                                                          onPressed: () {
-                                                            posts.doc(doc.id).set(
-                                                                {
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductInfoScreen(
+                                                            product: doc.id)));
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              primary: Colors.orange.shade200),
+                                          child: Text('View')),
+                                      ListView(
+                                        shrinkWrap: true,
+                                        children: offerList.map((offer) {
+                                          int index = offerList.indexOf(offer);
+                                          print(offer.toString());
+                                          return StreamBuilder<
+                                                  DocumentSnapshot>(
+                                              stream: users
+                                                  .doc(offer['offerFromUser'])
+                                                  .snapshots(),
+                                              builder: (context3, snapshot3) {
+                                                if (!snapshot3.hasData) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                }
+                                                Map<String, dynamic> userDoc =
+                                                    snapshot3.data.data();
+                                                return Container(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'User ${userDoc['username']} has offered ${offer['priceOffered']}',
+                                                          style: TextStyle(
+                                                              fontSize: 12),
+                                                        ),
+                                                        ElevatedButton(
+                                                            style: ElevatedButton
+                                                                .styleFrom(
+                                                                    primary: Colors
+                                                                        .orange
+                                                                        .shade200),
+                                                            onPressed: () {
+                                                              posts.doc(doc.id).set(
+                                                                  {
+                                                                    'status':
+                                                                        'Sold'
+                                                                  },
+                                                                  SetOptions(
+                                                                      merge:
+                                                                          true));
+                                                              for (var user
+                                                                  in offerList) {
+                                                                offersMade
+                                                                    .doc(doc.id)
+                                                                    .set({
                                                                   'status':
-                                                                      'Sold'
-                                                                },
-                                                                SetOptions(
-                                                                    merge:
-                                                                        true));
-                                                            for (var user
-                                                                in offerList) {
-                                                              offersMade
+                                                                      'Declined'
+                                                                }, SetOptions(merge: true));
+                                                              }
+                                                              offersReceived
                                                                   .doc(doc.id)
                                                                   .set(
                                                                       {
                                                                     'status':
-                                                                        'Declined'
+                                                                        'Accepted',
+                                                                    'userAccepted':
+                                                                        offerList
+                                                                            .elementAt(index),
+                                                                    'time':
+                                                                        DateTime
+                                                                            .now(),
+                                                                    'offers':
+                                                                        'sold'
                                                                   },
                                                                       SetOptions(
                                                                           merge:
                                                                               true));
-                                                            }
-                                                            offersReceived
-                                                                .doc(doc.id)
-                                                                .set(
-                                                                    {
-                                                                  'status':
-                                                                      'Accepted',
-                                                                  'userAccepted':
-                                                                      offerList
-                                                                          .elementAt(
-                                                                              index),
-                                                                  'time':
-                                                                      DateTime
-                                                                          .now(),
-                                                                  'offers':
-                                                                      'sold'
-                                                                },
-                                                                    SetOptions(
-                                                                        merge:
-                                                                            true));
 
-                                                            users
-                                                                .doc(offer[
-                                                                    'offerFromUser'])
-                                                                .collection(
-                                                                    'offersMade')
-                                                                .doc(doc.id)
-                                                                .set(
-                                                                    {
-                                                                  'status':
-                                                                      'Accepted',
-                                                                  'priceAccepted':
-                                                                      offer[
-                                                                          'priceOffered'],
-                                                                },
-                                                                    SetOptions(
-                                                                        merge:
-                                                                            true));
-                                                          },
-                                                          child:
-                                                              Text('Accept')),
-                                                    ],
+                                                              users
+                                                                  .doc(offer[
+                                                                      'offerFromUser'])
+                                                                  .collection(
+                                                                      'offersMade')
+                                                                  .doc(doc.id)
+                                                                  .set(
+                                                                      {
+                                                                    'status':
+                                                                        'Accepted',
+                                                                    'priceAccepted':
+                                                                        offer[
+                                                                            'priceOffered'],
+                                                                  },
+                                                                      SetOptions(
+                                                                          merge:
+                                                                              true));
+                                                            },
+                                                            child:
+                                                                Text('Accept')),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              );
-                                            });
-                                      }).toList(),
-                                    )
-                                  ],
+                                                );
+                                              });
+                                        }).toList(),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          });
-                    }).toList(),
+                              );
+                            });
+                      }).toList(),
+                    ),
                   ),
                 );
               }),
@@ -252,233 +257,240 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
             child: Text(
                 'Please contact the buyer to meet up or mail to send the item'),
           ),
-          Container(
-            height: newheight / 3,
-            child: StreamBuilder<QuerySnapshot>(
-                stream: offersReceived
-                    .orderBy('time', descending: true)
-                    .snapshots(),
-                builder: (context, querySnapshot) {
-                  if (querySnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Text('Not yet');
-                  }
-                  return ListView(
-                    shrinkWrap: true,
-                    children: querySnapshot.data.docs.map((doc) {
-                      return StreamBuilder<DocumentSnapshot>(
-                          stream: posts.doc(doc.id).snapshots(),
-                          builder: (context2, snapshot2) {
-                            if (!snapshot2.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            Map<String, dynamic> post = snapshot2.data.data();
-                            Map<String, dynamic> offers = doc.data();
-                            Map userAccepted = offers['userAccepted'];
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.yellow.shade50,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              height: newheight / 3,
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: offersReceived
+                      .orderBy('time', descending: true)
+                      .snapshots(),
+                  builder: (context, querySnapshot) {
+                    if (querySnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Text('Not yet');
+                    }
+                    return ListView(
+                      shrinkWrap: true,
+                      children: querySnapshot.data.docs.map((doc) {
+                        return StreamBuilder<DocumentSnapshot>(
+                            stream: posts.doc(doc.id).snapshots(),
+                            builder: (context2, snapshot2) {
+                              if (!snapshot2.hasData) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              Map<String, dynamic> post = snapshot2.data.data();
+                              Map<String, dynamic> offers = doc.data();
+                              Map userAccepted = offers['userAccepted'];
 
-                            if (userAccepted == null) return Container();
-                            return Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade200,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Product: ${post['productName']}',
-                                        style: TextStyle(fontSize: 22),
+                              if (userAccepted == null) return Container();
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade200,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Product: ${post['productName']}',
+                                          style: TextStyle(fontSize: 22),
+                                        ),
                                       ),
-                                    ),
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.orange.shade200),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfoScreen(
-                                                          product: doc.id)));
-                                        },
-                                        child: Text('View')),
-                                    StreamBuilder<DocumentSnapshot>(
-                                        stream: users
-                                            .doc(userAccepted['offerFromUser'])
-                                            .snapshots(),
-                                        builder: (context, snapshot4) {
-                                          if (!snapshot4.hasData) {
-                                            return Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          }
-                                          Map<String, dynamic> userDoc2 =
-                                              snapshot4.data.data();
-                                          String seller =
-                                              AuthService().getCurrentUID();
-                                          String user =
-                                              userAccepted['offerFromUser'];
-                                          Chat chat = new Chat([seller, user]);
-                                          String docID;
-                                          return Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  '${userDoc2['username']} offered ${userAccepted['priceOffered']}',
-                                                  style:
-                                                      TextStyle(fontSize: 18),
-                                                ),
-                                              ),
-                                              //TODO
-                                              //Add chat option
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          primary: Colors
-                                                              .orange.shade200),
-                                                  onPressed: () {
-                                                    if (seller.compareTo(user) <
-                                                        0) {
-                                                      docID =
-                                                          seller + "_" + user;
-                                                    } else {
-                                                      docID =
-                                                          user + "_" + seller;
-                                                    }
-                                                    db
-                                                        .collection("chats")
-                                                        .doc(docID)
-                                                        .get()
-                                                        .then((snapshot) => {
-                                                              if (!snapshot
-                                                                  .exists)
-                                                                {
-                                                                  db
-                                                                      .collection(
-                                                                          "chats")
-                                                                      .doc(
-                                                                          docID)
-                                                                      .set(chat
-                                                                          .toMap()),
-                                                                  db
-                                                                      .collection(
-                                                                          "myChats")
-                                                                      .doc(
-                                                                          seller)
-                                                                      .get()
-                                                                      .then(
-                                                                          (sellerSnapshot) =>
-                                                                              {
-                                                                                if (!sellerSnapshot.exists)
-                                                                                  {
-                                                                                    db.collection("myChats").doc(seller).set({
-                                                                                      "myChats": [docID]
-                                                                                    })
-                                                                                  }
-                                                                                else
-                                                                                  {
-                                                                                    db.collection("myChats").doc(seller).update({
-                                                                                      "myChats": FieldValue.arrayUnion([docID])
-                                                                                    })
-                                                                                  }
-                                                                              }),
-                                                                  db
-                                                                      .collection(
-                                                                          "myChats")
-                                                                      .doc(user)
-                                                                      .get()
-                                                                      .then(
-                                                                          (userSnapshot) =>
-                                                                              {
-                                                                                if (!userSnapshot.exists)
-                                                                                  {
-                                                                                    db.collection("myChats").doc(user).set({
-                                                                                      "myChats": [docID]
-                                                                                    })
-                                                                                  }
-                                                                                else
-                                                                                  {
-                                                                                    db.collection("myChats").doc(user).update({
-                                                                                      "myChats": FieldValue.arrayUnion([docID])
-                                                                                    })
-                                                                                  }
-                                                                              }),
-                                                                }
-                                                            });
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                ContactSellerScreen(
-                                                                  chatID: docID,
-                                                                  theOtherUserId:
-                                                                      user,
-                                                                  theOtherUserName:
-                                                                      userDoc2[
-                                                                          'username'],
-                                                                )));
-                                                  },
-                                                  // style: ElevatedButton.styleFrom(
-                                                  //   primary: Color.fromRGBO(
-                                                  //       100, 170, 255, 1),
-                                                  // ),
-                                                  child: Text("Chat"),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        }),
-                                    doc['sellerReceivedPayment'] == false
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              primary: Colors.orange.shade200),
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductInfoScreen(
+                                                            product: doc.id)));
+                                          },
+                                          child: Text('View')),
+                                      StreamBuilder<DocumentSnapshot>(
+                                          stream: users
+                                              .doc(userAccepted['offerFromUser'])
+                                              .snapshots(),
+                                          builder: (context, snapshot4) {
+                                            if (!snapshot4.hasData) {
+                                              return Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            }
+                                            Map<String, dynamic> userDoc2 =
+                                                snapshot4.data.data();
+                                            String seller =
+                                                AuthService().getCurrentUID();
+                                            String user =
+                                                userAccepted['offerFromUser'];
+                                            Chat chat = new Chat([seller, user]);
+                                            String docID;
+                                            return Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                                  MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text('I have received payment'),
-                                                ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    '${userDoc2['username']} offered ${userAccepted['priceOffered']}',
+                                                    style:
+                                                        TextStyle(fontSize: 18),
+                                                  ),
+                                                ),
+                                                //TODO
+                                                //Add chat option
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: ElevatedButton(
+                                                    style:
+                                                        ElevatedButton.styleFrom(
                                                             primary: Colors
-                                                                .orange
-                                                                .shade200),
+                                                                .orange.shade200),
                                                     onPressed: () {
-                                                      offersReceived
-                                                          .doc(doc.id)
-                                                          .set(
-                                                              {
-                                                            'sellerReceivedPayment':
-                                                                true
-                                                          },
-                                                              SetOptions(
-                                                                  merge: true));
+                                                      if (seller.compareTo(user) <
+                                                          0) {
+                                                        docID =
+                                                            seller + "_" + user;
+                                                      } else {
+                                                        docID =
+                                                            user + "_" + seller;
+                                                      }
+                                                      db
+                                                          .collection("chats")
+                                                          .doc(docID)
+                                                          .get()
+                                                          .then((snapshot) => {
+                                                                if (!snapshot
+                                                                    .exists)
+                                                                  {
+                                                                    db
+                                                                        .collection(
+                                                                            "chats")
+                                                                        .doc(
+                                                                            docID)
+                                                                        .set(chat
+                                                                            .toMap()),
+                                                                    db
+                                                                        .collection(
+                                                                            "myChats")
+                                                                        .doc(
+                                                                            seller)
+                                                                        .get()
+                                                                        .then(
+                                                                            (sellerSnapshot) =>
+                                                                                {
+                                                                                  if (!sellerSnapshot.exists)
+                                                                                    {
+                                                                                      db.collection("myChats").doc(seller).set({
+                                                                                        "myChats": [docID]
+                                                                                      })
+                                                                                    }
+                                                                                  else
+                                                                                    {
+                                                                                      db.collection("myChats").doc(seller).update({
+                                                                                        "myChats": FieldValue.arrayUnion([docID])
+                                                                                      })
+                                                                                    }
+                                                                                }),
+                                                                    db
+                                                                        .collection(
+                                                                            "myChats")
+                                                                        .doc(user)
+                                                                        .get()
+                                                                        .then(
+                                                                            (userSnapshot) =>
+                                                                                {
+                                                                                  if (!userSnapshot.exists)
+                                                                                    {
+                                                                                      db.collection("myChats").doc(user).set({
+                                                                                        "myChats": [docID]
+                                                                                      })
+                                                                                    }
+                                                                                  else
+                                                                                    {
+                                                                                      db.collection("myChats").doc(user).update({
+                                                                                        "myChats": FieldValue.arrayUnion([docID])
+                                                                                      })
+                                                                                    }
+                                                                                }),
+                                                                  }
+                                                              });
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ContactSellerScreen(
+                                                                    chatID: docID,
+                                                                    theOtherUserId:
+                                                                        user,
+                                                                    theOtherUserName:
+                                                                        userDoc2[
+                                                                            'username'],
+                                                                  )));
                                                     },
-                                                    child: Text('Confirm'))
+                                                    // style: ElevatedButton.styleFrom(
+                                                    //   primary: Color.fromRGBO(
+                                                    //       100, 170, 255, 1),
+                                                    // ),
+                                                    child: Text("Chat"),
+                                                  ),
+                                                ),
                                               ],
-                                            ),
-                                          )
-                                        : Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child:
-                                                Text('Transaction completed!'),
-                                          )
-                                  ],
+                                            );
+                                          }),
+                                      doc['sellerReceivedPayment'] == false
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text('I have received payment'),
+                                                  ElevatedButton(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                              primary: Colors
+                                                                  .orange
+                                                                  .shade200),
+                                                      onPressed: () {
+                                                        offersReceived
+                                                            .doc(doc.id)
+                                                            .set(
+                                                                {
+                                                              'sellerReceivedPayment':
+                                                                  true
+                                                            },
+                                                                SetOptions(
+                                                                    merge: true));
+                                                      },
+                                                      child: Text('Confirm'))
+                                                ],
+                                              ),
+                                            )
+                                          : Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child:
+                                                  Text('Transaction completed!'),
+                                            )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          });
-                    }).toList(),
-                  );
-                }),
+                              );
+                            });
+                      }).toList(),
+                    );
+                  }),
+            ),
           ),
         ],
       ),

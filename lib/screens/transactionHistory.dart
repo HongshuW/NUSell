@@ -84,8 +84,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                       builder: (context, querySnapshot) {
                         if (querySnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text('Not yet');
+                          return Center(child: CircularProgressIndicator());
                         }
+                        if (querySnapshot.data.docs.length == 0)
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('You have not bought anything yet!'),
+                          );
                         return ListView(
                             children: querySnapshot.data.docs.map((doc) {
                           Timestamp time = doc['time'];
@@ -166,8 +171,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                       builder: (context, querySnapshot) {
                         if (querySnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text('Not yet');
+                          return Center(child: CircularProgressIndicator());
                         }
+                        if (querySnapshot.data.docs.length == 0)
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('You have not sold anything yet!'),
+                          );
                         return ListView(
                           shrinkWrap: true,
                           children: querySnapshot.data.docs.map((doc) {
@@ -175,6 +185,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                 doc['sellerReceivedPayment'] == false) {
                               return Container();
                             }
+
                             Timestamp time = doc['time'];
                             DateTime timeAsString = time.toDate();
                             return StreamBuilder<DocumentSnapshot>(
@@ -184,6 +195,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                     return Center(
                                         child: CircularProgressIndicator());
                                   }
+
                                   Map<String, dynamic> post =
                                       snapshot2.data.data();
                                   Map<String, dynamic> offers = doc.data();
