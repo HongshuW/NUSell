@@ -49,9 +49,10 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
         title: Text('Offers Received'),
         leading: BackButton(
           onPressed: () {
+            Navigator.pop(context);
             //Navigator.of(context).pop();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            // Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),
@@ -281,7 +282,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                             stream: posts.doc(doc.id).snapshots(),
                             builder: (context2, snapshot2) {
                               if (!snapshot2.hasData) {
-                                return Center(child: CircularProgressIndicator());
+                                return Center(
+                                    child: CircularProgressIndicator());
                               }
                               Map<String, dynamic> post = snapshot2.data.data();
                               Map<String, dynamic> offers = doc.data();
@@ -317,7 +319,8 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                           child: Text('View')),
                                       StreamBuilder<DocumentSnapshot>(
                                           stream: users
-                                              .doc(userAccepted['offerFromUser'])
+                                              .doc(
+                                                  userAccepted['offerFromUser'])
                                               .snapshots(),
                                           builder: (context, snapshot4) {
                                             if (!snapshot4.hasData) {
@@ -331,11 +334,13 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                 AuthService().getCurrentUID();
                                             String user =
                                                 userAccepted['offerFromUser'];
-                                            Chat chat = new Chat([seller, user]);
+                                            Chat chat =
+                                                new Chat([seller, user]);
                                             String docID;
                                             return Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Padding(
                                                   padding:
@@ -352,12 +357,14 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: ElevatedButton(
-                                                    style:
-                                                        ElevatedButton.styleFrom(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
                                                             primary: Colors
-                                                                .orange.shade200),
+                                                                .orange
+                                                                .shade200),
                                                     onPressed: () {
-                                                      if (seller.compareTo(user) <
+                                                      if (seller
+                                                              .compareTo(user) <
                                                           0) {
                                                         docID =
                                                             seller + "_" + user;
@@ -386,50 +393,58 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                         .doc(
                                                                             seller)
                                                                         .get()
-                                                                        .then(
-                                                                            (sellerSnapshot) =>
+                                                                        .then((sellerSnapshot) =>
+                                                                            {
+                                                                              if (!sellerSnapshot.exists)
                                                                                 {
-                                                                                  if (!sellerSnapshot.exists)
-                                                                                    {
-                                                                                      db.collection("myChats").doc(seller).set({
-                                                                                        "myChats": [docID]
-                                                                                      })
-                                                                                    }
-                                                                                  else
-                                                                                    {
-                                                                                      db.collection("myChats").doc(seller).update({
-                                                                                        "myChats": FieldValue.arrayUnion([docID])
-                                                                                      })
-                                                                                    }
-                                                                                }),
+                                                                                  db.collection("myChats").doc(seller).set({
+                                                                                    "myChats": [
+                                                                                      docID
+                                                                                    ]
+                                                                                  })
+                                                                                }
+                                                                              else
+                                                                                {
+                                                                                  db.collection("myChats").doc(seller).update({
+                                                                                    "myChats": FieldValue.arrayUnion([
+                                                                                      docID
+                                                                                    ])
+                                                                                  })
+                                                                                }
+                                                                            }),
                                                                     db
                                                                         .collection(
                                                                             "myChats")
-                                                                        .doc(user)
+                                                                        .doc(
+                                                                            user)
                                                                         .get()
-                                                                        .then(
-                                                                            (userSnapshot) =>
+                                                                        .then((userSnapshot) =>
+                                                                            {
+                                                                              if (!userSnapshot.exists)
                                                                                 {
-                                                                                  if (!userSnapshot.exists)
-                                                                                    {
-                                                                                      db.collection("myChats").doc(user).set({
-                                                                                        "myChats": [docID]
-                                                                                      })
-                                                                                    }
-                                                                                  else
-                                                                                    {
-                                                                                      db.collection("myChats").doc(user).update({
-                                                                                        "myChats": FieldValue.arrayUnion([docID])
-                                                                                      })
-                                                                                    }
-                                                                                }),
+                                                                                  db.collection("myChats").doc(user).set({
+                                                                                    "myChats": [
+                                                                                      docID
+                                                                                    ]
+                                                                                  })
+                                                                                }
+                                                                              else
+                                                                                {
+                                                                                  db.collection("myChats").doc(user).update({
+                                                                                    "myChats": FieldValue.arrayUnion([
+                                                                                      docID
+                                                                                    ])
+                                                                                  })
+                                                                                }
+                                                                            }),
                                                                   }
                                                               });
                                                       Navigator.of(context).push(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   ContactSellerScreen(
-                                                                    chatID: docID,
+                                                                    chatID:
+                                                                        docID,
                                                                     theOtherUserId:
                                                                         user,
                                                                     theOtherUserName:
@@ -449,13 +464,15 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                           }),
                                       doc['sellerReceivedPayment'] == false
                                           ? Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('I have received payment'),
+                                                  Text(
+                                                      'I have received payment'),
                                                   ElevatedButton(
                                                       style: ElevatedButton
                                                           .styleFrom(
@@ -471,16 +488,18 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                                   true
                                                             },
                                                                 SetOptions(
-                                                                    merge: true));
+                                                                    merge:
+                                                                        true));
                                                       },
                                                       child: Text('Confirm'))
                                                 ],
                                               ),
                                             )
                                           : Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child:
-                                                  Text('Transaction completed!'),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                  'Transaction completed!'),
                                             )
                                     ],
                                   ),

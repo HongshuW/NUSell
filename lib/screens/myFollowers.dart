@@ -24,9 +24,10 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
         title: Text('Your Followers'),
         leading: BackButton(
           onPressed: () {
+            Navigator.pop(context);
             //Navigator.of(context).pop();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            // Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),
@@ -234,8 +235,10 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
                                                         .getCurrentUID()
                                                   ])
                                                 }, SetOptions(merge: true));
-                                                var timer = backgroundTimer(null);
-                                                timer.updatePreference(null, null, user, 0);
+                                                var timer =
+                                                    backgroundTimer(null);
+                                                timer.updatePreference(
+                                                    null, null, user, 0);
                                               }
                                             },
                                             child: Container(

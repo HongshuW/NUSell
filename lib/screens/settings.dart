@@ -26,9 +26,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            // Navigator.of(context).pop();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).pop();
+            //Navigator.of(context).pushReplacement(
+            //  MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),
@@ -42,8 +42,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: IconButton(
                   icon: Icon(Icons.arrow_forward_ios_rounded),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => EditProfileImageScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditProfileImageScreen()));
                   },
                 ),
               ),
@@ -52,8 +54,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: IconButton(
                   icon: Icon(Icons.arrow_forward_ios_rounded),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => EditProfileScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditProfileScreen()));
                   },
                 ),
               ),
@@ -62,8 +66,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: IconButton(
                   icon: Icon(Icons.arrow_forward_ios_rounded),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => ResetPasswordScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ResetPasswordScreen()));
                   },
                 ),
               ),
@@ -82,7 +88,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             confirmColor: Color.fromRGBO(100, 170, 255, 1),
                             confirmAction: () {
                               AuthService().signout();
-                              Navigator.of(context).pushReplacement(
+                              Navigator.push(
+                                  context,
                                   MaterialPageRoute(
                                       builder: (context) => LoginScreen()));
                             },
@@ -188,11 +195,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     .doc(uid)
                                                     .delete();
                                                 print('Deleted successfully!');
-                                                Navigator.of(context)
-                                                    .pushReplacement(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                LoginScreen()));
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LoginScreen()));
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 primary: Color.fromRGBO(

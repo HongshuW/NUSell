@@ -53,8 +53,12 @@ class AuthService with ChangeNotifier {
       await UserDatabaseService(uid: user.uid).updateUserData(user);
       print(user.uid);
       //Success
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => VerifyScreen()));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyScreen(),
+          ),
+          (_) => false);
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
@@ -76,15 +80,22 @@ class AuthService with ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       //Success
-      db.collection("personalPreference").doc(_auth.currentUser.uid).get()
-        .then((doc) {
-          if (doc.exists) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => HomeScreen()));
-          } else {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => InterestsScreen()));
-          }
+      db
+          .collection("personalPreference")
+          .doc(_auth.currentUser.uid)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (_) => false);
+        } else {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => InterestsScreen()),
+              (_) => false);
+        }
       });
     } on FirebaseAuthException catch (error) {
       print(error.message);

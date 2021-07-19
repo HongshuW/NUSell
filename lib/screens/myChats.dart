@@ -240,30 +240,28 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
       showUnselectedLabels: true,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.art_track), label: "Forum"),
+        BottomNavigationBarItem(icon: Icon(Icons.art_track), label: "Forum"),
         BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
         BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.person), label: "Profile"),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
       onTap: (index) {
         if (FirebaseAuth.instance.currentUser == null) {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
         } else {
           if (index == 0) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
           } else if (index == 1) {
-            Navigator.of(context).pushReplacement(
+            Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ForumScreen()));
           } else if (index == 3) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => PostScreen()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => PostScreen()));
           } else if (index == 4) {
-            Navigator.of(context).pushReplacement(
+            Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ProfileScreen()));
           }
         }

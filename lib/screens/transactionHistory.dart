@@ -65,8 +65,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
             title: Text('transaction history'),
             leading: BackButton(
               onPressed: () {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
+                Navigator.pop(context);
+                // Navigator.of(context).pushReplacement(
+                //     MaterialPageRoute(builder: (context) => ProfileScreen()));
               },
             ),
             bottom: TabBar(

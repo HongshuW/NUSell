@@ -66,8 +66,7 @@ class _EditProfileImageScreenState extends State<EditProfileImageScreen> {
         title: Text('You profile photo'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => SettingsScreen()));
+            Navigator.of(context).pop();
           },
         ),
       ),

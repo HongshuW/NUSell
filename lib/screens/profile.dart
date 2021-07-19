@@ -100,7 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: Colors.black87,
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(
+                              Navigator.push(
+                                  context,
                                   MaterialPageRoute(
                                       builder: (context) => SettingsScreen()));
                             },
@@ -220,12 +221,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    Navigator.of(context)
-                                                        .pushReplacement(
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        MyFollowingScreen()));
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                MyFollowingScreen()));
                                                   },
                                                   child: Column(
                                                     children: [
@@ -237,12 +237,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 ),
                                                 InkWell(
                                                   onTap: () {
-                                                    Navigator.of(context)
-                                                        .pushReplacement(
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        MyFollowersScreen()));
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                MyFollowersScreen()));
                                                   },
                                                   child: Column(
                                                     children: [
@@ -272,7 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 myPosts(context)));
@@ -285,7 +285,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 myReviews(context)));
@@ -298,7 +299,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 OffersReceivedScreen()));
@@ -311,7 +313,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 OffersMadeScreen()));
@@ -324,7 +327,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 TransactionHistoryScreen()));
@@ -337,10 +341,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 IconButton(
                                   icon: Icon(Icons.arrow_forward_ios_rounded),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              myForum(context)));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                myForum(context)));
                                   },
                                 ),
                               ),
@@ -371,23 +376,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                     onTap: (index) {
                       if (FirebaseAuth.instance.currentUser == null) {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => LoginScreen()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()));
                       } else {
                         if (index == 0) {
-                          Navigator.of(context).pushReplacement(
+                          Navigator.push(
+                              context,
                               MaterialPageRoute(
                                   builder: (context) => HomeScreen()));
                         } else if (index == 1) {
-                          Navigator.of(context).pushReplacement(
+                          Navigator.push(
+                              context,
                               MaterialPageRoute(
                                   builder: (context) => ForumScreen()));
                         } else if (index == 2) {
-                          Navigator.of(context).pushReplacement(
+                          Navigator.push(
+                              context,
                               MaterialPageRoute(
                                   builder: (context) => MyChatsScreen()));
                         } else if (index == 3) {
-                          Navigator.of(context).pushReplacement(
+                          Navigator.push(
+                              context,
                               MaterialPageRoute(
                                   builder: (context) => PostScreen()));
                         }
@@ -463,8 +474,9 @@ Widget myPosts(context) {
         color: Colors.black,
         onPressed: () {
           //Navigator.of(context).pop();
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => ProfileScreen()));
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+          Navigator.pop(context);
         },
       ),
     ),
@@ -481,8 +493,9 @@ Widget myReviews(context) {
       leading: BackButton(
         color: Colors.black,
         onPressed: () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => ProfileScreen()));
+          Navigator.pop(context);
+          // Navigator.of(context).pushReplacement(
+          //     MaterialPageRoute(builder: (context) => ProfileScreen()));
         },
       ),
     ),
@@ -524,8 +537,9 @@ Widget myForum(context) {
     appBar: AppBar(
       leading: BackButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ProfileScreen()));
+          Navigator.pop(context);
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
         },
       ),
       title: Text("My Forum"),

@@ -193,44 +193,32 @@ class _HomeScreenState extends State<HomeScreen> {
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: true,
             items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.house),
-                label: "Home"
-              ),
+                  icon: Icon(Icons.art_track), label: "Forum"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.art_track),
-                label: "Forum"
-              ),
+                  icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
+              BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.chat_bubble_rounded),
-                label: "Messages"
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.add),
-                label: "Sell"
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                label: "Profile"
-              ),
+                  icon: Icon(Icons.person), label: "Profile"),
             ],
             onTap: (index) {
               if (auth.currentUser == null) {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => LoginScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
               } else {
                 if (index == 1) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => ForumScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ForumScreen()));
                 } else if (index == 2) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => MyChatsScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MyChatsScreen()));
                 } else if (index == 3) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => PostScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => PostScreen()));
                 } else if (index == 4) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => ProfileScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ProfileScreen()));
                 }
               }
             },
