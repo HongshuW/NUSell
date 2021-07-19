@@ -787,6 +787,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                           'followers': FieldValue.arrayUnion(
                                               [AuthService().getCurrentUID()])
                                         }, SetOptions(merge: true));
+                                        widget.timer.updatePreference(null, null, post['user'], 0);
                                       },
                                       child: Container(
                                           margin: EdgeInsets.only(left: 5),

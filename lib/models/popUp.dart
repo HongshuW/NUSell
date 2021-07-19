@@ -53,9 +53,11 @@ class _popUpState extends State<popUp> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.subtitle,
-                    style: TextStyle(fontSize: 14),
+                  Expanded(
+                    child: Text(
+                      widget.subtitle,
+                      style: TextStyle(fontSize: 14),
+                    ),
                   ),
                   widget.hasTextField
                       ? Container(width: 70, child: widget.textField)

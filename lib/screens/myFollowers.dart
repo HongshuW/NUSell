@@ -5,6 +5,7 @@ import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
+import 'package:orbital2796_nusell/subProject/recommendation/backgroundTimer.dart';
 
 class MyFollowersScreen extends StatefulWidget {
   const MyFollowersScreen({Key key}) : super(key: key);
@@ -233,6 +234,8 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> {
                                                         .getCurrentUID()
                                                   ])
                                                 }, SetOptions(merge: true));
+                                                var timer = backgroundTimer(null);
+                                                timer.updatePreference(null, null, user, 0);
                                               }
                                             },
                                             child: Container(

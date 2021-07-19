@@ -9,6 +9,7 @@ import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/myForum.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
+import 'package:orbital2796_nusell/subProject/recommendation/backgroundTimer.dart';
 
 class SingleForumPost extends StatefulWidget {
   final DocumentSnapshot post;
@@ -335,6 +336,8 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                       'followers': FieldValue.arrayUnion(
                                           [this.userId])
                                     }, SetOptions(merge: true));
+                                    var timer = backgroundTimer(null);
+                                    timer.updatePreference(null, null, widget.post['user'], 0);
                                   },
                                   child: Container(
                                       margin: EdgeInsets.only(left: 5),
