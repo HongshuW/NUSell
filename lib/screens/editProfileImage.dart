@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
+import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
@@ -65,8 +66,8 @@ class _EditProfileImageScreenState extends State<EditProfileImageScreen> {
         title: Text('You profile photo'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => SettingsScreen()));
           },
         ),
       ),

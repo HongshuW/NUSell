@@ -303,8 +303,11 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
             automaticallyImplyLeading: false,
             title: Text("My Chats"),
           ),
-          body: ListView(
-            children: displayChats(),
+          body: Container(
+            color: Color.fromRGBO(195, 215, 223, 0.2),
+            child: ListView(
+              children: displayChats(),
+            ),
           ),
           // Navigation bar
           bottomNavigationBar: getNavigation(context),

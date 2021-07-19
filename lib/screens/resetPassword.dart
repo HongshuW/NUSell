@@ -33,9 +33,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         title: Text('Reset your password'),
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacement(
-            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => SettingsScreen()));
           },
         ),
       ),

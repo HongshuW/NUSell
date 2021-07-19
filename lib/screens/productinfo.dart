@@ -78,7 +78,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       return Column(
         children: [
           Container(
-            color: Color.fromRGBO(0, 0, 0, 0.1),
+            color: Colors.black,
             height: 0.5 * MediaQuery.of(context).size.height,
             child: Stack(
               children: [
@@ -150,7 +150,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   top: 0.25 * MediaQuery.of(context).size.height - 15,
                   left: 0,
                   child: Container(
-                    color: Colors.white38,
                     padding:
                         EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Listener(
@@ -163,7 +162,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                   top: 0.25 * MediaQuery.of(context).size.height - 15,
                   right: 0,
                   child: Container(
-                    color: Colors.white38,
                     padding:
                         EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
                     child: Listener(

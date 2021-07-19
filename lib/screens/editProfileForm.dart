@@ -52,7 +52,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 return Scaffold(
                     backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
                     appBar: AppBar(
-                      backgroundColor: Color.fromRGBO(252, 228, 70, 1),
                       title: Text(
                         'Edit your profile',
                         style: TextStyle(color: Colors.black),
@@ -60,7 +59,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       leading: BackButton(
                         color: Colors.black,
                         onPressed: () {
-                          // Navigator.of(context).pop();
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => SettingsScreen()));
                         },

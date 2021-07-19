@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           body: Container(
             decoration: BoxDecoration(
-              color: Color.fromRGBO(249, 248, 253, 1),
+              color: Color.fromRGBO(195, 215, 223, 0.2),
             ),
             child: ListView(
               // controller: scrollController,
