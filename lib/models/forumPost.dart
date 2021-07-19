@@ -7,11 +7,7 @@ class forumPost {
   List<String> images;
   String docId = "";
 
-  forumPost({
-    this.userID,
-    this.content,
-    this.images
-  });
+  forumPost({this.userID, this.content, this.images});
 
   addAPost(BuildContext context) {
     var db = FirebaseFirestore.instance;
@@ -23,13 +19,12 @@ class forumPost {
       'time': DateTime.parse(DateTime.now().toString()),
       'images': this.images,
       'likes': 0,
-      'commentNum': 0
-    })
-        .then((docRef) {
-          this.docId = docRef.id;
-        })
-        .then((value) => myPosts.doc(userID).set({
+      'commentNum': 0,
+      'comments': FieldValue.arrayUnion([])
+    }).then((docRef) {
+      this.docId = docRef.id;
+    }).then((value) => myPosts.doc(userID).set({
           'myForumPosts': FieldValue.arrayUnion([this.docId])
-          }, SetOptions(merge: true)));
+        }, SetOptions(merge: true)));
   }
 }
