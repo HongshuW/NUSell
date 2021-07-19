@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:orbital2796_nusell/models/imagePreview.dart';
 import 'package:orbital2796_nusell/models/loading.dart';
+import 'package:orbital2796_nusell/providers/imageDeletionProvider.dart';
+import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +65,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
   }
 
-  // upload images to firebase
+  // upload images to firebase storage
   uploadImages() async {
     var len = _images.length;
     for (var i = 0; i < len; i++) {
@@ -77,7 +80,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    updatePost() {
+    var deleteProvider = imageDeletionProvider();
+
+    updatePost() async {
       if (name == null || name == "") {
         Fluttertoast.showToast(
           msg: 'Please enter the name of your product.',
@@ -100,7 +105,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         );
         return null;
       } else {
-        return posts.doc(this.docId).update({
+        posts.doc(this.docId).update({
           'productName': name,
           'description': description,
           'category': category,
@@ -109,9 +114,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'productId': this.docId,
           'nameForSearch':
               name.toLowerCase().trim() + " " + description.toLowerCase().trim()
-        }).then((value) => Fluttertoast.showToast(
-            msg: 'You have updated this post successfully!',
-            gravity: ToastGravity.CENTER));
+        });
       }
     }
 
@@ -141,52 +144,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             mainAxisSpacing: 1,
             shrinkWrap: true,
             children: snapshot.data['images'].map<Widget>((img) {
-              return InkWell(
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.transparent,
-                          title: Container(
-                            margin: EdgeInsets.only(right: 180),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.arrow_back),
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white30,
-                              ),
-                            ),
-                          ),
-                          content: Image.network(img),
-                          actions: <Widget>[
-                            ElevatedButton(
-                              onPressed: () {
-                                db
-                                    .collection('posts')
-                                    .doc(widget.product)
-                                    .update({
-                                  'images': FieldValue.arrayRemove([img])
-                                });
-                                storage.refFromURL(img).delete();
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("delete"),
-                              style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(220, 80, 60, 1),
-                              ),
-                            )
-                          ],
-                        );
-                      });
-                },
-                child: Image.network(
-                  img,
-                  fit: BoxFit.fitWidth,
-                ),
-              );
+              return imagePreview(img: img, deleteProvider: deleteProvider);
             }).toList(),
           );
         },
@@ -249,6 +207,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
         }
       }
       return result;
+    }
+
+    // delete images from firebase storage
+    deleteSelectedImages(String docId) async {
+      List<String> deleted = deleteProvider.deleted;
+      db.collection("posts").doc(docId)
+          .update({"images": FieldValue.arrayRemove(deleted)});
+      for (var img in deleted) {
+        storage.refFromURL(img).delete();
+      }
     }
 
     // TODO: implement build
@@ -486,6 +454,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             context: context,
                             barrierDismissible: false,
                             builder: (context) {
+                              print("success");
                               return loading(
                                 hasImage: true,
                                 imagePath: 'assets/images/wavingLion.png',
@@ -494,9 +463,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               );
                             }
                         );
-                        updatePost();
+                        await updatePost();
+                        await deleteSelectedImages(docId);
                         await uploadImages();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                ProductInfoScreen(product: docId)));
+                        Fluttertoast.showToast(
+                            msg: 'You have updated this post successfully!',
+                            gravity: ToastGravity.CENTER);
                       },
                       child: Text("Update"),
                       style: ElevatedButton.styleFrom(
