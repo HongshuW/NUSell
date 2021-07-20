@@ -388,211 +388,219 @@ class _SingleForumPostState extends State<SingleForumPost> {
             displayImages(widget.post),
 
             // comments
-            ExpansionTile(
-              trailing: Container(
-                width: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(Icons.message_outlined, size: 18),
-                    Text(
-                      widget.post["comments"].length.toString(),
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w300,
-                          letterSpacing: 3),
-                    ),
-                  ],
-                ),
-              ),
-              children: <Widget>[
-                // write a comment
-                Container(
-                  child: TextField(
-                    textInputAction: TextInputAction.send,
-                    keyboardType: TextInputType.multiline,
-                    minLines: 1,
-                    maxLines: 3,
-                    maxLength: 100,
-                    decoration: InputDecoration(
-                      hintText: "Write a comment",
-                      isDense: true,
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromRGBO(242, 195, 71, 1)),
+            StreamBuilder(
+              stream: db.collection("forumPosts").doc(widget.post.id).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                var post = snapshot.data.data();
+                return ExpansionTile(
+                trailing: Container(
+                  width: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Icon(Icons.message_outlined, size: 18),
+                      Text(
+                        post["comments"].length.toString(),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            letterSpacing: 3),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black45),
-                      ),
-                    ),
-                    style: TextStyle(fontSize: 14, height: 1),
-                    controller: _controller,
-                    onChanged: (value) {
-                      this.content = value;
-                    },
-                    onSubmitted: (value) async {
-                      this.content = value;
-                      if (this.content != "") {
-                        this.comment = Comment(user: this.userId,
-                            content: this.content, mention: "");
-                        db.collection("forumPosts").doc(widget.post.id).update({
-                          "comments": FieldValue.arrayUnion([this.comment.toMap()]),
-                        });
-                        if (widget.post['user'] != this.userId) {
-                          db.collection("myForumPosts").doc(this.userId).update({
-                            "commented": FieldValue.arrayUnion([widget.post.id]),
-                          });
-                        }
-                        _controller.text = "";
-                        this.content = "";
-                        this.comment = null;
-                      }
-                    },
+                    ],
                   ),
                 ),
-              ] + widget.post["comments"].reversed.map<Widget>((comment) {
-                return InkWell(
-                  onTap: () {
-                    showModalBottomSheet(context: context,
-                        builder: (context) {
-                          return Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                child: TextField(
-                                  autofocus: true,
-                                  textInputAction: TextInputAction.send,
-                                  keyboardType: TextInputType.multiline,
-                                  minLines: 1,
-                                  maxLines: 1,
-                                  maxLength: 100,
-                                  decoration: InputDecoration(
-                                    hintText: "Write a comment",
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.all(10),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Color.fromRGBO(242, 195, 71, 1)),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black45),
-                                    ),
-                                  ),
-                                  style: TextStyle(fontSize: 14, height: 1),
-                                  controller: _controller,
-                                  onChanged: (value) {
-                                    this.content = value;
-                                  },
-                                  onSubmitted: (value) async {
-                                    this.content = value;
-                                    if (this.content != "") {
-                                      this.comment = Comment(user: this.userId,
-                                          content: this.content, mention: comment["user"]);
-                                      db.collection("forumPosts").doc(widget.post.id).update({
-                                        "comments": FieldValue.arrayUnion([this.comment.toMap()]),
-                                      });
-                                      if (widget.post['user'] != this.userId) {
-                                        db.collection("myForumPosts").doc(this.userId).update({
-                                          "commented": FieldValue.arrayUnion([widget.post.id]),
-                                        });
-                                      }
-                                      _controller.text = "";
-                                      this.content = "";
-                                      this.comment = null;
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    decoration: BoxDecoration(
-                        border: Border(
-                            top: BorderSide(width: 0.5, color: Color.fromRGBO(242, 195, 71, 1))
-                        )
-                    ),
-                    // single comment
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // User
-                        FutureBuilder<DocumentSnapshot>(
-                          future: db.collection("users").doc(comment['user']).get(),
-                          builder: (context, userSnapshot) {
-                            if (!userSnapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            Map<String, dynamic> user = userSnapshot.data.data();
-                            String userName = user["username"] == null
-                                ? comment['user'] : user["username"];
-                            return InkWell(
-                              onTap: () {
-                                if (comment['user'] == this.userId) {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => ProfileScreen()));
-                                } else {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          SellerProfileScreen(sellerId: comment['user'])));
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      userName,
-                                      style: TextStyle(color: Colors.brown),
-                                    ),
-                                  ),
-
-                                  // get mentioned user
-                                  comment["mention"] != ""
-                                      ? FutureBuilder<DocumentSnapshot>(
-                                      future: db.collection("users").doc(comment['mention']).get(),
-                                      builder: (context, mentionSnapshot) {
-                                        if (!mentionSnapshot.hasData) {
-                                          return Center(child: CircularProgressIndicator());
-                                        }
-                                        Map<String, dynamic> mention = mentionSnapshot.data.data();
-                                        String mentionedUser = mention["username"] == null
-                                            ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
-                                        return InkWell(
-                                          onTap: () {
-                                            if (comment['mention'] == this.userId) {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(builder:
-                                                      (context) => ProfileScreen()));
-                                            } else {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(builder:
-                                                      (context) => SellerProfileScreen(
-                                                      sellerId: comment['mention'])));
-                                            }
-                                          },
-                                          child: Text(
-                                            mentionedUser,
-                                            style: TextStyle(color: Colors.brown),
-                                          ),
-                                        );
-                                      }) : Container(),
-                                ],
-                              ),
-                            );
-                          },
+                children: <Widget>[
+                  // write a comment
+                  Container(
+                    child: TextField(
+                      textInputAction: TextInputAction.send,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 1,
+                      maxLines: 3,
+                      maxLength: 100,
+                      decoration: InputDecoration(
+                        hintText: "Write a comment",
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(10),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromRGBO(242, 195, 71, 1)),
                         ),
-
-                        Text(comment["message"])
-                      ],
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 14, height: 1),
+                      controller: _controller,
+                      onChanged: (value) {
+                        this.content = value;
+                      },
+                      onSubmitted: (value) async {
+                        this.content = value;
+                        if (this.content != "") {
+                          this.comment = Comment(user: this.userId,
+                              content: this.content, mention: "");
+                          db.collection("forumPosts").doc(widget.post.id).update({
+                            "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                          });
+                          if (post['user'] != this.userId) {
+                            db.collection("myForumPosts").doc(this.userId).update({
+                              "commented": FieldValue.arrayUnion([widget.post.id]),
+                            });
+                          }
+                          _controller.text = "";
+                          this.content = "";
+                          this.comment = null;
+                        }
+                      },
                     ),
                   ),
-                );
-              }).toList(),
+                ] + post["comments"].reversed.map<Widget>((comment) {
+                  return InkWell(
+                    onTap: () {
+                      showModalBottomSheet(context: context,
+                          builder: (context) {
+                            return Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: TextField(
+                                    autofocus: true,
+                                    textInputAction: TextInputAction.send,
+                                    keyboardType: TextInputType.multiline,
+                                    minLines: 1,
+                                    maxLines: 1,
+                                    maxLength: 100,
+                                    decoration: InputDecoration(
+                                      hintText: "Write a comment",
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.all(10),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Color.fromRGBO(242, 195, 71, 1)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black45),
+                                      ),
+                                    ),
+                                    style: TextStyle(fontSize: 14, height: 1),
+                                    controller: _controller,
+                                    onChanged: (value) {
+                                      this.content = value;
+                                    },
+                                    onSubmitted: (value) async {
+                                      this.content = value;
+                                      if (this.content != "") {
+                                        this.comment = Comment(user: this.userId,
+                                            content: this.content, mention: comment["user"]);
+                                        db.collection("forumPosts").doc(widget.post.id).update({
+                                          "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                                        });
+                                        if (post['user'] != this.userId) {
+                                          db.collection("myForumPosts").doc(this.userId).update({
+                                            "commented": FieldValue.arrayUnion([widget.post.id]),
+                                          });
+                                        }
+                                        _controller.text = "";
+                                        this.content = "";
+                                        this.comment = null;
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 5),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              top: BorderSide(width: 0.5, color: Color.fromRGBO(242, 195, 71, 1))
+                          )
+                      ),
+                      // single comment
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // User
+                          FutureBuilder<DocumentSnapshot>(
+                            future: db.collection("users").doc(comment['user']).get(),
+                            builder: (context, userSnapshot) {
+                              if (!userSnapshot.hasData) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              Map<String, dynamic> user = userSnapshot.data.data();
+                              String userName = user["username"] == null
+                                  ? comment['user'] : user["username"];
+                              return InkWell(
+                                onTap: () {
+                                  if (comment['user'] == this.userId) {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => ProfileScreen()));
+                                  } else {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            SellerProfileScreen(sellerId: comment['user'])));
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        userName,
+                                        style: TextStyle(color: Colors.brown),
+                                      ),
+                                    ),
+
+                                    // get mentioned user
+                                    comment["mention"] != ""
+                                        ? FutureBuilder<DocumentSnapshot>(
+                                        future: db.collection("users").doc(comment['mention']).get(),
+                                        builder: (context, mentionSnapshot) {
+                                          if (!mentionSnapshot.hasData) {
+                                            return Center(child: CircularProgressIndicator());
+                                          }
+                                          Map<String, dynamic> mention = mentionSnapshot.data.data();
+                                          String mentionedUser = mention["username"] == null
+                                              ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
+                                          return InkWell(
+                                            onTap: () {
+                                              if (comment['mention'] == this.userId) {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(builder:
+                                                        (context) => ProfileScreen()));
+                                              } else {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(builder:
+                                                        (context) => SellerProfileScreen(
+                                                        sellerId: comment['mention'])));
+                                              }
+                                            },
+                                            child: Text(
+                                              mentionedUser,
+                                              style: TextStyle(color: Colors.brown),
+                                            ),
+                                          );
+                                        }) : Container(),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+
+                          Text(comment["message"])
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );}
             ),
           ],
         ));
