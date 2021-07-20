@@ -151,65 +151,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       );
     }
 
-    // display added images
-    displayImages() {
-      List<Widget> result = [];
-      if (_images.isEmpty) {
-        result.add(InkWell(
-          onTap: () {
-            getImage(true);
-          },
-          child: Image.asset('assets/images/defaultPostImage.png',
-              fit: BoxFit.cover),
-        ));
-      } else {
-        for (File img in _images) {
-          result.add(InkWell(
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      title: Container(
-                        margin: EdgeInsets.only(right: 180),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Icon(Icons.arrow_back),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white30,
-                          ),
-                        ),
-                      ),
-                      content: Image.file(img),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          onPressed: () {
-                            this._images.remove(img);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("delete"),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(220, 80, 60, 1),
-                          ),
-                        ),
-                      ],
-                    );
-                  });
-            },
-            child: Image.file(
-              img,
-              fit: BoxFit.cover,
-            ),
-          ));
-        }
-      }
-      return result;
-    }
-
     // delete images from firebase storage
     deleteSelectedImages(String docId) async {
       List<String> deleted = deleteProvider.deleted;
@@ -278,7 +219,58 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     crossAxisSpacing: 1,
                     mainAxisSpacing: 1,
                     shrinkWrap: true,
-                    children: displayImages(),
+                    children: _images.isEmpty
+                      ? [InkWell(
+                          onTap: () {getImage(true);},
+                          child: Image.asset(
+                            'assets/images/defaultPostImage.png',
+                            fit: BoxFit.cover),
+                          )]
+                      : _images.map((img) {
+                        return InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  title: Container(
+                                    margin: EdgeInsets.only(right: 180),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        },
+                                      child: Icon(Icons.arrow_back),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.white30,
+                                      ),
+                                    ),
+                                  ),
+                                  content: Image.file(img),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          this._images.remove(img);
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("delete"),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Color.fromRGBO(220, 80, 60, 1),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              });
+                          },
+                          child: Image.file(
+                            img,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }).toList()
                   ),
 
                   // upload photos
