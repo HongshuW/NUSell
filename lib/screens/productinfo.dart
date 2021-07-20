@@ -80,6 +80,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
           Container(
             color: Colors.black,
             height: 0.5 * MediaQuery.of(context).size.height,
+            alignment: Alignment.center,
             child: Stack(
               children: [
                 GestureDetector(
@@ -91,31 +92,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                           return Dialog(
                             child: Container(
                               color: Colors.black,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(bottom: 50),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Icon(
-                                        Icons.arrow_back,
-                                        color: Colors.white,
-                                        size: 30,
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                      ),
-                                    ),
-                                  ),
-                                  CachedNetworkImage(
-                                    imageUrl: imgArr[index],
-                                    fadeInDuration: Duration.zero,
-                                  ),
-                                ],
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: CachedNetworkImage(
+                                  imageUrl: imgArr[index],
+                                  fadeInDuration: Duration.zero,
+                                ),
                               ),
                             ),
                             insetPadding: EdgeInsets.all(0),
@@ -144,30 +128,6 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       width: MediaQuery.of(context).size.width,
                       fadeInDuration: Duration(milliseconds: 250),
                     ),
-                  ),
-                ),
-                Positioned(
-                  top: 0.25 * MediaQuery.of(context).size.height - 15,
-                  left: 0,
-                  child: Container(
-                    padding:
-                        EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                    child: Listener(
-                        onPointerUp: previousPage,
-                        child: Icon(Icons.arrow_back_ios_rounded,
-                            color: Colors.grey)),
-                  ),
-                ),
-                Positioned(
-                  top: 0.25 * MediaQuery.of(context).size.height - 15,
-                  right: 0,
-                  child: Container(
-                    padding:
-                        EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-                    child: Listener(
-                        onPointerUp: nextPage,
-                        child: Icon(Icons.arrow_forward_ios_rounded,
-                            color: Colors.grey)),
                   ),
                 ),
               ],

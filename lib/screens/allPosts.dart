@@ -109,7 +109,7 @@ class _allPostsState extends State<allPosts> {
         ),
         child: CachedNetworkImage(
           imageUrl: imgArr[0],
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.cover,
           width: 200,
         ),
       );

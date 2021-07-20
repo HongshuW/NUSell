@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orbital2796_nusell/main.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
+import 'package:orbital2796_nusell/providers/imageDeletionProvider.dart';
 import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/userInfoProvider.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
@@ -69,6 +70,9 @@ class _AppState extends State<App> {
         ),
         ChangeNotifierProvider(
           create: (context) => filtersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => imageDeletionProvider(),
         ),
       ],
       child: MaterialApp(
