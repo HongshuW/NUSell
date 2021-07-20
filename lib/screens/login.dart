@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
         appBar: AppBar(
           centerTitle: true,
+          automaticallyImplyLeading: false,
           title: Text(
             'NUSell',
             style: TextStyle(color: Colors.black),

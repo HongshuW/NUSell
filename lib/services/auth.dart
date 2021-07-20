@@ -51,6 +51,7 @@ class AuthService with ChangeNotifier {
       print(user.uid);
       await UserDatabaseService(uid: user.uid).setUpFollow(user);
       await UserDatabaseService(uid: user.uid).updateUserData(user);
+      await UserDatabaseService(uid: user.uid).setUpSearch(user);
       print(user.uid);
       //Success
       Navigator.pushAndRemoveUntil(

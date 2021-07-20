@@ -25,6 +25,13 @@ class UserDatabaseService {
     });
   }
 
+  Future setUpSearch(NUSellUser user) async {
+    var options = SetOptions(merge: true);
+    return await db.collection('searchHistory').doc(uid).set({
+      'searchHistory': FieldValue.arrayUnion([]),
+    });
+  }
+
   Future updateProfilePic(picUrl) async {
     print('came in to update url');
     await FirebaseAuth.instance.currentUser

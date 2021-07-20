@@ -24,6 +24,9 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    var padding = MediaQuery.of(context).padding;
+    double newheight = height - padding.top - padding.bottom;
     interactions(bool showingPosts) {
       if (showingPosts == true) {
         return SellerPostsScreen(
@@ -32,6 +35,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
       } else {
         return ReviewsForUser(
           userId: widget.sellerId,
+          isForOwn: false,
         );
       }
     }
@@ -75,7 +79,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                     //crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        height: 120,
+                        height: newheight / 4,
                         decoration: BoxDecoration(
                           color: Colors.green.shade100,
                           borderRadius: BorderRadius.only(
@@ -94,6 +98,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                                 children: [
                                   Avatar(
                                     avatarUrl: doc['avatarUrl'],
+                                    size: 50,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),

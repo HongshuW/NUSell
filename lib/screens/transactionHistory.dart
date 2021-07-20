@@ -115,7 +115,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                         snapshot2.data.data();
                                     if (doc['status'] != 'Accepted' ||
                                         doc['buyerReceivedProduct'] == false) {
-                                      return Container();
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            'Your transaction for ${post['productName']} is ongoing!'),
+                                      );
                                     }
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -127,9 +131,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(
-                                                'Product: ${post['productName']}',
-                                                style: TextStyle(fontSize: 22),
+                                              Flexible(
+                                                child: Text(
+                                                  'Product: ${post['productName']}',
+                                                  style:
+                                                      TextStyle(fontSize: 22),
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                ),
                                               ),
                                               ElevatedButton(
                                                   style:

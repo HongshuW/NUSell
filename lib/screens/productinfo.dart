@@ -143,13 +143,13 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
 
   String getTimePosted(Map<String, dynamic> post) {
     DateTime currentTime = DateTime.now();
-    DateTime timePosted = DateTime
-        .fromMillisecondsSinceEpoch(post["time"].millisecondsSinceEpoch);
+    DateTime timePosted = DateTime.fromMillisecondsSinceEpoch(
+        post["time"].millisecondsSinceEpoch);
     Duration difference = currentTime.difference(timePosted);
     int days = difference.inDays;
     if (days == 0) {
       return "Today";
-    } else  if (days == 1) {
+    } else if (days == 1) {
       return "Yesterday";
     } else if (days <= 7) {
       return "${difference.inDays} days ago";
@@ -199,8 +199,15 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       //print(docForReceived['sellerReceivedPayment']);
                       return docForReceived['sellerReceivedPayment'] == true
                           ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.grey.shade200),
                               child: Text('Activate'),
-                              onPressed: null,
+                              onPressed: () {
+                                Fluttertoast.showToast(
+                                    //backgroundColor: Colors.black,
+                                    msg:
+                                        'Cannot activate : you have already completed transaction for this product!');
+                              },
                             )
                           : ElevatedButton(
                               onPressed: () {
@@ -563,7 +570,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                   hasTextField: true,
                                   textField: TextField(
                                       controller: controller,
-                                      keyboardType: TextInputType.number,
+                                      // keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(),
                                         isDense: true,
@@ -731,6 +738,42 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                     return GestureDetector(
                                         child: InkWell(
                                       onTap: () {
+                                        if (following) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return popUp(
+                                                  title:
+                                                      "Are you sure you want to unfollow?",
+                                                  // subtitle: "You will need to sign in again to view your account!",
+                                                  confirmText: "Unfollow",
+                                                  confirmColor: Color.fromRGBO(
+                                                      100, 170, 255, 1),
+                                                  confirmAction: () {
+                                                    db
+                                                        .collection('follow')
+                                                        .doc(AuthService()
+                                                            .getCurrentUID())
+                                                        .set({
+                                                      'following': FieldValue
+                                                          .arrayRemove(
+                                                              [post['user']])
+                                                    }, SetOptions(merge: true));
+                                                    db
+                                                        .collection('follow')
+                                                        .doc(post['user'])
+                                                        .set({
+                                                      'followers': FieldValue
+                                                          .arrayRemove([
+                                                        AuthService()
+                                                            .getCurrentUID()
+                                                      ])
+                                                    }, SetOptions(merge: true));
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                );
+                                              });
+                                        }
                                         db
                                             .collection('follow')
                                             .doc(AuthService().getCurrentUID())
@@ -745,7 +788,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                           'followers': FieldValue.arrayUnion(
                                               [AuthService().getCurrentUID()])
                                         }, SetOptions(merge: true));
-                                        widget.timer.updatePreference(null, null, post['user'], 0);
+                                        widget.timer.updatePreference(
+                                            null, null, post['user'], 0);
                                       },
                                       child: Container(
                                           margin: EdgeInsets.only(left: 5),
@@ -857,9 +901,15 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                     Icon(
                       Icons.article,
                     ),
-                    Text(
-                      " ${post['productName']}",
-                      style: TextStyle(fontSize: 16, letterSpacing: 0.5),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                      child: Text(
+                        "${post['productName']}",
+                        overflow: TextOverflow.visible,
+                        style: TextStyle(fontSize: 16, letterSpacing: 0.5),
+                      ),
                     ),
                   ],
                 ),

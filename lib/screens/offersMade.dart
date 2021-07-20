@@ -34,10 +34,9 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
         title: Text('Offers made'),
         leading: BackButton(
           onPressed: () {
-            Navigator.pop(context);
             //Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacement(
-            //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),
@@ -97,26 +96,32 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                         ),
                                       )
                                     : Container(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Product: ${post['productName']}',
-                                      style: TextStyle(fontSize: 22),
-                                    ),
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.orange.shade200),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfoScreen(
-                                                          product: doc.id)));
-                                        },
-                                        child: Text('View'))
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          'Product: ${post['productName']}',
+                                          overflow: TextOverflow.visible,
+                                          style: TextStyle(fontSize: 22),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              primary: Colors.orange.shade200),
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductInfoScreen(
+                                                            product: doc.id)));
+                                          },
+                                          child: Text('View'))
+                                    ],
+                                  ),
                                 ),
                                 StreamBuilder<DocumentSnapshot>(
                                     stream: FirebaseFirestore.instance
@@ -145,8 +150,8 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                                   children: [
                                                     Text(
                                                         'Price offered: ${price}'),
-                                                    doc['buyerReceivedProduct'] ==
-                                                            true
+                                                    docForReceived['offers'] ==
+                                                            "sold"
                                                         ? Container()
                                                         : ElevatedButton(
                                                             style: ElevatedButton

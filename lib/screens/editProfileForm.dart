@@ -140,7 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         initialValue: _username == ""
                                             ? _username
                                             : doc['username'],
-                                        keyboardType: TextInputType.name,
+                                        //keyboardType: TextInputType.name,
                                         decoration: InputDecoration(
                                             border: new OutlineInputBorder(
                                           borderRadius:
@@ -186,8 +186,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         initialValue: _phoneNumber == ""
                                             ? _phoneNumber
                                             : doc['phoneNumber'],
-                                        keyboardType:
-                                            TextInputType.visiblePassword,
+                                        // keyboardType:
+                                        //     TextInputType.visiblePassword,
                                         decoration: InputDecoration(
                                             border: new OutlineInputBorder(
                                           borderRadius:

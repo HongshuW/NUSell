@@ -34,6 +34,7 @@ class _SignupScreenState extends State<SignupScreen> {
               'NUSell',
               style: TextStyle(color: Colors.black),
             ),
+            automaticallyImplyLeading: false,
           ),
           body: Container(
             decoration: BoxDecoration(
