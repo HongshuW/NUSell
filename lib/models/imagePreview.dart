@@ -12,10 +12,11 @@ class imagePreview extends StatefulWidget {
 }
 
 class _imagePreviewState extends State<imagePreview> {
-  bool deleted = false;
+  bool _deleted = false;
 
   @override
   Widget build(BuildContext context) {
+    _deleted = widget.deleteProvider.deleted.contains(widget.img);
     return InkWell(
       onTap: () {
         showDialog(
@@ -38,29 +39,29 @@ class _imagePreviewState extends State<imagePreview> {
                 actions: <Widget>[
                   ElevatedButton(
                     onPressed: () {
-                      if (this.deleted) {
+                      if (this._deleted) {
                         widget.deleteProvider.resume(widget.img);
                         setState(() {
-                          this.deleted = false;
+                          this._deleted = false;
                         });
                       } else {
                         widget.deleteProvider.delete(widget.img);
                         setState(() {
-                          this.deleted = true;
+                          this._deleted = true;
                         });
                       }
                       Navigator.of(context).pop();
                     },
-                    child: Text(deleted ? "resume" : "delete"),
+                    child: Text(_deleted ? "resume" : "delete"),
                     style: ElevatedButton.styleFrom(
-                      primary: deleted ? Color.fromRGBO(242, 195, 71, 1) : Colors.red
+                      primary: _deleted ? Color.fromRGBO(242, 195, 71, 1) : Colors.red
                     ),
                   )
                 ],
               );
             });
       },
-      child: deleted
+      child: _deleted
           ? Container(
               color: Colors.white30,
               alignment: Alignment.center,

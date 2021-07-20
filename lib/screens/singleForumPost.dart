@@ -396,6 +396,7 @@ class _SingleForumPostState extends State<SingleForumPost> {
                 }
                 var post = snapshot.data.data();
                 return ExpansionTile(
+                  title: null,
                 trailing: Container(
                   width: 100,
                   child: Row(
