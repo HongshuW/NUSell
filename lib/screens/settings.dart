@@ -26,9 +26,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            Navigator.of(context).pop();
-            //Navigator.of(context).pushReplacement(
-            //  MaterialPageRoute(builder: (context) => ProfileScreen()));
+            // Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => ProfileScreen()));
           },
         ),
       ),

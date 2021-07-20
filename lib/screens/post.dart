@@ -423,7 +423,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: 70.0,
                       margin: const EdgeInsets.only(left: 140.0),
                       child: TextField(
-                        keyboardType: TextInputType.number,
+                        // keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           isDense: true,
