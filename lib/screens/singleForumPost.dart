@@ -79,7 +79,7 @@ class _SingleForumPostState extends State<SingleForumPost> {
               child: CachedNetworkImage(
                 imageUrl: img,
                 fadeInDuration: Duration.zero,
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.cover,
               ),
             ),
           );

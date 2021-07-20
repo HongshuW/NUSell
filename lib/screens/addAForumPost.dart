@@ -75,7 +75,7 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
             getImage(true);
           },
           child: Image.asset('assets/images/defaultPostImage.png',
-              fit: BoxFit.fitWidth),
+              fit: BoxFit.cover),
         ));
       } else {
         for (File img in _images) {
@@ -116,7 +116,7 @@ class _AddAForumPostScreenState extends State<AddAForumPostScreen> {
             },
             child: Image.file(
               img,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
             ),
           ));
         }

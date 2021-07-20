@@ -23,16 +23,15 @@ class _imagePreviewState extends State<imagePreview> {
             builder: (BuildContext context) {
               return AlertDialog(
                 backgroundColor: Colors.transparent,
+                elevation: 0,
                 title: Container(
                   margin: EdgeInsets.only(right: 180),
-                  child: ElevatedButton(
+                  child: IconButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Icon(Icons.arrow_back),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white30,
-                    ),
+                    color: Colors.white,
+                    icon: Icon(Icons.arrow_back),
                   ),
                 ),
                 content: Image.network(widget.img),
@@ -54,17 +53,23 @@ class _imagePreviewState extends State<imagePreview> {
                     },
                     child: Text(deleted ? "resume" : "delete"),
                     style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(220, 80, 60, 1),
+                      primary: deleted ? Color.fromRGBO(242, 195, 71, 1) : Colors.red
                     ),
                   )
                 ],
               );
             });
       },
-      child: Image.network(
-        widget.img,
-        fit: BoxFit.fitWidth,
-      ),
+      child: deleted
+          ? Container(
+              color: Colors.white30,
+              alignment: Alignment.center,
+              child: Text("deleted"),
+            )
+          : Image.network(
+              widget.img,
+              fit: BoxFit.cover,
+            ),
     );
   }
 }

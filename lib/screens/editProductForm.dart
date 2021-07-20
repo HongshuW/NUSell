@@ -134,7 +134,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               shrinkWrap: true,
               children: [
                 Image.asset('assets/images/defaultPostImage.png',
-                    fit: BoxFit.fitWidth)
+                    fit: BoxFit.cover)
               ],
             );
           }
@@ -160,7 +160,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             getImage(true);
           },
           child: Image.asset('assets/images/defaultPostImage.png',
-              fit: BoxFit.fitWidth),
+              fit: BoxFit.cover),
         ));
       } else {
         for (File img in _images) {
@@ -171,6 +171,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       backgroundColor: Colors.transparent,
+                      elevation: 0,
                       title: Container(
                         margin: EdgeInsets.only(right: 180),
                         child: ElevatedButton(
@@ -201,7 +202,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             },
             child: Image.file(
               img,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
             ),
           ));
         }
@@ -466,9 +467,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         await updatePost();
                         await deleteSelectedImages(docId);
                         await uploadImages();
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                ProductInfoScreen(product: docId)));
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                         Fluttertoast.showToast(
                             msg: 'You have updated this post successfully!',
                             gravity: ToastGravity.CENTER);
