@@ -81,93 +81,88 @@ class _ForumScreenState extends State<ForumScreen> {
       isLoading = false;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     userId = auth.currentUser.uid;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Forum"),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        actions: [
-          // publish a forum post.
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddAForumPostScreen()));
-              },
-              icon: Icon(Icons.camera_alt))
-        ],
-      ),
-
-      body: GestureDetector(
-        onTap: () {FocusScope.of(context).requestFocus(new FocusNode());},
-        child: Container(
-          color: Color.fromRGBO(195, 215, 223, 0.2),
-          child: Column(
-            children: [
-              Expanded(
-                child: forumPosts.length == 0
-                    ? Center(child: CircularProgressIndicator())
-                    : ListView(
-                  children: forumPosts.map<Widget>((post) {
-                    return SingleForumPost(post: post, commented: false);
-                  }).toList(),
-                )
-              )
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (Navigator.of(context).userGestureInProgress)
+          return false;
+        else
+          return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Forum"),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          actions: [
+            // publish a forum post.
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => AddAForumPostScreen()));
+                },
+                icon: Icon(Icons.camera_alt))
+          ],
+        ),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Container(
+            color: Color.fromRGBO(195, 215, 223, 0.2),
+            child: Column(
+              children: [
+                Expanded(
+                    child: forumPosts.length == 0
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView(
+                            children: forumPosts.map<Widget>((post) {
+                              return SingleForumPost(
+                                  post: post, commented: false);
+                            }).toList(),
+                          ))
+              ],
+            ),
           ),
         ),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.house),
-              label: "Home"
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.art_track),
-              label: "Forum"
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_rounded),
-              label: "Messages"
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: "Sell"
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Profile"
-          ),
-        ],
-        onTap: (index) {
-          if (this.userId == null) {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => LoginScreen()));
-          } else {
-            if (index == 0) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => HomeScreen()));
-            } else if (index == 2) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => MyChatsScreen()));
-            } else if (index == 3) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => PostScreen()));
-            } else if (index == 4) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => ProfileScreen()));
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 1,
+          selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.art_track), label: "Forum"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
+            BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          ],
+          onTap: (index) {
+            if (this.userId == null) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            } else {
+              if (index == 0) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => HomeScreen()));
+              } else if (index == 2) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => MyChatsScreen()));
+              } else if (index == 3) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => PostScreen()));
+              } else if (index == 4) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }

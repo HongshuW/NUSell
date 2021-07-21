@@ -113,6 +113,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                                     }
                                     Map<String, dynamic> post =
                                         snapshot2.data.data();
+                                    if (post == null) return Container();
                                     if (doc['status'] != 'Accepted' ||
                                         doc['buyerReceivedProduct'] == false) {
                                       return Padding(

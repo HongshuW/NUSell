@@ -72,6 +72,7 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                             return Center(child: CircularProgressIndicator());
                           }
                           Map<String, dynamic> post = snapshot2.data.data();
+                          if (post == null) return Container();
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
@@ -264,36 +265,40 @@ class _OffersMadeScreenState extends State<OffersMadeScreen> {
                                             'Sorry, the seller has accepted offer by another user'),
                                       )
                                     : doc['buyerReceivedProduct'] == false
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                    'I have received the product'),
-                                                ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            primary: Colors
-                                                                .orange
-                                                                .shade200),
-                                                    onPressed: () {
-                                                      offersMade
-                                                          .doc(doc.id)
-                                                          .set(
-                                                              {
-                                                            'buyerReceivedProduct':
-                                                                true
-                                                          },
-                                                              SetOptions(
-                                                                  merge: true));
-                                                    },
-                                                    child: Text('Confirm'))
-                                              ],
-                                            ),
-                                          )
+                                        ? doc['status'] != "Accepted"
+                                            ? Container()
+                                            : Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        'I have received the product'),
+                                                    ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                primary: Colors
+                                                                    .orange
+                                                                    .shade200),
+                                                        onPressed: () {
+                                                          offersMade
+                                                              .doc(doc.id)
+                                                              .set(
+                                                                  {
+                                                                'buyerReceivedProduct':
+                                                                    true
+                                                              },
+                                                                  SetOptions(
+                                                                      merge:
+                                                                          true));
+                                                        },
+                                                        child: Text('Confirm'))
+                                                  ],
+                                                ),
+                                              )
                                         : doc['reviewDone'] == false
                                             ? Padding(
                                                 padding:

@@ -197,6 +197,7 @@ class _allPostsState extends State<allPosts> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                   shrinkWrap: true,
+                  primary: false,
                   scrollDirection: Axis.vertical,
                   physics: ScrollPhysics(),
                   children: snapshot.data.docs

@@ -162,13 +162,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     .getCurrentUID();
                                                 Map<String, dynamic> doc =
                                                     snapshot.data.data();
-                                                for (var post
-                                                    in doc['myPosts']) {
-                                                  db
-                                                      .collection('posts')
-                                                      .doc(post)
-                                                      .delete();
+                                                if (doc != null) {
+                                                  for (var post
+                                                      in doc['myPosts']) {
+                                                    db
+                                                        .collection('posts')
+                                                        .doc(post)
+                                                        .delete();
+                                                  }
                                                 }
+
                                                 db
                                                     .collection('myChat')
                                                     .doc(uid)

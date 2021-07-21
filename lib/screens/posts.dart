@@ -65,6 +65,9 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    var padding = MediaQuery.of(context).padding;
+    double newheight = height - padding.top - padding.bottom;
     interactions(String seller, String user) {
       if (seller == user) {
         return Padding(
@@ -94,7 +97,7 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
           //   return Text("Loading");
           // }
 
-          return ListView(
+          return Column(
             children: [
               // filter
               Container(
@@ -119,6 +122,7 @@ class _AllPostsScreenState extends State<AllPostsScreen> {
 
               // posts
               Container(
+                  height: newheight * 3 / 4,
                   padding: EdgeInsets.all(10),
                   child: FutureBuilder<Object>(
                       future: _getMyPosts(),

@@ -6,9 +6,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orbital2796_nusell/models/loading.dart';
+import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/home.dart';
 import 'package:orbital2796_nusell/screens/interests.dart';
+import 'package:orbital2796_nusell/screens/login.dart';
+import 'package:orbital2796_nusell/screens/signup.dart';
 import 'package:orbital2796_nusell/screens/verify.dart';
 import 'package:orbital2796_nusell/services/db.dart';
 
@@ -68,36 +71,59 @@ class AuthService with ChangeNotifier {
   }
 
   signin(String email, String password, BuildContext context) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return loading(
-              hasImage: true,
-              imagePath: 'assets/images/wavingLion.png',
-              hasMessage: true,
-              message: "Processing...");
-        });
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      //Success
-      db
-          .collection("personalPreference")
-          .doc(_auth.currentUser.uid)
-          .get()
-          .then((doc) {
-        if (doc.exists) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-              (_) => false);
-        } else {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => InterestsScreen()),
-              (_) => false);
-        }
-      });
+      await _auth.currentUser.reload();
+      print(_auth.currentUser.emailVerified);
+      if (_auth.currentUser.emailVerified) {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return loading(
+                  hasImage: true,
+                  imagePath: 'assets/images/wavingLion.png',
+                  hasMessage: true,
+                  message: "Processing...");
+            });
+
+        //Success
+        db
+            .collection("personalPreference")
+            .doc(_auth.currentUser.uid)
+            .get()
+            .then((doc) {
+          if (doc.exists) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+                (_) => false);
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => InterestsScreen()),
+                (_) => false);
+          }
+        });
+      } else {
+        await Fluttertoast.showToast(
+            msg: "Please verify your email before you log in!");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return popUp(
+                title: "Please check if you have verified your email!",
+                // subtitle: "You will need to sign in again to view your account!",
+                //confirmText: "Retry",
+                cancelButton: false,
+                confirmColor: Color.fromRGBO(100, 170, 255, 1),
+                confirmAction: () {
+                  Navigator.pop(context);
+                },
+              );
+            });
+        print('not verified');
+      }
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);

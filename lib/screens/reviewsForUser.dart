@@ -57,7 +57,7 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                     //crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${score}',
+                        '${score.toStringAsFixed(2)}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 25),
                       ),
@@ -77,7 +77,7 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                 ),
                 Container(
                   height:
-                      widget.isForOwn ? newheight * 3 / 4 : newheight * 5 / 11,
+                      widget.isForOwn ? newheight * 3 / 5 : newheight * 5 / 11,
                   child: ListView(
                     children: reviews.map((review) {
                       return FutureBuilder<DocumentSnapshot>(
@@ -103,28 +103,34 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Avatar(
-                                        avatarUrl: userDoc['avatarUrl'],
-                                        size: 25,
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Avatar(
+                                            avatarUrl: userDoc['avatarUrl'],
+                                            size: 25,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${userDoc['username']}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       SizedBox(
-                                        height: 10,
+                                        width: 20,
                                       ),
-                                      Text(
-                                        '${userDoc['username']}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      Container(
+                                          child: Text(review['description'])),
                                     ],
-                                  ),
-                                  SizedBox(
-                                    child: Container(
-                                        child: Text(review['description'])),
-                                    width:
-                                        MediaQuery.of(context).size.width - 120,
                                   ),
                                   Text("${review['rating']}")
                                 ],

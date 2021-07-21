@@ -456,38 +456,41 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                             );
                                           }),
                                       doc['sellerReceivedPayment'] == false
-                                          ? Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      'I have received payment'),
-                                                  ElevatedButton(
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                              primary: Colors
-                                                                  .orange
-                                                                  .shade200),
-                                                      onPressed: () {
-                                                        offersReceived
-                                                            .doc(doc.id)
-                                                            .set(
-                                                                {
-                                                              'sellerReceivedPayment':
-                                                                  true
-                                                            },
-                                                                SetOptions(
-                                                                    merge:
-                                                                        true));
-                                                      },
-                                                      child: Text('Confirm'))
-                                                ],
-                                              ),
-                                            )
+                                          ? doc['status'] != "Accepted"
+                                              ? Container()
+                                              : Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                          'I have received payment'),
+                                                      ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                                  primary: Colors
+                                                                      .orange
+                                                                      .shade200),
+                                                          onPressed: () {
+                                                            offersReceived
+                                                                .doc(doc.id)
+                                                                .set(
+                                                                    {
+                                                                  'sellerReceivedPayment':
+                                                                      true
+                                                                },
+                                                                    SetOptions(
+                                                                        merge:
+                                                                            true));
+                                                          },
+                                                          child:
+                                                              Text('Confirm'))
+                                                    ],
+                                                  ),
+                                                )
                                           : Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
