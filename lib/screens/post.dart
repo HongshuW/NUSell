@@ -139,8 +139,7 @@ class _PostScreenState extends State<PostScreen> {
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.of(context).pop();
           },
         ),
         title: Text(
@@ -208,63 +207,67 @@ class _PostScreenState extends State<PostScreen> {
 
               // display photos
               GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 1,
-                mainAxisSpacing: 1,
-                shrinkWrap: true,
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                  shrinkWrap: true,
                   children: _images.isEmpty
-                  ? [InkWell(
-                    onTap: () {getImage(true);},
-                    child: Image.asset(
-                        'assets/images/defaultPostImage.png',
-                        fit: BoxFit.cover),
-                  )]
+                      ? [
+                          InkWell(
+                            onTap: () {
+                              getImage(true);
+                            },
+                            child: Image.asset(
+                                'assets/images/defaultPostImage.png',
+                                fit: BoxFit.cover),
+                          )
+                        ]
                       : _images.map((img) {
-                        return InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  title: Container(
-                                    margin: EdgeInsets.only(right: 180),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Icon(Icons.arrow_back),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.white30,
+                          return InkWell(
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                      title: Container(
+                                        margin: EdgeInsets.only(right: 180),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Icon(Icons.arrow_back),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.white30,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  content: Image.file(img),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          this._images.remove(img);
-                                        });
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text("delete"),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Color.fromRGBO(220, 80, 60, 1),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              });
+                                      content: Image.file(img),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              this._images.remove(img);
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("delete"),
+                                          style: ElevatedButton.styleFrom(
+                                            primary:
+                                                Color.fromRGBO(220, 80, 60, 1),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
                             },
                             child: Image.file(
                               img,
                               fit: BoxFit.cover,
                             ),
                           );
-                      }).toList()
-              ),
+                        }).toList()),
 
               // upload photos
               Container(

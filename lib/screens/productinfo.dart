@@ -629,7 +629,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                     Navigator.of(context).pop();
                                     Fluttertoast.showToast(
                                         msg:
-                                            'You have successfully made an offer');
+                                            'You have successfully made an offer, please go to offers made page to view.');
                                   },
                                 );
                               });

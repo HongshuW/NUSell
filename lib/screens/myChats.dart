@@ -283,15 +283,23 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         }
         Map<String, dynamic> chatData = snapshot.data.data();
         if (chatData == null) {
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              automaticallyImplyLeading: false,
-              title: Text("My Chats"),
+          return WillPopScope(
+            onWillPop: () async {
+              if (Navigator.of(context).userGestureInProgress)
+                return false;
+              else
+                return true;
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                automaticallyImplyLeading: false,
+                title: Text("My Chats"),
+              ),
+              body: Center(child: Text("You don't have any conversation.")),
+              // Navigation bar
+              bottomNavigationBar: getNavigation(context),
             ),
-            body: Center(child: Text("You don't have any conversation.")),
-            // Navigation bar
-            bottomNavigationBar: getNavigation(context),
           );
         }
         this.myChats = chatData["myChats"];
