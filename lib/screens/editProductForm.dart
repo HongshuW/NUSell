@@ -81,42 +81,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     var deleteProvider = imageDeletionProvider();
 
-    updatePost() async {
-      if (name == null || name == "") {
-        Fluttertoast.showToast(
-          msg: 'Please enter the name of your product.',
-          gravity: ToastGravity.TOP,
-          textColor: Colors.red,
-        );
-        return null;
-      } else if (description == null || description == "") {
-        Fluttertoast.showToast(
-          msg: 'Please fill in description of your product.',
-          gravity: ToastGravity.TOP,
-          textColor: Colors.red,
-        );
-        return null;
-      } else if (price == null) {
-        Fluttertoast.showToast(
-          msg: 'Please enter a valid price for your product.',
-          gravity: ToastGravity.TOP,
-          textColor: Colors.red,
-        );
-        return null;
-      } else {
-        posts.doc(this.docId).update({
-          'productName': name,
-          'description': description,
-          'category': category,
-          'price': price,
-          'location': location,
-          'productId': this.docId,
-          'nameForSearch':
-              name.toLowerCase().trim() + " " + description.toLowerCase().trim()
-        });
-      }
-    }
-
     // display original images from firebase
     displayOriginalImages() {
       return StreamBuilder(
@@ -310,7 +274,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   TextField(
                     controller: TextEditingController(text: "${this.name}"),
                     onChanged: (value) {
-                      this.name = value;
+                      if (value == null || value.trim() == "") {
+                        Fluttertoast.showToast(
+                          msg: 'Please enter the name of your product.',
+                          gravity: ToastGravity.TOP,
+                          textColor: Colors.red,
+                        );
+                        this.name = post['productName'];
+                      } else {
+                        this.name = value;
+                      }
                     },
                   ),
 
@@ -327,6 +300,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           gravity: ToastGravity.CENTER,
                           textColor: Colors.red,
                         );
+                        this.price = post['price'];
                       }
                     },
                   ),
@@ -339,7 +313,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     controller:
                         TextEditingController(text: "${this.description}"),
                     onChanged: (value) {
-                      this.description = value;
+                      if (value == null || value.trim() == "") {
+                        Fluttertoast.showToast(
+                          msg: 'Please fill in description of your product.',
+                          gravity: ToastGravity.TOP,
+                          textColor: Colors.red,
+                        );
+                        this.description = post['description'];
+                      } else {
+                        this.description = value;
+                      }
                     },
                   ),
 
@@ -443,19 +426,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) {
-                              print("success");
-                              return loading(
-                                hasImage: true,
-                                imagePath: 'assets/images/wavingLion.png',
-                                hasMessage: true,
-                                message: "Updating...",
-                              );
-                            }
-                        );
-                        await updatePost();
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return loading(
+                              hasImage: true,
+                              imagePath: 'assets/images/wavingLion.png',
+                              hasMessage: true,
+                              message: "Updating...",
+                            );
+                          });
+                        posts.doc(this.docId).update({
+                            'productName': name,
+                            'description': description,
+                            'category': category,
+                            'price': price,
+                            'location': location,
+                            'productId': this.docId,
+                            'nameForSearch':
+                              name.toLowerCase().trim() + " " + description.toLowerCase().trim()
+                          });
                         await deleteSelectedImages(docId);
                         await uploadImages();
                         Navigator.of(context).pop();
