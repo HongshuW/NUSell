@@ -35,7 +35,7 @@ class _ReviewsForUserState extends State<ReviewsForUser> {
           if (doc == null) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16, 56, 16, 36),
                 child: Text('No reviews yet'),
               ),
             );

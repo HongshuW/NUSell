@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:orbital2796_nusell/models/chat.dart';
 import 'package:orbital2796_nusell/models/user.dart';
+import 'package:orbital2796_nusell/screens/contactSeller.dart';
 import 'package:orbital2796_nusell/screens/posts.dart';
 import 'package:orbital2796_nusell/screens/profile/avatar.dart';
 import 'package:orbital2796_nusell/screens/reviewsForUser.dart';
 import 'package:orbital2796_nusell/screens/sellerPosts.dart';
+import 'package:orbital2796_nusell/services/auth.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   final String sellerId;
@@ -17,6 +20,7 @@ class SellerProfileScreen extends StatefulWidget {
 }
 
 class _SellerProfileScreenState extends State<SellerProfileScreen> {
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   Map<String, dynamic> user = new Map();
 
   File newProfilePic;
@@ -40,14 +44,19 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
       }
     }
 
+    String user = AuthService().getCurrentUID();
+    String seller = widget.sellerId;
+    Chat chat = new Chat([seller, user]);
+    String docID;
+
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(widget.sellerId)
             .snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.hasError) {
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot> snapshotForUser) {
+          if (snapshotForUser.hasError) {
             return Text('Something went wrong');
           }
 
@@ -74,6 +83,105 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                         Navigator.of(context).pop();
                       },
                     ),
+                    actions: [
+                      Theme(
+                          data: Theme.of(context).copyWith(
+                              textTheme:
+                                  TextTheme().apply(bodyColor: Colors.black),
+                              dividerColor: Colors.white,
+                              iconTheme: IconThemeData(color: Colors.white)),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.chat_bubble_outline_rounded,
+                              color: Colors.black87,
+                            ),
+                            onPressed: () {
+                              if (seller.compareTo(user) < 0) {
+                                docID = seller + "_" + user;
+                              } else {
+                                docID = user + "_" + seller;
+                              }
+                              db
+                                  .collection("chats")
+                                  .doc(docID)
+                                  .get()
+                                  .then((snapshot) => {
+                                        if (!snapshot.exists)
+                                          {
+                                            db
+                                                .collection("chats")
+                                                .doc(docID)
+                                                .set(chat.toMap()),
+                                            db
+                                                .collection("myChats")
+                                                .doc(seller)
+                                                .get()
+                                                .then((sellerSnapshot) => {
+                                                      if (!sellerSnapshot
+                                                          .exists)
+                                                        {
+                                                          db
+                                                              .collection(
+                                                                  "myChats")
+                                                              .doc(seller)
+                                                              .set({
+                                                            "myChats": [docID]
+                                                          })
+                                                        }
+                                                      else
+                                                        {
+                                                          db
+                                                              .collection(
+                                                                  "myChats")
+                                                              .doc(seller)
+                                                              .update({
+                                                            "myChats":
+                                                                FieldValue
+                                                                    .arrayUnion(
+                                                                        [docID])
+                                                          })
+                                                        }
+                                                    }),
+                                            db
+                                                .collection("myChats")
+                                                .doc(user)
+                                                .get()
+                                                .then((userSnapshot) => {
+                                                      if (!userSnapshot.exists)
+                                                        {
+                                                          db
+                                                              .collection(
+                                                                  "myChats")
+                                                              .doc(user)
+                                                              .set({
+                                                            "myChats": [docID]
+                                                          })
+                                                        }
+                                                      else
+                                                        {
+                                                          db
+                                                              .collection(
+                                                                  "myChats")
+                                                              .doc(user)
+                                                              .update({
+                                                            "myChats":
+                                                                FieldValue
+                                                                    .arrayUnion(
+                                                                        [docID])
+                                                          })
+                                                        }
+                                                    }),
+                                          }
+                                      });
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ContactSellerScreen(
+                                        chatID: docID,
+                                        theOtherUserId: user,
+                                        theOtherUserName: doc['username'],
+                                      )));
+                            },
+                          ))
+                    ],
                   ),
                   body: ListView(
                     //crossAxisAlignment: CrossAxisAlignment.stretch,
