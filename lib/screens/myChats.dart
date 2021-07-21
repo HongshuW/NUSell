@@ -303,20 +303,28 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
           );
         }
         this.myChats = chatData["myChats"];
-        return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-            title: Text("My Chats"),
-          ),
-          body: Container(
-            color: Color.fromRGBO(195, 215, 223, 0.2),
-            child: ListView(
-              children: displayChats(),
+        return WillPopScope(
+          onWillPop: () async {
+            if (Navigator.of(context).userGestureInProgress)
+              return false;
+            else
+              return true;
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+              title: Text("My Chats"),
             ),
+            body: Container(
+              color: Color.fromRGBO(195, 215, 223, 0.2),
+              child: ListView(
+                children: displayChats(),
+              ),
+            ),
+            // Navigation bar
+            bottomNavigationBar: getNavigation(context),
           ),
-          // Navigation bar
-          bottomNavigationBar: getNavigation(context),
         );
       },
     );
