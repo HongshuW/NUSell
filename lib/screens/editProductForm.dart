@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:orbital2796_nusell/models/imagePreview.dart';
 import 'package:orbital2796_nusell/models/loading.dart';
 import 'package:orbital2796_nusell/providers/imageDeletionProvider.dart';
-import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

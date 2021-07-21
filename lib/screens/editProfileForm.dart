@@ -5,7 +5,6 @@ import 'package:orbital2796_nusell/models/user.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/settings.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
-import 'package:orbital2796_nusell/services/db.dart';
 
 class EditProfileScreen extends StatefulWidget {
   @override
