@@ -196,6 +196,22 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       }
                       Map<String, dynamic> docForReceived =
                           snapshotForReceived.data.data();
+                      if (docForReceived == null)
+                        return ElevatedButton(
+                            onPressed: () {
+                              DocumentReference docRef =
+                                  db.collection("posts").doc(widget.product);
+                              docRef.update({
+                                "status": "Selling",
+                                "time":
+                                    DateTime.parse(DateTime.now().toString())
+                              });
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ProfileScreen()));
+                            },
+                            child: Text(this.status == "Deleted"
+                                ? "Resume"
+                                : "Activate"));
                       //print(docForReceived['sellerReceivedPayment']);
                       return docForReceived['sellerReceivedPayment'] == true
                           ? ElevatedButton(
