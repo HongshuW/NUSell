@@ -184,6 +184,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     _controller.text = this.content;
     _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length));
+    print(widget.theOtherUserId);
 
     return Scaffold(
       appBar: AppBar(
@@ -290,7 +291,9 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                 this.userIndex, Timestamp.now(), this.content);
                             Map updatedVals = {};
                             updatedVals[widget.theOtherUserId] =
-                                chat["unread"][widget.theOtherUserId] + 1;
+                              chat["unread"][widget.theOtherUserId] == null
+                                  ? 1
+                                  : chat["unread"][widget.theOtherUserId] + 1;
                             updatedVals[this.userId] = 0;
                             db.collection("chats").doc(widget.chatID).update({
                               "history":
