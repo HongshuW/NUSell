@@ -25,8 +25,6 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   // user id of the current user.
   String user;
-  // user id of the other user in a chat.
-  String theOtherUser;
   // A list of all of the user's chats.
   List<dynamic> myChats;
 
@@ -62,12 +60,12 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
             Map<String, dynamic> chatInfo = snapshot.data.data();
             // the index of current user
             int userIndex = getUserIndex(this.user, chatInfo["users"]);
-            theOtherUser =
+            var theOtherUser =
                 userIndex == 0 ? chatInfo["users"][1] : chatInfo["users"][0];
 
             return FutureBuilder(
                 // get the information of the other user
-                future: db.collection("users").doc(this.theOtherUser).get(),
+                future: db.collection("users").doc(theOtherUser).get(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
@@ -151,7 +149,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ContactSellerScreen(
                               chatID: chatID,
-                              theOtherUserId: this.theOtherUser,
+                              theOtherUserId: theOtherUser,
                               theOtherUserName: userInfo["username"])));
                     },
                     child: Card(
