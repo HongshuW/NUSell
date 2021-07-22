@@ -63,212 +63,196 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
           // if (snapshot.connectionState == ConnectionState.waiting) {
           //   return Center(child: CircularProgressIndicator());
           // }
+          if (snapshotForUser.connectionState == ConnectionState.waiting) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
 
-          return FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(widget.sellerId)
-                  .get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Scaffold(
-                      body: Center(child: CircularProgressIndicator()));
-                }
-                Map<String, dynamic> doc = snapshot.data.data();
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Text("${doc['username']} 's Profile"),
-                    leading: BackButton(
-                      color: Colors.black,
+          Map<String, dynamic> doc = snapshotForUser.data.data();
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("${doc['username']} 's Profile"),
+              leading: BackButton(
+                color: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              actions: [
+                Theme(
+                    data: Theme.of(context).copyWith(
+                        textTheme: TextTheme().apply(bodyColor: Colors.black),
+                        dividerColor: Colors.white,
+                        iconTheme: IconThemeData(color: Colors.white)),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        color: Colors.black87,
+                      ),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        if (seller.compareTo(user) < 0) {
+                          docID = seller + "_" + user;
+                        } else {
+                          docID = user + "_" + seller;
+                        }
+                        db
+                            .collection("chats")
+                            .doc(docID)
+                            .get()
+                            .then((snapshot) => {
+                                  if (!snapshot.exists)
+                                    {
+                                      db
+                                          .collection("chats")
+                                          .doc(docID)
+                                          .set(chat.toMap()),
+                                      db
+                                          .collection("myChats")
+                                          .doc(seller)
+                                          .get()
+                                          .then((sellerSnapshot) => {
+                                                if (!sellerSnapshot.exists)
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(seller)
+                                                        .set({
+                                                      "myChats": [docID]
+                                                    })
+                                                  }
+                                                else
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(seller)
+                                                        .update({
+                                                      "myChats":
+                                                          FieldValue.arrayUnion(
+                                                              [docID])
+                                                    })
+                                                  }
+                                              }),
+                                      db
+                                          .collection("myChats")
+                                          .doc(user)
+                                          .get()
+                                          .then((userSnapshot) => {
+                                                if (!userSnapshot.exists)
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(user)
+                                                        .set({
+                                                      "myChats": [docID]
+                                                    })
+                                                  }
+                                                else
+                                                  {
+                                                    db
+                                                        .collection("myChats")
+                                                        .doc(user)
+                                                        .update({
+                                                      "myChats":
+                                                          FieldValue.arrayUnion(
+                                                              [docID])
+                                                    })
+                                                  }
+                                              }),
+                                    }
+                                });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ContactSellerScreen(
+                                  chatID: docID,
+                                  theOtherUserId: user,
+                                  theOtherUserName: doc['username'],
+                                )));
                       },
+                    ))
+              ],
+            ),
+            body: ListView(
+              //crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  height: newheight / 4,
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade100,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0),
                     ),
-                    actions: [
-                      Theme(
-                          data: Theme.of(context).copyWith(
-                              textTheme:
-                                  TextTheme().apply(bodyColor: Colors.black),
-                              dividerColor: Colors.white,
-                              iconTheme: IconThemeData(color: Colors.white)),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.chat_bubble_outline_rounded,
-                              color: Colors.black87,
-                            ),
-                            onPressed: () {
-                              if (seller.compareTo(user) < 0) {
-                                docID = seller + "_" + user;
-                              } else {
-                                docID = user + "_" + seller;
-                              }
-                              db
-                                  .collection("chats")
-                                  .doc(docID)
-                                  .get()
-                                  .then((snapshot) => {
-                                        if (!snapshot.exists)
-                                          {
-                                            db
-                                                .collection("chats")
-                                                .doc(docID)
-                                                .set(chat.toMap()),
-                                            db
-                                                .collection("myChats")
-                                                .doc(seller)
-                                                .get()
-                                                .then((sellerSnapshot) => {
-                                                      if (!sellerSnapshot
-                                                          .exists)
-                                                        {
-                                                          db
-                                                              .collection(
-                                                                  "myChats")
-                                                              .doc(seller)
-                                                              .set({
-                                                            "myChats": [docID]
-                                                          })
-                                                        }
-                                                      else
-                                                        {
-                                                          db
-                                                              .collection(
-                                                                  "myChats")
-                                                              .doc(seller)
-                                                              .update({
-                                                            "myChats":
-                                                                FieldValue
-                                                                    .arrayUnion(
-                                                                        [docID])
-                                                          })
-                                                        }
-                                                    }),
-                                            db
-                                                .collection("myChats")
-                                                .doc(user)
-                                                .get()
-                                                .then((userSnapshot) => {
-                                                      if (!userSnapshot.exists)
-                                                        {
-                                                          db
-                                                              .collection(
-                                                                  "myChats")
-                                                              .doc(user)
-                                                              .set({
-                                                            "myChats": [docID]
-                                                          })
-                                                        }
-                                                      else
-                                                        {
-                                                          db
-                                                              .collection(
-                                                                  "myChats")
-                                                              .doc(user)
-                                                              .update({
-                                                            "myChats":
-                                                                FieldValue
-                                                                    .arrayUnion(
-                                                                        [docID])
-                                                          })
-                                                        }
-                                                    }),
-                                          }
-                                      });
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => ContactSellerScreen(
-                                        chatID: docID,
-                                        theOtherUserId: user,
-                                        theOtherUserName: doc['username'],
-                                      )));
-                            },
-                          ))
-                    ],
                   ),
-                  body: ListView(
-                    //crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        height: newheight / 4,
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade100,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          ),
-                        ),
-                        child: FutureBuilder<DocumentSnapshot>(
-                            future: FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(widget.sellerId)
-                                .get(),
-                            builder: (context, snapshot) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Avatar(
-                                    avatarUrl: doc['avatarUrl'],
-                                    size: 50,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '${doc['username']}',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.all(8.0),
-                                  //   child: Text(
-                                  //     'Email: ${doc['email']}',
-                                  //     style: TextStyle(fontSize: 16),
-                                  //   ),
-                                  // ),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.all(8.0),
-                                  //   child: Text(
-                                  //     'Phone number: ${doc['phoneNumber']}',
-                                  //     style: TextStyle(fontSize: 16),
-                                  //   ),
-                                  // ),
-                                ],
-                              );
-                            }),
-                      ),
-                      GestureDetector(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  child: FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(widget.sellerId)
+                          .get(),
+                      builder: (context, snapshot) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    showingPosts = true;
-                                  });
-                                },
-                                child: Text(
-                                  'posts',
-                                  style: TextStyle(fontSize: 20),
-                                )),
-                            Container(height: 30, width: 1, color: Colors.grey),
-                            InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    showingPosts = false;
-                                  });
-                                },
-                                child: Text(
-                                  'reviews',
-                                  style: TextStyle(fontSize: 20),
-                                )),
+                            Avatar(
+                              avatarUrl: doc['avatarUrl'],
+                              size: 50,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '${doc['username']}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: Text(
+                            //     'Email: ${doc['email']}',
+                            //     style: TextStyle(fontSize: 16),
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: Text(
+                            //     'Phone number: ${doc['phoneNumber']}',
+                            //     style: TextStyle(fontSize: 16),
+                            //   ),
+                            // ),
                           ],
-                        ),
-                      ),
-                      interactions(showingPosts)
+                        );
+                      }),
+                ),
+                GestureDetector(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                          onTap: () {
+                            setState(() {
+                              showingPosts = true;
+                            });
+                          },
+                          child: Text(
+                            'posts',
+                            style: TextStyle(fontSize: 20),
+                          )),
+                      Container(height: 30, width: 1, color: Colors.grey),
+                      InkWell(
+                          onTap: () {
+                            setState(() {
+                              showingPosts = false;
+                            });
+                          },
+                          child: Text(
+                            'reviews',
+                            style: TextStyle(fontSize: 20),
+                          )),
                     ],
                   ),
+                ),
+                interactions(showingPosts)
+              ],
+            ),
 
-                  //a collection of the three buttons
-                );
-              });
+            //a collection of the three buttons
+          );
         });
   }
 }
