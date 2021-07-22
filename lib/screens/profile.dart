@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
           return FutureBuilder<DocumentSnapshot>(

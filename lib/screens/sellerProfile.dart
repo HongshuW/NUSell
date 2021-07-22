@@ -71,7 +71,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                   .get(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return Scaffold(
+                      body: Center(child: CircularProgressIndicator()));
                 }
                 Map<String, dynamic> doc = snapshot.data.data();
                 return Scaffold(
