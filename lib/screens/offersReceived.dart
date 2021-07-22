@@ -38,9 +38,6 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // setOffers();
-    // offers = offersReceived.get();
-    // print(offers.toString());
     double height = MediaQuery.of(context).size.height;
     var padding = MediaQuery.of(context).padding;
     double newheight = height - padding.top - padding.bottom;
@@ -117,13 +114,13 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Flexible(
-                                          child: Text(
-                                            'Product: ${post['productName']}',
-                                            overflow: TextOverflow.visible,
-                                            style: TextStyle(fontSize: 22),
-                                          ),
+                                        //child: Flexible(
+                                        child: Text(
+                                          'Product: ${post['productName']}',
+                                          overflow: TextOverflow.visible,
+                                          style: TextStyle(fontSize: 22),
                                         ),
+                                        //),
                                       ),
                                       ElevatedButton(
                                           onPressed: () {
@@ -140,7 +137,6 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                         shrinkWrap: true,
                                         children: offerList.map((offer) {
                                           int index = offerList.indexOf(offer);
-                                          print(offer.toString());
                                           return StreamBuilder<
                                                   DocumentSnapshot>(
                                               stream: users
@@ -164,16 +160,16 @@ class _OffersReceivedScreenState extends State<OffersReceivedScreen> {
                                                           MainAxisAlignment
                                                               .spaceBetween,
                                                       children: [
-                                                        Flexible(
-                                                          child: Text(
-                                                            'User ${userDoc['username']} has offered ${offer['priceOffered']}',
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .visible,
-                                                            style: TextStyle(
-                                                                fontSize: 12),
-                                                          ),
+                                                        //Flexible(
+                                                        //child:
+                                                        Text(
+                                                          'User ${userDoc['username']} has offered ${offer['priceOffered']}',
+                                                          overflow: TextOverflow
+                                                              .visible,
+                                                          style: TextStyle(
+                                                              fontSize: 12),
                                                         ),
+                                                        //),
                                                         ElevatedButton(
                                                             style: ElevatedButton
                                                                 .styleFrom(
