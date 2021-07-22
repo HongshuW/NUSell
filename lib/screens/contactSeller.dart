@@ -186,6 +186,29 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
         TextPosition(offset: _controller.text.length));
     print(widget.theOtherUserId);
 
+    sendTextMessage(String value) async {
+      this.content = value;
+      if (this.content != "") {
+        this.message = AppMessage(
+            this.userIndex, Timestamp.now(), this.content);
+        Map updatedVals = {};
+        updatedVals[widget.theOtherUserId] =
+        chat["unread"][widget.theOtherUserId] == null
+            ? 1
+            : chat["unread"][widget.theOtherUserId] + 1;
+        updatedVals[this.userId] = 0;
+        db.collection("chats").doc(widget.chatID).update({
+          "history":
+          FieldValue.arrayUnion([this.message.toMap()]),
+          "unread": updatedVals
+        });
+        //_showNotification(value);
+        _controller.text = "";
+        this.content = "";
+        this.message = null;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -256,7 +279,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(left: 20, right: 10),
-                      width: MediaQuery.of(context).size.width * 0.65,
+                      width: MediaQuery.of(context).size.width * 0.55,
                       child: TextField(
                         textInputAction: TextInputAction.send,
                         keyboardType: TextInputType.multiline,
@@ -284,28 +307,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         onChanged: (value) {
                           this.content = value;
                         },
-                        onSubmitted: (value) async {
-                          this.content = value;
-                          if (this.content != "") {
-                            this.message = AppMessage(
-                                this.userIndex, Timestamp.now(), this.content);
-                            Map updatedVals = {};
-                            updatedVals[widget.theOtherUserId] =
-                              chat["unread"][widget.theOtherUserId] == null
-                                  ? 1
-                                  : chat["unread"][widget.theOtherUserId] + 1;
-                            updatedVals[this.userId] = 0;
-                            db.collection("chats").doc(widget.chatID).update({
-                              "history":
-                                  FieldValue.arrayUnion([this.message.toMap()]),
-                              "unread": updatedVals
-                            });
-                            //_showNotification(value);
-                            _controller.text = "";
-                            this.content = "";
-                            this.message = null;
-                          }
-                        },
+                        onSubmitted: sendTextMessage,
                       ),
                     ),
                     InkWell(
@@ -322,7 +324,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.1,
                         height: MediaQuery.of(context).size.width * 0.1,
-                        margin: EdgeInsets.only(right: 10),
+                        margin: EdgeInsets.only(right: 5),
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Colors.black,
@@ -348,6 +350,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.1,
                         height: MediaQuery.of(context).size.width * 0.1,
+                        margin: EdgeInsets.only(right: 5),
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Colors.black,
@@ -357,6 +360,24 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                               MediaQuery.of(context).size.width * 0.1),
                         ),
                         child: Icon(Icons.camera_alt, size: 20),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        sendTextMessage(this.content);
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        height: MediaQuery.of(context).size.width * 0.1,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * 0.1),
+                        ),
+                        child: Icon(Icons.keyboard_return, size: 20),
                       ),
                     ),
                   ],
