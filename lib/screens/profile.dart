@@ -64,362 +64,339 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
-          return FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(FirebaseAuth.instance.currentUser.uid)
-                  .get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                Map<String, dynamic> doc = snapshot.data.data();
-                return WillPopScope(
-                  onWillPop: () async {
-                    if (Navigator.of(context).userGestureInProgress)
-                      return false;
-                    else
-                      return true;
-                  },
-                  child: Scaffold(
-                    appBar: AppBar(
-                      centerTitle: true,
-                      automaticallyImplyLeading: false,
-                      title: Text('Your Profile'),
+          Map<String, dynamic> doc = snapshot.data.data();
+          return WillPopScope(
+            onWillPop: () async {
+              if (Navigator.of(context).userGestureInProgress)
+                return false;
+              else
+                return true;
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                automaticallyImplyLeading: false,
+                title: Text('Your Profile'),
 
-                      // leading: BackButton(
+                // leading: BackButton(
+                //   color: Colors.black,
+                //   onPressed: () {
+                //     Navigator.of(context).push(MaterialPageRoute(
+                //         builder: (context) => HomeScreen()));
+                //   },
+                // ),
+                actions: [
+                  Theme(
+                      data: Theme.of(context).copyWith(
+                          textTheme: TextTheme().apply(bodyColor: Colors.black),
+                          dividerColor: Colors.white,
+                          iconTheme: IconThemeData(color: Colors.white)),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.settings,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SettingsScreen()));
+                        },
+                      )
+                      // PopupMenuButton<int>(
                       //   color: Colors.black,
-                      //   onPressed: () {
-                      //     Navigator.of(context).push(MaterialPageRoute(
-                      //         builder: (context) => HomeScreen()));
-                      //   },
+                      //   itemBuilder: (context) => [
+                      //     PopupMenuItem<int>(
+                      //         value: 0,
+                      //         child: Row(
+                      //           children: [
+                      //             Icon(
+                      //               Icons.settings,
+                      //               color: Colors.grey,
+                      //             ),
+                      //             const SizedBox(
+                      //               width: 7,
+                      //             ),
+                      //             Text("Settings"),
+                      //           ],
+                      //         )),
+                      //     // PopupMenuItem<int>(
+                      //     //     value: 1, child: Text("Reset password")),
+                      //     //PopupMenuDivider(),
+                      //     PopupMenuItem<int>(
+                      //         value: 2,
+                      //         child: Row(
+                      //           children: [
+                      //             Icon(
+                      //               Icons.logout,
+                      //               color: Colors.red,
+                      //             ),
+                      //             const SizedBox(
+                      //               width: 7,
+                      //             ),
+                      //             Text("Logout")
+                      //           ],
+                      //         )),
+                      //   ],
+                      //   onSelected: (item) => SelectedItem(context, item),
                       // ),
-                      actions: [
-                        Theme(
-                            data: Theme.of(context).copyWith(
-                                textTheme:
-                                    TextTheme().apply(bodyColor: Colors.black),
-                                dividerColor: Colors.white,
-                                iconTheme: IconThemeData(color: Colors.white)),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.settings,
-                                color: Colors.black87,
-                              ),
+                      ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  //crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      height: newheight / 2.5,
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0),
+                        ),
+                      ),
+                      child: FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(FirebaseAuth.instance.currentUser.uid)
+                              .get(),
+                          builder: (context, snapshot) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Avatar(
+                                  avatarUrl: doc['avatarUrl'],
+                                  onTap: () {},
+                                  size: 50,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Username: ${doc['username']}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Email: ${auth.currentUser.email}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                doc['phoneNumber'] == null
+                                    ? Container()
+                                    : Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Phone number: ${doc['phoneNumber']}',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                StreamBuilder<DocumentSnapshot>(
+                                    stream: db
+                                        .collection('follow')
+                                        .doc(AuthService().getCurrentUID())
+                                        .snapshots(),
+                                    builder: (context, snapshotForFollow) {
+                                      if (!snapshot.hasData ||
+                                          snapshotForFollow.connectionState ==
+                                              ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      Map<String, dynamic> followDoc =
+                                          snapshotForFollow.data.data();
+                                      List usersFollowing =
+                                          followDoc['following'];
+                                      List followers = followDoc['followers'];
+                                      return GestureDetector(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MyFollowingScreen()));
+                                              },
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                      '${usersFollowing.length}'),
+                                                  Text('Following')
+                                                ],
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MyFollowersScreen()));
+                                              },
+                                              child: Column(
+                                                children: [
+                                                  Text('${followers.length}'),
+                                                  Text('Followers')
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    })
+                              ],
+                            );
+                          }),
+                    ),
+                    GestureDetector(
+                      child: Column(
+                        //scrollDirection: Axis.horizontal,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          rowWidget(
+                            context,
+                            'product posts',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
                               onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SettingsScreen()));
+                                            myPosts(context)));
                               },
-                            )
-                            // PopupMenuButton<int>(
-                            //   color: Colors.black,
-                            //   itemBuilder: (context) => [
-                            //     PopupMenuItem<int>(
-                            //         value: 0,
-                            //         child: Row(
-                            //           children: [
-                            //             Icon(
-                            //               Icons.settings,
-                            //               color: Colors.grey,
-                            //             ),
-                            //             const SizedBox(
-                            //               width: 7,
-                            //             ),
-                            //             Text("Settings"),
-                            //           ],
-                            //         )),
-                            //     // PopupMenuItem<int>(
-                            //     //     value: 1, child: Text("Reset password")),
-                            //     //PopupMenuDivider(),
-                            //     PopupMenuItem<int>(
-                            //         value: 2,
-                            //         child: Row(
-                            //           children: [
-                            //             Icon(
-                            //               Icons.logout,
-                            //               color: Colors.red,
-                            //             ),
-                            //             const SizedBox(
-                            //               width: 7,
-                            //             ),
-                            //             Text("Logout")
-                            //           ],
-                            //         )),
-                            //   ],
-                            //   onSelected: (item) => SelectedItem(context, item),
-                            // ),
                             ),
-                      ],
-                    ),
-                    body: SingleChildScrollView(
-                      child: Column(
-                        //crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            height: newheight / 2.5,
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade100,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(20.0),
-                                bottomRight: Radius.circular(20.0),
-                              ),
-                            ),
-                            child: FutureBuilder<DocumentSnapshot>(
-                                future: FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(FirebaseAuth.instance.currentUser.uid)
-                                    .get(),
-                                builder: (context, snapshot) {
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Avatar(
-                                        avatarUrl: doc['avatarUrl'],
-                                        onTap: () {},
-                                        size: 50,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Username: ${doc['username']}',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Email: ${auth.currentUser.email}',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                      doc['phoneNumber'] == null
-                                          ? Container()
-                                          : Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Phone number: ${doc['phoneNumber']}',
-                                                style: TextStyle(fontSize: 16),
-                                              ),
-                                            ),
-                                      StreamBuilder<DocumentSnapshot>(
-                                          stream: db
-                                              .collection('follow')
-                                              .doc(
-                                                  AuthService().getCurrentUID())
-                                              .snapshots(),
-                                          builder:
-                                              (context, snapshotForFollow) {
-                                            if (!snapshot.hasData ||
-                                                snapshotForFollow
-                                                        .connectionState ==
-                                                    ConnectionState.waiting) {
-                                              return CircularProgressIndicator();
-                                            }
-                                            Map<String, dynamic> followDoc =
-                                                snapshotForFollow.data.data();
-                                            List usersFollowing =
-                                                followDoc['following'];
-                                            List followers =
-                                                followDoc['followers'];
-                                            return GestureDetector(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MyFollowingScreen()));
-                                                    },
-                                                    child: Column(
-                                                      children: [
-                                                        Text(
-                                                            '${usersFollowing.length}'),
-                                                        Text('Following')
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MyFollowersScreen()));
-                                                    },
-                                                    child: Column(
-                                                      children: [
-                                                        Text(
-                                                            '${followers.length}'),
-                                                        Text('Followers')
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            );
-                                          })
-                                    ],
-                                  );
-                                }),
                           ),
-                          GestureDetector(
-                            child: Column(
-                              //scrollDirection: Axis.horizontal,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                rowWidget(
-                                  context,
-                                  'product posts',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  myPosts(context)));
-                                    },
-                                  ),
-                                ),
-                                rowWidget(
-                                  context,
-                                  'reviews',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  myReviews(context)));
-                                    },
-                                  ),
-                                ),
-                                rowWidget(
-                                  context,
-                                  'offers received',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  OffersReceivedScreen()));
-                                    },
-                                  ),
-                                ),
-                                rowWidget(
-                                  context,
-                                  'offers made',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  OffersMadeScreen()));
-                                    },
-                                  ),
-                                ),
-                                rowWidget(
-                                  context,
-                                  'transaction history',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TransactionHistoryScreen()));
-                                    },
-                                  ),
-                                ),
-                                rowWidget(
-                                  context,
-                                  'my forum',
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  myForum(context)));
-                                    },
-                                  ),
-                                ),
-                              ],
+                          rowWidget(
+                            context,
+                            'reviews',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            myReviews(context)));
+                              },
                             ),
-                          )
+                          ),
+                          rowWidget(
+                            context,
+                            'offers received',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            OffersReceivedScreen()));
+                              },
+                            ),
+                          ),
+                          rowWidget(
+                            context,
+                            'offers made',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            OffersMadeScreen()));
+                              },
+                            ),
+                          ),
+                          rowWidget(
+                            context,
+                            'transaction history',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            TransactionHistoryScreen()));
+                              },
+                            ),
+                          ),
+                          rowWidget(
+                            context,
+                            'my forum',
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            myForum(context)));
+                              },
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    // Navigation bar
-                    bottomNavigationBar: BottomNavigationBar(
-                      currentIndex: 4,
-                      selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
-                      unselectedItemColor: Colors.grey,
-                      showUnselectedLabels: true,
-                      items: const <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.house), label: "Home"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.art_track), label: "Forum"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.chat_bubble_rounded),
-                            label: "Messages"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.add), label: "Sell"),
-                        BottomNavigationBarItem(
-                            icon: Icon(Icons.person), label: "Profile"),
-                      ],
-                      onTap: (index) {
-                        if (FirebaseAuth.instance.currentUser == null) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginScreen()));
-                        } else {
-                          if (index == 0) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()));
-                          } else if (index == 1) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ForumScreen()));
-                          } else if (index == 2) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyChatsScreen()));
-                          } else if (index == 3) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PostScreen()));
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                );
-              });
+                    )
+                  ],
+                ),
+              ),
+              // Navigation bar
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: 4,
+                selectedItemColor: Color.fromRGBO(242, 195, 71, 1),
+                unselectedItemColor: Colors.grey,
+                showUnselectedLabels: true,
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.house), label: "Home"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.art_track), label: "Forum"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.chat_bubble_rounded), label: "Messages"),
+                  BottomNavigationBarItem(icon: Icon(Icons.add), label: "Sell"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person), label: "Profile"),
+                ],
+                onTap: (index) {
+                  if (FirebaseAuth.instance.currentUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                  } else {
+                    if (index == 0) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomeScreen()));
+                    } else if (index == 1) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForumScreen()));
+                    } else if (index == 2) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyChatsScreen()));
+                    } else if (index == 3) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PostScreen()));
+                    }
+                  }
+                },
+              ),
+            ),
+          );
         });
   }
 
@@ -531,7 +508,7 @@ Widget rowWidget(context, String text, IconButton button) {
                 text,
                 style: TextStyle(fontSize: 20),
               ),
-              height: 25,
+              height: 32,
             ),
             button
           ],

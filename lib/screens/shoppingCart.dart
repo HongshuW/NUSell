@@ -92,9 +92,14 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
             body: Container(
                 // padding: EdgeInsets.only(
                 //     left: 10, right: 10, top: 60, bottom: 90),
-                child: FutureBuilder<Object>(
-                    future: _getMyPosts(),
-                    builder: (context, snapshot) {
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: shoppingCart.doc(widget.userId).snapshots(),
+                    builder: (context, snapshotForCart) {
+                      if (snapshotForCart.connectionState ==
+                          ConnectionState.waiting) return Container();
+                      Map<String, dynamic> docForCart =
+                          snapshotForCart.data.data();
+                      postAddresses = List.from(docForCart['shopping cart']);
                       if (postAddresses.length == 0) {
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -110,8 +115,9 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                         padding: const EdgeInsets.all(8),
                         shrinkWrap: true,
                         children: postAddresses.map((docId) {
-                          return FutureBuilder<DocumentSnapshot>(
-                              future: db.collection("posts").doc(docId).get(),
+                          return StreamBuilder<DocumentSnapshot>(
+                              stream:
+                                  db.collection("posts").doc(docId).snapshots(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return Center(
@@ -220,7 +226,8 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
-                                                color: Color.fromRGBO(242, 195, 71, 1),
+                                                color: Color.fromRGBO(
+                                                    242, 195, 71, 1),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
@@ -228,43 +235,58 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                   ? null
                                                   : getImage(post['images']),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    post == null
-                                                        ? "Item is not available"
-                                                        : "${post['productName']}",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16,
-                                                    ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      3,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Flexible(
+                                                        child: Text(
+                                                          post == null
+                                                              ? "Item is not available"
+                                                              : "${post['productName']}",
+                                                          overflow: TextOverflow
+                                                              .visible,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    post == null
-                                                        ? ""
-                                                        : "${post['price']}",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
+                                                ),
+                                                Text(
+                                                  post == null
+                                                      ? ""
+                                                      : "${post['price']}",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
                                                   ),
-                                                  Text(
-                                                    post == null ||
-                                                            post["status"] !=
-                                                                "Selling"
-                                                        ? "Unavailable"
-                                                        : "",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
+                                                ),
+                                                Text(
+                                                  post == null ||
+                                                          post["status"] !=
+                                                              "Selling"
+                                                      ? "Unavailable"
+                                                      : "",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                             IconButton(
                                                 icon: Icon(Icons.delete),
