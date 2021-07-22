@@ -87,6 +87,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             confirmText: "Log out",
                             confirmColor: Color.fromRGBO(100, 170, 255, 1),
                             confirmAction: () {
+                              db
+                                  .collection('users')
+                                  .doc(AuthService().getCurrentUID())
+                                  .set({'androidNotificationToken': null});
                               AuthService().signout();
                               Navigator.push(
                                   context,
