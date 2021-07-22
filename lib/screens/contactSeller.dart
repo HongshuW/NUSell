@@ -188,7 +188,7 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
 
     sendTextMessage(String value) async {
       this.content = value;
-      if (this.content != "") {
+      if (this.content != null && this.content != "") {
         this.message = AppMessage(
             this.userIndex, Timestamp.now(), this.content);
         Map updatedVals = {};
