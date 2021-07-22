@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -8,7 +7,6 @@ import 'package:orbital2796_nusell/providers/imageDeletionProvider.dart';
 import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/userInfoProvider.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
-import 'package:orbital2796_nusell/services/auth.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {

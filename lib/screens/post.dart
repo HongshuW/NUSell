@@ -77,6 +77,7 @@ class _PostScreenState extends State<PostScreen> {
   Widget build(BuildContext context) {
     FirebaseAuth auth = FirebaseAuth.instance;
     this.userId = auth.currentUser.uid;
+    var db = FirebaseFirestore.instance;
 
     DocumentReference sellerReview =
         FirebaseFirestore.instance.collection('reviews').doc(this.userId);
@@ -87,49 +88,6 @@ class _PostScreenState extends State<PostScreen> {
         sellerScore = doc.data()['averageRating'];
       } else {
         sellerScore = 5;
-      }
-    }
-
-    addPost() async {
-      if (userId == null || userId == "") {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-        Fluttertoast.showToast(
-            msg: "Please log in to add a post!", gravity: ToastGravity.CENTER);
-      } else if (productName == null || productName == "") {
-        Fluttertoast.showToast(
-          msg: 'Please enter the name of your product.',
-          gravity: ToastGravity.BOTTOM,
-          textColor: Colors.red,
-        );
-        return null;
-      } else if (description == null || description == "") {
-        Fluttertoast.showToast(
-          msg: 'Please fill in description of your product.',
-          gravity: ToastGravity.BOTTOM,
-          textColor: Colors.red,
-        );
-        return null;
-      } else if (price == null || price < 0) {
-        Fluttertoast.showToast(
-          msg: 'Please enter a valid price for your product.',
-          gravity: ToastGravity.BOTTOM,
-          textColor: Colors.red,
-        );
-        return null;
-      } else {
-        await getSellerScore();
-        productPost post = productPost(
-            userId: userId,
-            productName: productName,
-            description: description,
-            price: price,
-            category: category,
-            location: location,
-            sellerScore: sellerScore,
-            images: _imgRef);
-        post.addAPost(context);
-        this.docId = post.getDocID();
       }
     }
 
@@ -525,18 +483,57 @@ class _PostScreenState extends State<PostScreen> {
                 margin: EdgeInsets.only(bottom: 30, left: 90, right: 90),
                 child: ElevatedButton(
                   onPressed: () async {
-                    showDialog(
+                    if (userId == null || userId == "") {
+                      Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+                      Fluttertoast.showToast(
+                        msg: "Please log in to add a post!",
+                        gravity: ToastGravity.CENTER);
+                    } else if (productName == null || productName == "") {
+                      Fluttertoast.showToast(
+                        msg: 'Please enter the name of your product.',
+                        gravity: ToastGravity.BOTTOM,
+                        textColor: Colors.red,
+                      );
+                    } else if (description == null || description == "") {
+                      Fluttertoast.showToast(
+                        msg: 'Please fill in description of your product.',
+                        gravity: ToastGravity.BOTTOM,
+                        textColor: Colors.red,
+                      );
+                    } else if (price == null || price < 0) {
+                      Fluttertoast.showToast(
+                        msg: 'Please enter a valid price for your product.',
+                        gravity: ToastGravity.BOTTOM,
+                        textColor: Colors.red,
+                      );
+                    } else {
+                      showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (context) {
                           return loading(
-                              hasImage: true,
-                              imagePath: 'assets/images/wavingLion.png',
-                              hasMessage: true,
-                              message: "Uploading...");
-                        });
-                    await uploadImages();
-                    addPost();
+                            hasImage: true,
+                            imagePath: 'assets/images/wavingLion.png',
+                            hasMessage: true,
+                            message: "Uploading...");
+                          });
+                      await getSellerScore();
+                      productPost post = productPost(
+                        userId: userId,
+                        productName: productName,
+                        description: description,
+                        price: price,
+                        category: category,
+                        location: location,
+                        sellerScore: sellerScore,
+                        images: _imgRef);
+                      await uploadImages();
+                      post.addAPost(context);
+                      this.docId = post.getDocID();
+                      db.collection("posts").doc(this.docId)
+                        .update({'images': _imgRef});
+                    }
                   },
                   child: Text("Post"),
                   style: ElevatedButton.styleFrom(
