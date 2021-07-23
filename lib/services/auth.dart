@@ -28,21 +28,21 @@ class AuthService with ChangeNotifier {
   Random _rnd = Random();
 
   signup(String email, String password, BuildContext context) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return loading(
-              hasImage: true,
-              imagePath: 'assets/images/wavingLion.png',
-              hasMessage: true,
-              message: "Processing...");
-        });
     try {
       UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return loading(
+                hasImage: true,
+                imagePath: 'assets/images/wavingLion.png',
+                hasMessage: true,
+                message: "Processing...");
+          });
       User firebaseUser = cred.user;
       NUSellUser user = NUSellUser(
           uid: firebaseUser.uid,
@@ -66,7 +66,6 @@ class AuthService with ChangeNotifier {
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
-      Navigator.of(context).pop();
     }
   }
 
@@ -127,7 +126,6 @@ class AuthService with ChangeNotifier {
     } on FirebaseAuthException catch (error) {
       print(error.message);
       Fluttertoast.showToast(msg: error.message, gravity: ToastGravity.TOP);
-      Navigator.of(context).pop();
     }
   }
 

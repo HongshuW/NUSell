@@ -598,38 +598,57 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                       )),
                                   confirmAction: () {
                                     //AuthService().signout();
-                                    users
-                                        .doc(seller)
-                                        .collection('offersReceived')
-                                        .doc(widget.product)
-                                        .set({
-                                      'offers': FieldValue.arrayUnion([
-                                        {
-                                          'offerFromUser':
-                                              AuthService().getCurrentUID(),
-                                          'priceOffered': controller.text,
-                                          'status': 'Pending'
-                                        }
-                                      ]),
-                                      'status': 'Pending',
-                                      'sellerReceivedPayment': false,
-                                    }, SetOptions(merge: true));
-                                    users
-                                        .doc(AuthService().getCurrentUID())
-                                        .collection('offersMade')
-                                        .doc(widget.product)
-                                        .set({
-                                      'price': FieldValue.arrayUnion(
-                                          [controller.text]),
-                                      'status': 'Pending',
-                                      'time': DateTime.now(),
-                                      'buyerReceivedProduct': false,
-                                      'reviewDone': false
-                                    }, SetOptions(merge: true));
-                                    Navigator.of(context).pop();
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'You have successfully made an offer, please go to offers made page to view.');
+                                    try {
+                                      double price;
+                                      price = double.parse(controller.text);
+                                      print(price);
+                                      if (price < 0) {
+                                        Fluttertoast.showToast(
+                                          msg: "price is invalid!",
+                                          gravity: ToastGravity.CENTER,
+                                          textColor: Colors.red,
+                                        );
+                                      } else {
+                                        users
+                                            .doc(seller)
+                                            .collection('offersReceived')
+                                            .doc(widget.product)
+                                            .set({
+                                          'offers': FieldValue.arrayUnion([
+                                            {
+                                              'offerFromUser':
+                                                  AuthService().getCurrentUID(),
+                                              'priceOffered': controller.text,
+                                              'status': 'Pending'
+                                            }
+                                          ]),
+                                          'status': 'Pending',
+                                          'sellerReceivedPayment': false,
+                                        }, SetOptions(merge: true));
+                                        users
+                                            .doc(AuthService().getCurrentUID())
+                                            .collection('offersMade')
+                                            .doc(widget.product)
+                                            .set({
+                                          'price': FieldValue.arrayUnion(
+                                              [controller.text]),
+                                          'status': 'Pending',
+                                          'time': DateTime.now(),
+                                          'buyerReceivedProduct': false,
+                                          'reviewDone': false
+                                        }, SetOptions(merge: true));
+                                        Navigator.of(context).pop();
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'You have successfully made an offer, please go to offers made page to view.');
+                                      }
+                                    } catch (FormatException) {
+                                      Fluttertoast.showToast(
+                                        msg: "Please enter a numerical value!",
+                                        gravity: ToastGravity.CENTER,
+                                        textColor: Colors.red,
+                                      );
+                                    }
                                   },
                                 );
                               });

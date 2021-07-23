@@ -175,7 +175,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 return 'Please re-enter password';
                               }
 
-                              if (confirmPassword.text != _password) {
+                              if (_confirmPassword != _password) {
                                 return 'Password does not match';
                               }
                               return null;
