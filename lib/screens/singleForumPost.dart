@@ -278,11 +278,15 @@ class _SingleForumPostState extends State<SingleForumPost> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              userName,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              child: Text(
+                                userName,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             Text(
                               getTimePosted(widget.post),
@@ -553,6 +557,11 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                                 "commented": FieldValue.arrayUnion([widget.post.id]),
                                               });
                                             }
+                                            if (comment["user"] != this.userId && comment["user"] != post["user"]) {
+                                              db.collection("myForumPosts").doc(comment["user"]).update({
+                                                "commented": FieldValue.arrayUnion([widget.post.id]),
+                                              });
+                                            }
                                             _controller.text = "";
                                             this.content = "";
                                             this.comment = null;
@@ -611,6 +620,7 @@ class _SingleForumPostState extends State<SingleForumPost> {
                               top: BorderSide(width: 0.5, color: Color.fromRGBO(242, 195, 71, 1))
                           )
                       ),
+                      alignment: Alignment.centerLeft,
                       // single comment
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,48 +646,42 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                             SellerProfileScreen(sellerId: comment['user'])));
                                   }
                                 },
-                                child: Row(
-                                  children: [
-                                    Container(
+                                child: comment["mention"] != ""
+                                    ? FutureBuilder<DocumentSnapshot>(
+                                    future: db.collection("users").doc(comment['mention']).get(),
+                                    builder: (context, mentionSnapshot) {
+                                      if (!mentionSnapshot.hasData) {
+                                        return Center(child: CircularProgressIndicator());
+                                      }
+                                      Map<String, dynamic> mention = mentionSnapshot.data.data();
+                                      String mentionedUser = mention["username"] == null
+                                          ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
+                                      return InkWell(
+                                        onTap: () {
+                                          if (comment['mention'] == this.userId) {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder:
+                                                    (context) => ProfileScreen()));
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder:
+                                                    (context) => SellerProfileScreen(
+                                                    sellerId: comment['mention'])));
+                                          }
+                                        },
+                                        child: Text(
+                                          userName + mentionedUser,
+                                          style: TextStyle(color: Colors.brown),
+                                        ),
+                                      );
+                                    })
+                                  : Container(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         userName,
                                         style: TextStyle(color: Colors.brown),
                                       ),
                                     ),
-
-                                    // get mentioned user
-                                    comment["mention"] != ""
-                                        ? FutureBuilder<DocumentSnapshot>(
-                                        future: db.collection("users").doc(comment['mention']).get(),
-                                        builder: (context, mentionSnapshot) {
-                                          if (!mentionSnapshot.hasData) {
-                                            return Center(child: CircularProgressIndicator());
-                                          }
-                                          Map<String, dynamic> mention = mentionSnapshot.data.data();
-                                          String mentionedUser = mention["username"] == null
-                                              ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
-                                          return InkWell(
-                                            onTap: () {
-                                              if (comment['mention'] == this.userId) {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(builder:
-                                                        (context) => ProfileScreen()));
-                                              } else {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(builder:
-                                                        (context) => SellerProfileScreen(
-                                                        sellerId: comment['mention'])));
-                                              }
-                                            },
-                                            child: Text(
-                                              mentionedUser,
-                                              style: TextStyle(color: Colors.brown),
-                                            ),
-                                          );
-                                        }) : Container(),
-                                  ],
-                                ),
                               );
                             },
                           ),

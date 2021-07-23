@@ -527,9 +527,8 @@ Widget myForum(context) {
     appBar: AppBar(
       leading: BackButton(
         onPressed: () {
-          Navigator.pop(context);
-          // Navigator.of(context)
-          //     .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
         },
       ),
       title: Text("My Forum"),
