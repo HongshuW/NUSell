@@ -415,49 +415,92 @@ class _SingleForumPostState extends State<SingleForumPost> {
                 ),
                 children: <Widget>[
                   // write a comment
-                  Container(
-                    child: TextField(
-                      textInputAction: TextInputAction.send,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 3,
-                      maxLength: 100,
-                      decoration: InputDecoration(
-                        hintText: "Write a comment",
-                        isDense: true,
-                        contentPadding: EdgeInsets.all(10),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromRGBO(242, 195, 71, 1)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black45),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.65,
+                        child: TextField(
+                          textInputAction: TextInputAction.send,
+                          keyboardType: TextInputType.multiline,
+                          minLines: 1,
+                          maxLines: 3,
+                          maxLength: 100,
+                          decoration: InputDecoration(
+                            hintText: "Write a comment",
+                            isDense: true,
+                            contentPadding: EdgeInsets.all(10),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Color.fromRGBO(242, 195, 71, 1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                            ),
+                          ),
+                          style: TextStyle(fontSize: 14, height: 1),
+                          controller: _controller,
+                          onChanged: (value) {
+                            this.content = value;
+                          },
+                          onSubmitted: (value) async {
+                            this.content = value;
+                            if (this.content != "") {
+                              this.comment = Comment(user: this.userId,
+                                  content: this.content, mention: "");
+                              db.collection("forumPosts").doc(widget.post.id).update({
+                                "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                              });
+                              if (post['user'] != this.userId) {
+                                db.collection("myForumPosts").doc(this.userId).update({
+                                  "commented": FieldValue.arrayUnion([widget.post.id]),
+                                });
+                              }
+                              _controller.text = "";
+                              this.content = "";
+                              this.comment = null;
+                            }
+                          },
                         ),
                       ),
-                      style: TextStyle(fontSize: 14, height: 1),
-                      controller: _controller,
-                      onChanged: (value) {
-                        this.content = value;
-                      },
-                      onSubmitted: (value) async {
-                        this.content = value;
-                        if (this.content != "") {
-                          this.comment = Comment(user: this.userId,
-                              content: this.content, mention: "");
-                          db.collection("forumPosts").doc(widget.post.id).update({
-                            "comments": FieldValue.arrayUnion([this.comment.toMap()]),
-                          });
-                          if (post['user'] != this.userId) {
-                            db.collection("myForumPosts").doc(this.userId).update({
-                              "commented": FieldValue.arrayUnion([widget.post.id]),
+                      InkWell(
+                        onTap: () async {
+                          if (this.content != "") {
+                            this.comment = Comment(user: this.userId,
+                                content: this.content, mention: "");
+                            db.collection("forumPosts").doc(widget.post.id).update({
+                              "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                             });
+                            if (post['user'] != this.userId) {
+                              db.collection("myForumPosts").doc(this.userId).update({
+                                "commented": FieldValue.arrayUnion([widget.post.id]),
+                              });
+                            }
+                            _controller.text = "";
+                            this.content = "";
+                            this.comment = null;
                           }
-                          _controller.text = "";
-                          this.content = "";
-                          this.comment = null;
-                        }
-                      },
-                    ),
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10, top: 3),
+                          width: MediaQuery.of(context).size.width * 0.08,
+                          height: MediaQuery.of(context).size.width * 0.08,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Color.fromRGBO(242, 195, 71, 1)
+                            ),
+                            borderRadius: BorderRadius.circular(
+                                MediaQuery.of(context).size.width * 0.08),
+                          ),
+                          child: Icon(
+                            Icons.keyboard_return,
+                            size: 18,
+                            color: Color.fromRGBO(242, 195, 71, 1)
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ] + post["comments"].reversed.map<Widget>((comment) {
                   return InkWell(
@@ -466,52 +509,96 @@ class _SingleForumPostState extends State<SingleForumPost> {
                           builder: (context) {
                             return Column(
                               children: [
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: TextField(
-                                    autofocus: true,
-                                    textInputAction: TextInputAction.send,
-                                    keyboardType: TextInputType.multiline,
-                                    minLines: 1,
-                                    maxLines: 1,
-                                    maxLength: 100,
-                                    decoration: InputDecoration(
-                                      hintText: "Write a comment",
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.all(10),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(242, 195, 71, 1)),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.black45),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.8,
+                                      padding: EdgeInsets.all(10),
+                                      child: TextField(
+                                        autofocus: true,
+                                        textInputAction: TextInputAction.send,
+                                        keyboardType: TextInputType.multiline,
+                                        minLines: 1,
+                                        maxLines: 1,
+                                        maxLength: 100,
+                                        decoration: InputDecoration(
+                                          hintText: "Write a comment",
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.all(10),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Color.fromRGBO(242, 195, 71, 1)),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black45),
+                                          ),
+                                        ),
+                                        style: TextStyle(fontSize: 14, height: 1),
+                                        controller: _controller,
+                                        onChanged: (value) {
+                                          this.content = value;
+                                        },
+                                        onSubmitted: (value) async {
+                                          this.content = value;
+                                          if (this.content != "") {
+                                            this.comment = Comment(user: this.userId,
+                                                content: this.content, mention: comment["user"]);
+                                            db.collection("forumPosts").doc(widget.post.id).update({
+                                              "comments": FieldValue.arrayUnion([this.comment.toMap()]),
+                                            });
+                                            if (post['user'] != this.userId) {
+                                              db.collection("myForumPosts").doc(this.userId).update({
+                                                "commented": FieldValue.arrayUnion([widget.post.id]),
+                                              });
+                                            }
+                                            _controller.text = "";
+                                            this.content = "";
+                                            this.comment = null;
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
                                       ),
                                     ),
-                                    style: TextStyle(fontSize: 14, height: 1),
-                                    controller: _controller,
-                                    onChanged: (value) {
-                                      this.content = value;
-                                    },
-                                    onSubmitted: (value) async {
-                                      this.content = value;
-                                      if (this.content != "") {
-                                        this.comment = Comment(user: this.userId,
-                                            content: this.content, mention: comment["user"]);
-                                        db.collection("forumPosts").doc(widget.post.id).update({
-                                          "comments": FieldValue.arrayUnion([this.comment.toMap()]),
-                                        });
-                                        if (post['user'] != this.userId) {
-                                          db.collection("myForumPosts").doc(this.userId).update({
-                                            "commented": FieldValue.arrayUnion([widget.post.id]),
+                                    InkWell(
+                                      onTap: () async {
+                                        if (this.content != "") {
+                                          this.comment = Comment(user: this.userId,
+                                              content: this.content, mention: comment["user"]);
+                                          db.collection("forumPosts").doc(widget.post.id).update({
+                                            "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                           });
+                                          if (post['user'] != this.userId) {
+                                            db.collection("myForumPosts").doc(this.userId).update({
+                                              "commented": FieldValue.arrayUnion([widget.post.id]),
+                                            });
+                                          }
+                                          _controller.text = "";
+                                          this.content = "";
+                                          this.comment = null;
+                                          Navigator.of(context).pop();
                                         }
-                                        _controller.text = "";
-                                        this.content = "";
-                                        this.comment = null;
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ),
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(bottom: 10),
+                                        width: MediaQuery.of(context).size.width * 0.08,
+                                        height: MediaQuery.of(context).size.width * 0.08,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color.fromRGBO(242, 195, 71, 1)
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                              MediaQuery.of(context).size.width * 0.08),
+                                        ),
+                                        child: Icon(
+                                            Icons.keyboard_return,
+                                            size: 18,
+                                            color: Color.fromRGBO(242, 195, 71, 1)
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             );

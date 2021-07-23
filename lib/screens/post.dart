@@ -375,8 +375,8 @@ class _PostScreenState extends State<PostScreen> {
                       ),
                     ),
                     Container(
-                      width: 70.0,
-                      margin: const EdgeInsets.only(left: 140.0),
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      margin: const EdgeInsets.only(left: 100.0),
                       child: TextField(
                         // keyboardType: TextInputType.number,
                         decoration: InputDecoration(
