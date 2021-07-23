@@ -118,13 +118,13 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                           return StreamBuilder<DocumentSnapshot>(
                               stream:
                                   db.collection("posts").doc(docId).snapshots(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
+                              builder: (context, snapshotForPost) {
+                                if (!snapshotForPost.hasData) {
                                   return Center(
                                       child: CircularProgressIndicator());
                                 }
                                 Map<String, dynamic> post =
-                                    snapshot.data.data();
+                                    snapshotForPost.data.data();
                                 return GestureDetector(
                                   onTap: () {
                                     if (auth.currentUser == null) {
@@ -297,6 +297,12 @@ class _MyShoppingCartsScreenState extends State<MyShoppingCartsScreen> {
                                                     "shopping cart":
                                                         FieldValue.arrayRemove(
                                                             [docId])
+                                                  });
+                                                  db
+                                                      .collection("posts")
+                                                      .doc(docId)
+                                                      .update({
+                                                    'likes': (post['likes'] - 1)
                                                   });
                                                 })
                                           ],
