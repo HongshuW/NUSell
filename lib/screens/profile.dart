@@ -184,7 +184,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     style: TextStyle(fontSize: 16),
                                   ),
                                 ),
-                                doc['phoneNumber'] == null
+                                doc['phoneNumber'] == null ||
+                                        doc['phoneNumber'] == ""
                                     ? Container()
                                     : Padding(
                                         padding: const EdgeInsets.all(8.0),
