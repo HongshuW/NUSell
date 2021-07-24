@@ -487,11 +487,11 @@ class _PostScreenState extends State<PostScreen> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (userId == null || userId == "") {
-                      Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
                       Fluttertoast.showToast(
-                        msg: "Please log in to add a post!",
-                        gravity: ToastGravity.CENTER);
+                          msg: "Please log in to add a post!",
+                          gravity: ToastGravity.CENTER);
                     } else if (productName == null || productName == "") {
                       Fluttertoast.showToast(
                         msg: 'Please enter the name of your product.',
@@ -512,30 +512,32 @@ class _PostScreenState extends State<PostScreen> {
                       );
                     } else {
                       showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return loading(
-                            hasImage: true,
-                            imagePath: 'assets/images/wavingLion.png',
-                            hasMessage: true,
-                            message: "Uploading...");
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return loading(
+                                hasImage: true,
+                                imagePath: 'assets/images/wavingLion.png',
+                                hasMessage: true,
+                                message: "Uploading...");
                           });
                       await getSellerScore();
                       productPost post = productPost(
-                        userId: userId,
-                        productName: productName,
-                        description: description,
-                        price: price,
-                        category: category,
-                        location: location,
-                        sellerScore: sellerScore,
-                        images: _imgRef);
+                          userId: userId,
+                          productName: productName,
+                          description: description,
+                          price: double.parse(price.toStringAsFixed(2)),
+                          category: category,
+                          location: location,
+                          sellerScore: sellerScore,
+                          images: _imgRef);
                       await uploadImages();
                       post.addAPost(context);
                       this.docId = post.getDocID();
-                      db.collection("posts").doc(this.docId)
-                        .update({'images': _imgRef});
+                      db
+                          .collection("posts")
+                          .doc(this.docId)
+                          .update({'images': _imgRef});
                     }
                   },
                   child: Text("Post"),

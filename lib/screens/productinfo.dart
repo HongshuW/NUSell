@@ -609,6 +609,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                           textColor: Colors.red,
                                         );
                                       } else {
+                                        String priceOffered =
+                                            price.toStringAsFixed(2);
+                                        print(priceOffered);
                                         users
                                             .doc(seller)
                                             .collection('offersReceived')
@@ -618,7 +621,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                             {
                                               'offerFromUser':
                                                   AuthService().getCurrentUID(),
-                                              'priceOffered': controller.text,
+                                              'priceOffered': priceOffered,
                                               'status': 'Pending'
                                             }
                                           ]),
@@ -631,7 +634,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                                             .doc(widget.product)
                                             .set({
                                           'price': FieldValue.arrayUnion(
-                                              [controller.text]),
+                                              [priceOffered]),
                                           'status': 'Pending',
                                           'time': DateTime.now(),
                                           'buyerReceivedProduct': false,
