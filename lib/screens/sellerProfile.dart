@@ -162,7 +162,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ContactSellerScreen(
                                   chatID: docID,
-                                  theOtherUserId: user,
+                                  theOtherUserId: widget.sellerId,
                                   theOtherUserName: doc['username'],
                                 )));
                       },

@@ -116,23 +116,23 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                CachedNetworkImage(
-                                                  imageUrl: message["imgURL"],
-                                                  fadeInDuration:
-                                                      const Duration(
-                                                          milliseconds: 10),
-                                                ),
+                                                // CachedNetworkImage(
+                                                //   imageUrl: message["imgURL"],
+                                                //   fadeInDuration:
+                                                //       const Duration(
+                                                //           milliseconds: 10),
+                                                // ),
                                               ],
                                             ),
                                           ),
                                         );
                                       });
                                 },
-                                child: CachedNetworkImage(
-                                  imageUrl: message["imgURL"],
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 10),
-                                ),
+                                // child: CachedNetworkImage(
+                                //   imageUrl: message["imgURL"],
+                                //   fadeInDuration:
+                                //       const Duration(milliseconds: 10),
+                                // ),
                               ),
                             )),
                 ),
@@ -186,29 +186,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length));
 
-    sendTextMessage(String value) async {
-      this.content = value;
-      if (this.content != null && this.content != "") {
-        this.message = AppMessage(
-            this.userIndex, Timestamp.now(), this.content);
-        Map updatedVals = {};
-        updatedVals[widget.theOtherUserId] =
-        chat["unread"][widget.theOtherUserId] == null
-            ? 1
-            : chat["unread"][widget.theOtherUserId] + 1;
-        updatedVals[this.userId] = 0;
-        db.collection("chats").doc(widget.chatID).update({
-          "history":
-          FieldValue.arrayUnion([this.message.toMap()]),
-          "unread": updatedVals
-        });
-        //_showNotification(value);
-        _controller.text = "";
-        this.content = "";
-        this.message = null;
-      }
-    }
-
+    print(this.userId);
+    print(widget.theOtherUserId);
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -314,7 +293,27 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         onChanged: (value) {
                           this.content = value;
                         },
-                        onSubmitted: sendTextMessage,
+                        onSubmitted: (value) async {
+                          this.content = value;
+                          if (this.content != null && this.content != "") {
+                            this.message = AppMessage(
+                                this.userIndex, Timestamp.now(), this.content);
+                            final Map<String, int> updatedVals = {
+                              widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                  ? 1
+                                  : chat["unread"][widget.theOtherUserId] + 1,
+                              this.userId: 0};
+                            db.collection("chats").doc(widget.chatID).update({
+                              "history":
+                              FieldValue.arrayUnion([this.message.toMap()]),
+                              "unread": updatedVals
+                            });
+                            //_showNotification(value);
+                            _controller.text = "";
+                            this.content = "";
+                            this.message = null;
+                          }
+                        },
                       ),
                     ),
                     InkWell(
@@ -371,7 +370,24 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     ),
                     InkWell(
                       onTap: () async {
-                        sendTextMessage(this.content);
+                        if (this.content != null && this.content != "") {
+                          this.message = AppMessage(
+                              this.userIndex, Timestamp.now(), this.content);
+                          final Map<String, int> updatedVals = {
+                            widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                ? 1
+                                : chat["unread"][widget.theOtherUserId] + 1,
+                            this.userId: 0};
+                          db.collection("chats").doc(widget.chatID).update({
+                            "history":
+                            FieldValue.arrayUnion([this.message.toMap()]),
+                            "unread": updatedVals
+                          });
+                          //_showNotification(value);
+                          _controller.text = "";
+                          this.content = "";
+                          this.message = null;
+                        }
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.1,

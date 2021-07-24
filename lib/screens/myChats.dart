@@ -202,7 +202,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                           ),
 
                           // number of unread messages
-                          chatInfo["unread"][this.user] == 0
+                          chatInfo["unread"] == null || chatInfo["unread"][this.user] == 0
                               ? Container()
                               : Container(
                                   height: 15,
