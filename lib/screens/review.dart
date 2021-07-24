@@ -88,8 +88,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    TextField(
+                    TextFormField(
                       keyboardType: TextInputType.multiline,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please enter your description!';
+                        }
+                        return null;
+                      },
                       minLines: 1,
                       maxLines: null,
                       decoration: InputDecoration(

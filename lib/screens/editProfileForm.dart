@@ -129,7 +129,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Username',
+                                            'Username *',
                                             style: TextStyle(fontSize: 20),
                                           ),
                                         ],
@@ -203,12 +203,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             _phoneNumber = value.trim();
                                           });
                                         },
-                                        validator: (String value) {
-                                          if (value.isEmpty) {
-                                            return 'Please enter your phone number';
-                                          }
-                                          return null;
-                                        },
+                                        // validator: (String value) {
+                                        //   if (value.isEmpty) {
+                                        //     return 'Please enter your phone number';
+                                        //   }
+                                        //   return null;
+                                        // },
                                       ),
                                     ],
                                   ),
