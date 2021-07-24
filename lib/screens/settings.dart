@@ -90,7 +90,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               db
                                   .collection('users')
                                   .doc(AuthService().getCurrentUID())
-                                  .set({'androidNotificationToken': null});
+                                  .update(
+                                {'androidNotificationToken': null},
+                              );
                               AuthService().signout();
                               Navigator.push(
                                   context,
