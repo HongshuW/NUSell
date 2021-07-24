@@ -401,12 +401,52 @@ class _SingleForumPostState extends State<SingleForumPost> {
                 var post = snapshot.data.data();
                 return ExpansionTile(
                   title: null,
+                onExpansionChanged: (expanded) {
+                    if (expanded) {
+                      db.collection("myForumPosts").doc(this.userId).update({
+                        "unread": FieldValue.arrayRemove([widget.post.id])
+                      });
+                    }
+                },
                 trailing: Container(
                   width: 100,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(Icons.message_outlined, size: 18),
+                      Stack(
+                        children: [
+                          Icon(Icons.message_outlined, size: 18),
+                          // unread red dot
+                          StreamBuilder(
+                              stream: db.collection("myForumPosts").doc(this.userId).snapshots(),
+                              builder: (context, myForumSnapshot) {
+                                if (!myForumSnapshot.hasData) {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                  );
+                                }
+                                var info = myForumSnapshot.data.data();
+                                List<dynamic> unreadList = info["unread"];
+                                if (unreadList == null || !unreadList.contains(widget.post.id)) {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                  );
+                                } else {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(7),
+                                      color: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                          ),
+                        ],
+                      ),
                       Text(
                         post["comments"].length.toString(),
                         style: TextStyle(
@@ -460,6 +500,9 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                 db.collection("myForumPosts").doc(this.userId).update({
                                   "commented": FieldValue.arrayUnion([widget.post.id]),
                                 });
+                                db.collection("myForumPosts").doc(post['user']).update({
+                                  "unread": FieldValue.arrayUnion([widget.post.id]),
+                                });
                               }
                               _controller.text = "";
                               this.content = "";
@@ -479,6 +522,9 @@ class _SingleForumPostState extends State<SingleForumPost> {
                             if (post['user'] != this.userId) {
                               db.collection("myForumPosts").doc(this.userId).update({
                                 "commented": FieldValue.arrayUnion([widget.post.id]),
+                              });
+                              db.collection("myForumPosts").doc(post['user']).update({
+                                "unread": FieldValue.arrayUnion([widget.post.id]),
                               });
                             }
                             _controller.text = "";
@@ -547,8 +593,9 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                         onSubmitted: (value) async {
                                           this.content = value;
                                           if (this.content != "") {
+                                            var mentioned = comment["user"];
                                             this.comment = Comment(user: this.userId,
-                                                content: this.content, mention: comment["user"]);
+                                                content: this.content, mention: mentioned);
                                             db.collection("forumPosts").doc(widget.post.id).update({
                                               "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                             });
@@ -557,9 +604,12 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                                 "commented": FieldValue.arrayUnion([widget.post.id]),
                                               });
                                             }
-                                            if (comment["user"] != this.userId && comment["user"] != post["user"]) {
-                                              db.collection("myForumPosts").doc(comment["user"]).update({
-                                                "commented": FieldValue.arrayUnion([widget.post.id]),
+                                            if (mentioned != this.userId) {
+                                              db.collection("myForumPosts").doc(mentioned).update({
+                                                "commented": mentioned != post["user"]
+                                                    ? FieldValue.arrayUnion([widget.post.id])
+                                                    : FieldValue,
+                                                "unread": FieldValue.arrayUnion([widget.post.id])
                                               });
                                             }
                                             _controller.text = "";
@@ -573,14 +623,23 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                     InkWell(
                                       onTap: () async {
                                         if (this.content != "") {
+                                          var mentioned = comment["user"];
                                           this.comment = Comment(user: this.userId,
-                                              content: this.content, mention: comment["user"]);
+                                              content: this.content, mention: mentioned);
                                           db.collection("forumPosts").doc(widget.post.id).update({
                                             "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                           });
                                           if (post['user'] != this.userId) {
                                             db.collection("myForumPosts").doc(this.userId).update({
                                               "commented": FieldValue.arrayUnion([widget.post.id]),
+                                            });
+                                          }
+                                          if (mentioned != this.userId) {
+                                            db.collection("myForumPosts").doc(mentioned).update({
+                                              "commented": mentioned != post["user"]
+                                                  ? FieldValue.arrayUnion([widget.post.id])
+                                                  : FieldValue,
+                                              "unread": FieldValue.arrayUnion([widget.post.id])
                                             });
                                           }
                                           _controller.text = "";
