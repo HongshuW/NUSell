@@ -278,11 +278,15 @@ class _SingleForumPostState extends State<SingleForumPost> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              userName,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              child: Text(
+                                userName,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             Text(
                               getTimePosted(widget.post),
@@ -397,12 +401,52 @@ class _SingleForumPostState extends State<SingleForumPost> {
                 var post = snapshot.data.data();
                 return ExpansionTile(
                   title: null,
+                onExpansionChanged: (expanded) {
+                    if (expanded) {
+                      db.collection("myForumPosts").doc(this.userId).update({
+                        "unread": FieldValue.arrayRemove([widget.post.id])
+                      });
+                    }
+                },
                 trailing: Container(
                   width: 100,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(Icons.message_outlined, size: 18),
+                      Stack(
+                        children: [
+                          Icon(Icons.message_outlined, size: 18),
+                          // unread red dot
+                          StreamBuilder(
+                              stream: db.collection("myForumPosts").doc(this.userId).snapshots(),
+                              builder: (context, myForumSnapshot) {
+                                if (!myForumSnapshot.hasData) {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                  );
+                                }
+                                var info = myForumSnapshot.data.data();
+                                List<dynamic> unreadList = info["unread"];
+                                if (unreadList == null || !unreadList.contains(widget.post.id)) {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                  );
+                                } else {
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(7),
+                                      color: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                          ),
+                        ],
+                      ),
                       Text(
                         post["comments"].length.toString(),
                         style: TextStyle(
@@ -456,6 +500,9 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                 db.collection("myForumPosts").doc(this.userId).update({
                                   "commented": FieldValue.arrayUnion([widget.post.id]),
                                 });
+                                db.collection("myForumPosts").doc(post['user']).update({
+                                  "unread": FieldValue.arrayUnion([widget.post.id]),
+                                });
                               }
                               _controller.text = "";
                               this.content = "";
@@ -475,6 +522,9 @@ class _SingleForumPostState extends State<SingleForumPost> {
                             if (post['user'] != this.userId) {
                               db.collection("myForumPosts").doc(this.userId).update({
                                 "commented": FieldValue.arrayUnion([widget.post.id]),
+                              });
+                              db.collection("myForumPosts").doc(post['user']).update({
+                                "unread": FieldValue.arrayUnion([widget.post.id]),
                               });
                             }
                             _controller.text = "";
@@ -543,14 +593,23 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                         onSubmitted: (value) async {
                                           this.content = value;
                                           if (this.content != "") {
+                                            var mentioned = comment["user"];
                                             this.comment = Comment(user: this.userId,
-                                                content: this.content, mention: comment["user"]);
+                                                content: this.content, mention: mentioned);
                                             db.collection("forumPosts").doc(widget.post.id).update({
                                               "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                             });
                                             if (post['user'] != this.userId) {
                                               db.collection("myForumPosts").doc(this.userId).update({
                                                 "commented": FieldValue.arrayUnion([widget.post.id]),
+                                              });
+                                            }
+                                            if (mentioned != this.userId) {
+                                              db.collection("myForumPosts").doc(mentioned).update({
+                                                "commented": mentioned != post["user"]
+                                                    ? FieldValue.arrayUnion([widget.post.id])
+                                                    : FieldValue,
+                                                "unread": FieldValue.arrayUnion([widget.post.id])
                                               });
                                             }
                                             _controller.text = "";
@@ -564,14 +623,23 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                     InkWell(
                                       onTap: () async {
                                         if (this.content != "") {
+                                          var mentioned = comment["user"];
                                           this.comment = Comment(user: this.userId,
-                                              content: this.content, mention: comment["user"]);
+                                              content: this.content, mention: mentioned);
                                           db.collection("forumPosts").doc(widget.post.id).update({
                                             "comments": FieldValue.arrayUnion([this.comment.toMap()]),
                                           });
                                           if (post['user'] != this.userId) {
                                             db.collection("myForumPosts").doc(this.userId).update({
                                               "commented": FieldValue.arrayUnion([widget.post.id]),
+                                            });
+                                          }
+                                          if (mentioned != this.userId) {
+                                            db.collection("myForumPosts").doc(mentioned).update({
+                                              "commented": mentioned != post["user"]
+                                                  ? FieldValue.arrayUnion([widget.post.id])
+                                                  : FieldValue,
+                                              "unread": FieldValue.arrayUnion([widget.post.id])
                                             });
                                           }
                                           _controller.text = "";
@@ -611,6 +679,7 @@ class _SingleForumPostState extends State<SingleForumPost> {
                               top: BorderSide(width: 0.5, color: Color.fromRGBO(242, 195, 71, 1))
                           )
                       ),
+                      alignment: Alignment.centerLeft,
                       // single comment
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,48 +705,42 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                             SellerProfileScreen(sellerId: comment['user'])));
                                   }
                                 },
-                                child: Row(
-                                  children: [
-                                    Container(
+                                child: comment["mention"] != ""
+                                    ? FutureBuilder<DocumentSnapshot>(
+                                    future: db.collection("users").doc(comment['mention']).get(),
+                                    builder: (context, mentionSnapshot) {
+                                      if (!mentionSnapshot.hasData) {
+                                        return Center(child: CircularProgressIndicator());
+                                      }
+                                      Map<String, dynamic> mention = mentionSnapshot.data.data();
+                                      String mentionedUser = mention["username"] == null
+                                          ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
+                                      return InkWell(
+                                        onTap: () {
+                                          if (comment['mention'] == this.userId) {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder:
+                                                    (context) => ProfileScreen()));
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder:
+                                                    (context) => SellerProfileScreen(
+                                                    sellerId: comment['mention'])));
+                                          }
+                                        },
+                                        child: Text(
+                                          userName + mentionedUser,
+                                          style: TextStyle(color: Colors.brown),
+                                        ),
+                                      );
+                                    })
+                                  : Container(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         userName,
                                         style: TextStyle(color: Colors.brown),
                                       ),
                                     ),
-
-                                    // get mentioned user
-                                    comment["mention"] != ""
-                                        ? FutureBuilder<DocumentSnapshot>(
-                                        future: db.collection("users").doc(comment['mention']).get(),
-                                        builder: (context, mentionSnapshot) {
-                                          if (!mentionSnapshot.hasData) {
-                                            return Center(child: CircularProgressIndicator());
-                                          }
-                                          Map<String, dynamic> mention = mentionSnapshot.data.data();
-                                          String mentionedUser = mention["username"] == null
-                                              ? " @ ${comment['mention']}" : " @ ${mention["username"]}";
-                                          return InkWell(
-                                            onTap: () {
-                                              if (comment['mention'] == this.userId) {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(builder:
-                                                        (context) => ProfileScreen()));
-                                              } else {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(builder:
-                                                        (context) => SellerProfileScreen(
-                                                        sellerId: comment['mention'])));
-                                              }
-                                            },
-                                            child: Text(
-                                              mentionedUser,
-                                              style: TextStyle(color: Colors.brown),
-                                            ),
-                                          );
-                                        }) : Container(),
-                                  ],
-                                ),
                               );
                             },
                           ),

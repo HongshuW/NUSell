@@ -330,19 +330,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                             ),
                           ),
-                          rowWidget(
+                          rowWidgetWithNotification(
                             context,
                             'my forum',
-                            IconButton(
-                              icon: Icon(Icons.arrow_forward_ios_rounded),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            myForum(context)));
-                              },
-                            ),
+                            Stack(
+                              alignment: AlignmentDirectional.centerStart,
+                              children: [
+                                // unread red dot
+                                StreamBuilder(
+                                    stream: db.collection("myForumPosts").doc(auth.currentUser.uid).snapshots(),
+                                    builder: (context, myForumSnapshot) {
+                                      if (!myForumSnapshot.hasData) {
+                                        return Container(
+                                          width: 10,
+                                          height: 10,
+                                        );
+                                      }
+                                      var info = myForumSnapshot.data.data();
+                                      List<dynamic> unreadList = info["unread"];
+                                      if (unreadList == null || unreadList.isEmpty) {
+                                        return Container(
+                                          width: 10,
+                                          height: 10,
+                                        );
+                                      } else {
+                                        return Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            color: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                ),
+                                // navigate button
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                myForum(context)));
+                                  },
+                                ),
+                              ],
+                            )
                           ),
                         ],
                       ),
@@ -523,14 +558,40 @@ Widget rowWidget(context, String text, IconButton button) {
   );
 }
 
+Widget rowWidgetWithNotification(context, String text, Stack button) {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+              child: Text(
+                text,
+                style: TextStyle(fontSize: 20),
+              ),
+              height: 32,
+            ),
+            button
+          ],
+        ),
+      ),
+      Container(
+          height: 1,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.grey),
+    ],
+  );
+}
+
 Widget myForum(context) {
   return Scaffold(
     appBar: AppBar(
       leading: BackButton(
         onPressed: () {
-          Navigator.pop(context);
-          // Navigator.of(context)
-          //     .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
         },
       ),
       title: Text("My Forum"),

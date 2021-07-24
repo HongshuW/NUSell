@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orbital2796_nusell/main.dart';
+import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -184,7 +185,6 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
     _controller.text = this.content;
     _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length));
-    print(widget.theOtherUserId);
 
     sendTextMessage(String value) async {
       this.content = value;
@@ -216,9 +216,16 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(widget.theOtherUserName == null
-            ? widget.chatID
-            : widget.theOtherUserName),
+        title: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) =>
+                    SellerProfileScreen(sellerId: widget.theOtherUserId,)));
+          },
+          child: Text(widget.theOtherUserName == null
+              ? widget.chatID
+              : widget.theOtherUserName),
+        ),
       ),
       body: GestureDetector(
         onTap: () {

@@ -32,6 +32,7 @@ class _PostScreenState extends State<PostScreen> {
   String location = "UTown";
   String category = "Textbooks";
   double sellerScore;
+  bool allowSubmit = true;
 
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   FirebaseStorage storage = FirebaseStorage.instance;
@@ -378,7 +379,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: MediaQuery.of(context).size.width * 0.25,
                       margin: const EdgeInsets.only(left: 100.0),
                       child: TextField(
-                        // keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           isDense: true,
@@ -390,12 +391,13 @@ class _PostScreenState extends State<PostScreen> {
                         onChanged: (value) {
                           try {
                             this.price = double.parse(value);
-                            if (this.price < 0) {
+                            if (this.price < 0.05) {
                               Fluttertoast.showToast(
                                 msg: "price is invalid!",
                                 gravity: ToastGravity.CENTER,
                                 textColor: Colors.red,
                               );
+                              this.allowSubmit = false;
                             }
                           } catch (FormatException) {
                             Fluttertoast.showToast(
@@ -403,6 +405,7 @@ class _PostScreenState extends State<PostScreen> {
                               gravity: ToastGravity.CENTER,
                               textColor: Colors.red,
                             );
+                            this.allowSubmit = false;
                           }
                         },
                       ),
@@ -501,7 +504,7 @@ class _PostScreenState extends State<PostScreen> {
                         gravity: ToastGravity.BOTTOM,
                         textColor: Colors.red,
                       );
-                    } else if (price == null || price < 0) {
+                    } else if (price == null || price < 0 || !allowSubmit) {
                       Fluttertoast.showToast(
                         msg: 'Please enter a valid price for your product.',
                         gravity: ToastGravity.BOTTOM,
