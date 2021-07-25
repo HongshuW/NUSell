@@ -74,7 +74,7 @@ class _MyForumScreenState extends State<MyForumScreen> {
               Map<String, dynamic> myForum = snapshot.data.data();
               if (myForum == null) {
                 db.collection("myForumPosts").doc(this.user).set({
-                  "commented": [], "myForumPosts": []
+                  "commented": [], "myForumPosts": [], "unread": []
                 });
                 return Container(
                   alignment: Alignment.center,

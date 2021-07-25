@@ -427,6 +427,15 @@ class _SingleForumPostState extends State<SingleForumPost> {
                                   );
                                 }
                                 var info = myForumSnapshot.data.data();
+                                if (info == null) {
+                                  db.collection("myForumPosts").doc(this.userId).set({
+                                    "commented": [], "myForumPosts": [], "unread": []
+                                  });
+                                  return Container(
+                                    width: 7,
+                                    height: 7,
+                                  );
+                                }
                                 List<dynamic> unreadList = info["unread"];
                                 if (unreadList == null || !unreadList.contains(widget.post.id)) {
                                   return Container(

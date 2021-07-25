@@ -347,6 +347,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         );
                                       }
                                       var info = myForumSnapshot.data.data();
+                                      if (info == null) {
+                                        db.collection("myForumPosts").doc(auth.currentUser.uid).set({
+                                          "commented": [], "myForumPosts": [], "unread": []
+                                        });
+                                        return Container(
+                                          width: 10,
+                                          height: 10,
+                                        );
+                                      }
                                       List<dynamic> unreadList = info["unread"];
                                       if (unreadList == null || unreadList.isEmpty) {
                                         return Container(
