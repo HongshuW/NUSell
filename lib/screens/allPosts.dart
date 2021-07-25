@@ -180,8 +180,8 @@ class _allPostsState extends State<allPosts> {
     } else {
       return StreamBuilder(
           stream: FirebaseFirestore.instance.collection("posts")
-              .orderBy("time", descending: true)
               .where("status", isEqualTo: "Selling")
+              .orderBy("time", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {

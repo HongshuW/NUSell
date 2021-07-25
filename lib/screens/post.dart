@@ -98,7 +98,11 @@ class _PostScreenState extends State<PostScreen> {
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+                    (route) => false
+            );
           },
         ),
         title: Text(
@@ -115,8 +119,11 @@ class _PostScreenState extends State<PostScreen> {
                 primary: Color.fromRGBO(255, 88, 68, 1),
               ),
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => HomeScreen()));
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                        (route) => false
+                );
               },
             ),
           ),

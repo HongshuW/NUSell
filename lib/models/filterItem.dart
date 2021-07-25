@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Filter {
-  // postsProvider
-  final posts;
   // filtersProvider
   final selected;
   // type of filter
@@ -11,13 +9,12 @@ class Filter {
   // value of filter
   var value;
 
-  Filter({this.posts, this.selected, this.type, this.value});
+  Filter({this.selected, this.type, this.value});
 
   InkWell toButton() {
     return InkWell(
       onTap: () {
         selected.remove(this);
-        // posts.snapshot = selected.getQuery();
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 10, right: 5),
@@ -52,10 +49,6 @@ class Filter {
     return [this.toButton()];
   }
 
-  Query<Map<String, dynamic>> updateQuery(var query) {
-    return query;
-  }
-
   @override
   toString() {
     return this.value;
@@ -64,14 +57,8 @@ class Filter {
 
 class Time extends Filter {
   var timeRequested;
-  Time({posts, selected, value})
-      : super(posts: posts, selected: selected, type: 1, value: value);
-
-  @override
-  Query<Map<String, dynamic>> updateQuery(var query) {
-    timeRequested = DateTime.now().add(Duration(days: -1 * value));
-    return query.where("time", isGreaterThan: timeRequested);
-  }
+  Time({selected, value})
+      : super(selected: selected, type: 1, value: value);
 
   @override
   toString() {
@@ -88,13 +75,8 @@ class Time extends Filter {
 }
 
 class Category extends Filter {
-  Category({posts, selected, value})
-      : super(posts: posts, selected: selected, type: 2, value: value);
-
-  @override
-  Query<Map<String, dynamic>> updateQuery(var query) {
-    return query.where("category", isEqualTo: this.value);
-  }
+  Category({selected, value})
+      : super(selected: selected, type: 2, value: value);
 
   @override
   List<InkWell> listOfButtons() {
@@ -162,13 +144,8 @@ class Category extends Filter {
 }
 
 class Location extends Filter {
-  Location({posts, selected, value})
-      : super(posts: posts, selected: selected, type: 3, value: value);
-
-  @override
-  Query<Map<String, dynamic>> updateQuery(var query) {
-    return query.where("location", isEqualTo: this.value);
-  }
+  Location({selected, value})
+      : super(selected: selected, type: 3, value: value);
 
   @override
   List<InkWell> listOfButtons() {
@@ -235,8 +212,8 @@ class Location extends Filter {
 }
 
 class Price extends Filter {
-  Price({posts, selected, value})
-      : super(posts: posts, selected: selected, type: 4, value: value);
+  Price({selected, value})
+      : super(selected: selected, type: 4, value: value);
 
   @override
   toString() {
@@ -255,8 +232,8 @@ class Price extends Filter {
 }
 
 class SellerScore extends Filter {
-  SellerScore({posts, selected, value})
-      : super(posts: posts, selected: selected, type: 11, value: value);
+  SellerScore({selected, value})
+      : super(selected: selected, type: 11, value: value);
 
   @override
   String toString() {

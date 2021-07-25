@@ -246,21 +246,36 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
       ],
       onTap: (index) {
         if (FirebaseAuth.instance.currentUser == null) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false
+          );
         } else {
           if (index == 0) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+                    (route) => false
+            );
           } else if (index == 1) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ForumScreen()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => ForumScreen()),
+                  (route) => false
+            );
           } else if (index == 3) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => PostScreen()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => PostScreen()),
+                    (route) => false
+            );
           } else if (index == 4) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    (route) => false
+            );
           }
         }
       },
@@ -283,10 +298,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         if (chatData == null) {
           return WillPopScope(
             onWillPop: () async {
-              if (Navigator.of(context).userGestureInProgress)
-                return false;
-              else
-                return true;
+              return false;
             },
             child: Scaffold(
               appBar: AppBar(
@@ -303,10 +315,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         this.myChats = chatData["myChats"];
         return WillPopScope(
           onWillPop: () async {
-            if (Navigator.of(context).userGestureInProgress)
-              return false;
-            else
-              return true;
+            return false;
           },
           child: Scaffold(
             appBar: AppBar(

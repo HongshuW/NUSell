@@ -6,8 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class filtersProvider with ChangeNotifier {
   // originally no filter is selected.
   List<Filter> _selectedFilters = [];
-  CollectionReference _posts = FirebaseFirestore.instance.collection("posts");
-  Query<Map<String, dynamic>> _query;
 
   Time time;
   Category category;
@@ -122,9 +120,7 @@ class filtersProvider with ChangeNotifier {
       _range2 = [0.0, 5.0];
     }
     _selectedFilters.remove(filterItem);
-    if (_selectedFilters.length != 0) {
-      updateQuery();
-    } else {
+    if (_selectedFilters.length == 0) {
       clear();
     }
     notifyListeners();
@@ -132,7 +128,6 @@ class filtersProvider with ChangeNotifier {
 
   clear() {
     _selectedFilters = [];
-    _query = null;
     _timeRequested = Timestamp.fromDate(DateTime(2021));
     _categorySelected = [
       'Textbooks',
@@ -163,27 +158,5 @@ class filtersProvider with ChangeNotifier {
       list.addAll(filter.listOfButtons());
     }
     return list;
-  }
-
-  updateQuery() {
-    var i;
-    for (i = 0; i < _selectedFilters.length; i++) {
-      if (i == 0) {
-        _query = _selectedFilters[i].updateQuery(_posts);
-      } else {
-        _query = _selectedFilters[i].updateQuery(_query);
-      }
-    }
-    notifyListeners();
-  }
-
-  Query<Map<String, dynamic>> getQuery() {
-    if (_query == null) {
-      return FirebaseFirestore.instance
-          .collection("posts")
-          .orderBy("time", descending: true);
-    } else {
-      return _query.orderBy("time", descending: true);
-    }
   }
 }

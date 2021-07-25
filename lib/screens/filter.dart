@@ -74,7 +74,6 @@ class _FilterState extends State<Filter> {
                       selected.update(time),
                       selected.timeRequested =
                           Timestamp.fromDate(timeRequested),
-                      print(selected.timeRequested)
                       // posts.snapshot = selected.getQuery(),
                     },
                   ),

@@ -67,10 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Map<String, dynamic> doc = snapshot.data.data();
           return WillPopScope(
             onWillPop: () async {
-              if (Navigator.of(context).userGestureInProgress)
-                return false;
-              else
-                return true;
+              return false;
             },
             child: Scaffold(
               appBar: AppBar(
@@ -413,29 +410,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
                 onTap: (index) {
                   if (FirebaseAuth.instance.currentUser == null) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                            (route) => false
+                    );
                   } else {
                     if (index == 0) {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeScreen()));
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                              (route) => false
+                      );
                     } else if (index == 1) {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ForumScreen()));
+                          MaterialPageRoute(builder: (context) => ForumScreen()),
+                              (route) => false
+                      );
                     } else if (index == 2) {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => MyChatsScreen()));
+                          MaterialPageRoute(builder: (context) => MyChatsScreen()),
+                              (route) => false
+                      );
                     } else if (index == 3) {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => PostScreen()));
+                          MaterialPageRoute(builder: (context) => PostScreen()),
+                              (route) => false
+                      );
                     }
                   }
                 },
