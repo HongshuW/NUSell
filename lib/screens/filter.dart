@@ -32,7 +32,6 @@ class _FilterState extends State<Filter> {
     var timeRequested;
     // 5: view all
     if (widget.type == 0 || widget.type == 5) {
-      posts.clear();
       selected.clear();
       return Container(
         margin: EdgeInsets.all(10),
@@ -77,6 +76,7 @@ class _FilterState extends State<Filter> {
                       selected.update(time),
                       selected.timeRequested =
                           Timestamp.fromDate(timeRequested),
+                      print(selected.timeRequested)
                       // posts.snapshot = selected.getQuery(),
                     },
                   ),

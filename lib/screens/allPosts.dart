@@ -120,7 +120,6 @@ class _allPostsState extends State<allPosts> {
   Widget build(BuildContext context) {
     // Providers
     final filterState = Provider.of<filtersProvider>(context);
-    final postsState = Provider.of<postsProvider>(context);
 
     if (widget.hasPagination) {
       return Container(
@@ -181,7 +180,8 @@ class _allPostsState extends State<allPosts> {
       );
     } else {
       return StreamBuilder(
-          stream: postsState.snapshot
+          stream: FirebaseFirestore.instance.collection("posts")
+              .orderBy("time", descending: true)
               .where("status", isEqualTo: "Selling")
               .snapshots(),
           builder: (context, snapshot) {
