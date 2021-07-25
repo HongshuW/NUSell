@@ -3,7 +3,6 @@ import 'package:orbital2796_nusell/subProject/custom_radio_grouped_button/custom
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/models/filterItem.dart';
 
@@ -21,7 +20,6 @@ class _FilterState extends State<Filter> {
 
   @override
   Widget build(BuildContext context) {
-    final posts = Provider.of<postsProvider>(context);
     final selected = Provider.of<filtersProvider>(context);
     Time time;
     Category category;
@@ -72,7 +70,7 @@ class _FilterState extends State<Filter> {
                       timeRequested =
                           DateTime.now().add(Duration(days: -1 * value)),
                       time =
-                          Time(posts: posts, selected: selected, value: value),
+                          Time(selected: selected, value: value),
                       selected.update(time),
                       selected.timeRequested =
                           Timestamp.fromDate(timeRequested),
@@ -126,8 +124,7 @@ class _FilterState extends State<Filter> {
                     unSelectedBorderColor: Colors.black45,
                     selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
                     checkBoxButtonValues: (values) => {
-                      category = Category(
-                          posts: posts, selected: selected, value: values),
+                      category = Category(selected: selected, value: values),
                       selected.update(category),
                       selected.categorySelected = values
                     },
@@ -176,8 +173,7 @@ class _FilterState extends State<Filter> {
                     unSelectedBorderColor: Colors.black45,
                     selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
                     checkBoxButtonValues: (values) => {
-                      location = Location(
-                          posts: posts, selected: selected, value: values),
+                      location = Location(selected: selected, value: values),
                       selected.update(location),
                       selected.locationSelected = values,
                     },
@@ -214,7 +210,7 @@ class _FilterState extends State<Filter> {
                     selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
                     radioButtonValue: (value) => {
                       price =
-                          Price(posts: posts, selected: selected, value: value),
+                          Price(selected: selected, value: value),
                       selected.update(price),
                       selected.range = value,
                     },
@@ -250,8 +246,7 @@ class _FilterState extends State<Filter> {
                     selectedBorderColor: Color.fromRGBO(242, 195, 71, 1),
                     radioButtonValue: (value) => {
                       print(value),
-                      sellerScore = SellerScore(
-                          posts: posts, selected: selected, value: value),
+                      sellerScore = SellerScore(selected: selected, value: value),
                       selected.update(sellerScore),
                       selected.range2 = value,
                     },

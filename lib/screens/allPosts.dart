@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
-import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/subProject/recommendation/postsSorter.dart';

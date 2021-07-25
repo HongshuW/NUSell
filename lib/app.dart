@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orbital2796_nusell/main.dart';
 import 'package:orbital2796_nusell/providers/filtersProvider.dart';
 import 'package:orbital2796_nusell/providers/imageDeletionProvider.dart';
-import 'package:orbital2796_nusell/providers/postsProvider.dart';
 import 'package:orbital2796_nusell/providers/userInfoProvider.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:provider/provider.dart';
@@ -66,9 +65,6 @@ class _AppState extends State<App> {
           create: (context) => userInfoProvider(),
         ),
         //Provider(create: (context) => ProfileScreen(auth.currentUser.uid)),
-        ChangeNotifierProvider(
-          create: (context) => postsProvider(),
-        ),
         ChangeNotifierProvider(
           create: (context) => filtersProvider(),
         ),
