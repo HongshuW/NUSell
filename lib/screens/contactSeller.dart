@@ -116,23 +116,26 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                // CachedNetworkImage(
-                                                //   imageUrl: message["imgURL"],
-                                                //   fadeInDuration:
-                                                //       const Duration(
-                                                //           milliseconds: 10),
-                                                // ),
+                                                CachedNetworkImage(
+                                                  imageUrl: message["imgURL"],
+                                                  fadeInDuration:
+                                                      const Duration(
+                                                          milliseconds: 10),
+                                                ),
                                               ],
                                             ),
                                           ),
                                         );
                                       });
                                 },
-                                // child: CachedNetworkImage(
-                                //   imageUrl: message["imgURL"],
-                                //   fadeInDuration:
-                                //       const Duration(milliseconds: 10),
-                                // ),
+                                child: CachedNetworkImage(
+                                  imageUrl: message["imgURL"],
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 10),
+                                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                      CircularProgressIndicator(value: downloadProgress.progress),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                ),
                               ),
                             )),
                 ),
@@ -321,9 +324,15 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         String url = await uploadImage(true);
                         this.message =
                             ImageMessage(userIndex, Timestamp.now(), url);
+                        final Map<String, int> updatedVals = {
+                          widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                              ? 1
+                              : chat["unread"][widget.theOtherUserId] + 1,
+                          this.userId: 0};
                         db.collection("chats").doc(widget.chatID).update({
                           "history":
-                              FieldValue.arrayUnion([this.message.toMap()])
+                              FieldValue.arrayUnion([this.message.toMap()]),
+                          "unread": updatedVals
                         });
                         this.message = null;
                       },
@@ -347,9 +356,15 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         String url = await uploadImage(false);
                         this.message =
                             ImageMessage(userIndex, Timestamp.now(), url);
+                        final Map<String, int> updatedVals = {
+                          widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                              ? 1
+                              : chat["unread"][widget.theOtherUserId] + 1,
+                          this.userId: 0};
                         db.collection("chats").doc(widget.chatID).update({
                           "history":
-                              FieldValue.arrayUnion([this.message.toMap()])
+                              FieldValue.arrayUnion([this.message.toMap()]),
+                          "unread": updatedVals
                         });
                         this.message = null;
                       },

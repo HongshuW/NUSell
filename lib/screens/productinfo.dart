@@ -127,6 +127,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       fit: BoxFit.fitHeight,
                       width: MediaQuery.of(context).size.width,
                       fadeInDuration: Duration(milliseconds: 250),
+                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                 ),

@@ -104,7 +104,7 @@ class _ForumScreenState extends State<ForumScreen> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => AddAForumPostScreen()));
                 },
-                icon: Icon(Icons.camera_alt))
+                icon: Icon(Icons.add_a_photo))
           ],
         ),
         body: GestureDetector(
