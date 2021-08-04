@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orbital2796_nusell/main.dart';
+import 'package:orbital2796_nusell/models/loading.dart';
+import 'package:orbital2796_nusell/models/productLinkWidget.dart';
+import 'package:orbital2796_nusell/screens/productinfo.dart';
 import 'package:orbital2796_nusell/screens/sellerProfile.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/cupertino.dart';
@@ -75,7 +78,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                       child: message["message"] != null
                           ? Text(message["message"],
                               style: TextStyle(fontSize: 16))
-                          : ConstrainedBox(
+                          : message["imgURL"] != null
+                            ? ConstrainedBox(
                               constraints: BoxConstraints(
                                 maxHeight: 200,
                                 maxWidth: 150,
@@ -137,7 +141,19 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                                   errorWidget: (context, url, error) => Icon(Icons.error),
                                 ),
                               ),
-                            )),
+                            )
+                            : productLinkWidget(
+                                productId: message["productId"],
+                                smallPreview: true,
+                                action: () {
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(builder:
+                                          (context) => ProductInfoScreen(product: message["productId"])
+                                      )
+                                  );
+                                },
+                              ),
+                  ),
                 ),
               ],
             ))
@@ -260,15 +276,16 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                     );
                   }),
 
-              // Input text, return to send message.
+              // send messages
               Container(
                 color: Color.fromRGBO(0, 0, 0, 0.05),
                 padding: EdgeInsets.only(top: 5, bottom: 20),
                 child: Row(
                   children: [
+                    // Input text, return to send message.
                     Container(
                       margin: EdgeInsets.only(left: 20, right: 10),
-                      width: MediaQuery.of(context).size.width * 0.55,
+                      width: MediaQuery.of(context).size.width * 0.65,
                       child: TextField(
                         textInputAction: TextInputAction.send,
                         keyboardType: TextInputType.multiline,
@@ -319,23 +336,8 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                         },
                       ),
                     ),
+                    // more functions button
                     InkWell(
-                      onTap: () async {
-                        String url = await uploadImage(true);
-                        this.message =
-                            ImageMessage(userIndex, Timestamp.now(), url);
-                        final Map<String, int> updatedVals = {
-                          widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
-                              ? 1
-                              : chat["unread"][widget.theOtherUserId] + 1,
-                          this.userId: 0};
-                        db.collection("chats").doc(widget.chatID).update({
-                          "history":
-                              FieldValue.arrayUnion([this.message.toMap()]),
-                          "unread": updatedVals
-                        });
-                        this.message = null;
-                      },
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.1,
                         height: MediaQuery.of(context).size.width * 0.1,
@@ -347,42 +349,276 @@ class _ContactSellerScreenState extends State<ContactSellerScreen> {
                           ),
                           borderRadius: BorderRadius.circular(
                               MediaQuery.of(context).size.width * 0.1),
-                        ),
-                        child: Icon(Icons.add_photo_alternate, size: 20),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        String url = await uploadImage(false);
-                        this.message =
-                            ImageMessage(userIndex, Timestamp.now(), url);
-                        final Map<String, int> updatedVals = {
-                          widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
-                              ? 1
-                              : chat["unread"][widget.theOtherUserId] + 1,
-                          this.userId: 0};
-                        db.collection("chats").doc(widget.chatID).update({
-                          "history":
-                              FieldValue.arrayUnion([this.message.toMap()]),
-                          "unread": updatedVals
-                        });
-                        this.message = null;
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.1,
-                        height: MediaQuery.of(context).size.width * 0.1,
-                        margin: EdgeInsets.only(right: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(
-                              MediaQuery.of(context).size.width * 0.1),
-                        ),
-                        child: Icon(Icons.camera_alt, size: 20),
+                        child: Icon(Icons.add, size: 20),
                       ),
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              var heightOfSheet = MediaQuery.of(context).size.width / 4 + 15;
+                              var sizeOfIcon = MediaQuery.of(context).size.width / 12;
+                              return Container(
+                                height: heightOfSheet,
+                                padding: EdgeInsets.all(5),
+                                color: Color.fromRGBO(249, 248, 253, 1),
+                                child: GridView.count(
+                                    crossAxisCount: 4,
+                                  crossAxisSpacing: 0,
+                                  mainAxisSpacing: 0,
+                                  children: [
+                                    // send image from gallery
+                                    Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Card(
+                                            color: Color.fromRGBO(242, 195, 71, 0.1),
+                                            elevation: 0,
+                                            child: IconButton(
+                                              icon: Icon(Icons.photo),
+                                              iconSize: sizeOfIcon,
+                                              padding: EdgeInsets.zero,
+                                              color: Color.fromRGBO(242, 195, 71, 0.9),
+                                              onPressed: () async {
+                                                showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) {
+                                                      return loading(
+                                                          hasImage: false,
+                                                          hasMessage: false);
+                                                    });
+                                                String url = await uploadImage(true);
+                                                this.message =
+                                                    ImageMessage(userIndex, Timestamp.now(), url);
+                                                final Map<String, int> updatedVals = {
+                                                  widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                                      ? 1
+                                                      : chat["unread"][widget.theOtherUserId] + 1,
+                                                  this.userId: 0};
+                                                db.collection("chats").doc(widget.chatID).update({
+                                                  "history":
+                                                  FieldValue.arrayUnion([this.message.toMap()]),
+                                                  "unread": updatedVals
+                                                });
+                                                this.message = null;
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                          Text(
+                                            "Gallery",
+                                            style: TextStyle(
+                                              color: Color.fromRGBO(242, 195, 71, 1),
+                                              fontWeight: FontWeight.w300,
+                                                fontSize: 12
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+
+                                    // take photo from camera
+                                    Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Card(
+                                            color: Color.fromRGBO(242, 195, 71, 0.1),
+                                            elevation: 0,
+                                            child: IconButton(
+                                              icon: Icon(Icons.camera_alt),
+                                              iconSize: sizeOfIcon,
+                                              padding: EdgeInsets.zero,
+                                              color: Color.fromRGBO(242, 195, 71, 0.9),
+                                              onPressed: () async {
+                                                showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) {
+                                                      return loading(
+                                                          hasImage: false,
+                                                          hasMessage: false);
+                                                    });
+                                                String url = await uploadImage(false);
+                                                this.message =
+                                                    ImageMessage(userIndex, Timestamp.now(), url);
+                                                final Map<String, int> updatedVals = {
+                                                  widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                                      ? 1
+                                                      : chat["unread"][widget.theOtherUserId] + 1,
+                                                  this.userId: 0};
+                                                db.collection("chats").doc(widget.chatID).update({
+                                                  "history":
+                                                  FieldValue.arrayUnion([this.message.toMap()]),
+                                                  "unread": updatedVals
+                                                });
+                                                this.message = null;
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                          Text(
+                                            "Camera",
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(242, 195, 71, 1),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // send their products
+                                    Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Card(
+                                            color: Color.fromRGBO(242, 195, 71, 0.1),
+                                            elevation: 0,
+                                            child: IconButton(
+                                              icon: Icon(Icons.link),
+                                              iconSize: sizeOfIcon,
+                                              padding: EdgeInsets.zero,
+                                              color: Color.fromRGBO(242, 195, 71, 0.9),
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return StreamBuilder(
+                                                        stream: db.collection("myPosts").doc(widget.theOtherUserId).snapshots(),
+                                                          builder: (context, snapshot) {
+                                                            if (!snapshot.hasData) {
+                                                              return CircularProgressIndicator();
+                                                            }
+                                                            var postsOfTheSeller = snapshot.data.data();
+                                                            return ListView(
+                                                              children: postsOfTheSeller["myPosts"]
+                                                                  .map<Widget>((productId) {
+                                                                    return productLinkWidget(
+                                                                        productId: productId,
+                                                                      smallPreview: false,
+                                                                      action: () {
+                                                                          this.message =
+                                                                              LinkMessage(userIndex, Timestamp.now(), productId);
+                                                                          final Map<String, int> updatedVals = {
+                                                                            widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                                                                ? 1
+                                                                                : chat["unread"][widget.theOtherUserId] + 1,
+                                                                            this.userId: 0};
+                                                                          db.collection("chats").doc(widget.chatID).update({
+                                                                            "history":
+                                                                            FieldValue.arrayUnion([this.message.toMap()]),
+                                                                            "unread": updatedVals
+                                                                          });
+                                                                          this.message = null;
+                                                                          Navigator.of(context).pop();
+                                                                          Navigator.of(context).pop();
+                                                                      },
+                                                                    );
+                                                              }).toList(),
+                                                            );
+                                                          }
+                                                      );
+                                                    }
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          Text(
+                                            "Their Products",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(242, 195, 71, 1),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+
+                                    // send my products
+                                    Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Card(
+                                            color: Color.fromRGBO(242, 195, 71, 0.1),
+                                            elevation: 0,
+                                            child: IconButton(
+                                              icon: Icon(Icons.storage),
+                                              iconSize: sizeOfIcon,
+                                              padding: EdgeInsets.zero,
+                                              color: Color.fromRGBO(242, 195, 71, 0.9),
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return StreamBuilder(
+                                                          stream: db.collection("myPosts").doc(this.userId).snapshots(),
+                                                          builder: (context, snapshot) {
+                                                            if (!snapshot.hasData) {
+                                                              return CircularProgressIndicator();
+                                                            }
+                                                            var postsOfTheSeller = snapshot.data.data();
+                                                            return ListView(
+                                                              children: postsOfTheSeller["myPosts"]
+                                                                  .map<Widget>((productId) {
+                                                                return productLinkWidget(
+                                                                  productId: productId,
+                                                                  smallPreview: false,
+                                                                  action: () {
+                                                                    this.message =
+                                                                        LinkMessage(userIndex, Timestamp.now(), productId);
+                                                                    final Map<String, int> updatedVals = {
+                                                                      widget.theOtherUserId: chat["unread"][widget.theOtherUserId] == null
+                                                                          ? 1
+                                                                          : chat["unread"][widget.theOtherUserId] + 1,
+                                                                      this.userId: 0};
+                                                                    db.collection("chats").doc(widget.chatID).update({
+                                                                      "history":
+                                                                      FieldValue.arrayUnion([this.message.toMap()]),
+                                                                      "unread": updatedVals
+                                                                    });
+                                                                    this.message = null;
+                                                                    Navigator.of(context).pop();
+                                                                    Navigator.of(context).pop();
+                                                                  },
+                                                                );
+                                                              }).toList(),
+                                                            );
+                                                          }
+                                                      );
+                                                    }
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          Text(
+                                            "My Products",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(242, 195, 71, 1),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
                     ),
+                    // send message button
                     InkWell(
                       onTap: () async {
                         if (this.content != null && this.content != "") {

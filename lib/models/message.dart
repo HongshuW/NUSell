@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppMessage {
@@ -19,5 +21,14 @@ class ImageMessage extends AppMessage {
   @override
   Map<String, dynamic> toMap() {
     return {'user': userIndex, 'time': time, 'imgURL': message};
+  }
+}
+
+class LinkMessage extends AppMessage {
+  LinkMessage(userIndex, time, message) : super(userIndex, time, message);
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {'user': userIndex, 'time': time, 'productId': message};
   }
 }

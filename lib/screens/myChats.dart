@@ -126,12 +126,11 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                     Text(
                                       chatInfo["history"].isEmpty
                                           ? ""
-                                          : chatInfo["history"]
-                                                      .last["message"] ==
-                                                  null
-                                              ? "[photo]"
-                                              : chatInfo["history"]
-                                                  .last["message"],
+                                          : chatInfo["history"].last["message"] != null
+                                              ? chatInfo["history"].last["message"]
+                                              : chatInfo["history"].last["imgURL"] != null
+                                                ? "[photo]"
+                                                : "[link]",
                                       style: TextStyle(color: Colors.grey),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -188,11 +187,11 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                   Text(
                                     chatInfo["history"].isEmpty
                                         ? ""
-                                        : chatInfo["history"].last["message"] ==
-                                                null
+                                        : chatInfo["history"].last["message"] != null
+                                          ? chatInfo["history"].last["message"]
+                                          : chatInfo["history"].last["imgURL"] != null
                                             ? "[photo]"
-                                            : chatInfo["history"]
-                                                .last["message"],
+                                            : "[link]",
                                     style: TextStyle(color: Colors.grey),
                                     overflow: TextOverflow.ellipsis,
                                   ),
