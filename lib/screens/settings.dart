@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital2796_nusell/models/popUp.dart';
+import 'package:orbital2796_nusell/screens/about.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/editProfileImage.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
@@ -37,6 +38,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //          <-- ListTile.divideTiles
             context: context,
             tiles: [
+              ListTile(
+                title: Text('About'),
+                trailing: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AboutScreen()));
+                  },
+                ),
+              ),
               ListTile(
                 title: Text('Change profile photo'),
                 trailing: IconButton(
