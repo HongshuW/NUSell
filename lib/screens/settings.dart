@@ -5,9 +5,11 @@ import 'package:orbital2796_nusell/models/popUp.dart';
 import 'package:orbital2796_nusell/screens/about.dart';
 import 'package:orbital2796_nusell/screens/editProfileForm.dart';
 import 'package:orbital2796_nusell/screens/editProfileImage.dart';
+import 'package:orbital2796_nusell/screens/faq.dart';
 import 'package:orbital2796_nusell/screens/login.dart';
 import 'package:orbital2796_nusell/screens/profile.dart';
 import 'package:orbital2796_nusell/screens/resetPassword.dart';
+import 'package:orbital2796_nusell/screens/termsAndConditions.dart';
 import 'package:orbital2796_nusell/services/auth.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -47,6 +49,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => AboutScreen()));
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('FAQ'),
+                trailing: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FaqScreen()));
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Terms and Services'),
+                trailing: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TermsAndConditionsScreen()));
                   },
                 ),
               ),
